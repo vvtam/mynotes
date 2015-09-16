@@ -3,6 +3,7 @@
 - Error: 1114 SQLSTATE: HY000 The table '%s' is full
 
 > Error: 1114 SQLSTATE: HY000 (ER_RECORD_FILE_FULL)
+> 
 > Message: The table '%s' is full
 
 比如引擎是 memory，就可以在my.cnf增加 max_heap_table_size=1024M这个参数
