@@ -1,16 +1,16 @@
-#wrk£¬ÀàËÆab webbenchµÄ¹¤¾ß
+#wrkï¼Œç±»ä¼¼ab webbenchçš„å·¥å…·
 
-##½éÉÜ
+##ä»‹ç»
 https://github.com/wg/wrk
 
-##°²×°
+##å®‰è£…
 https://github.com/wg/wrk/wiki/Installing-Wrk-on-Linux
 
-##³£¼ûÓÃ·¨
+##å¸¸è§ç”¨æ³•
 
 > ./wrk -t16 -c30000 -d60s -T30s "http://192.168.90.61:8080/index.html"
 
-*-t ±íÊ¾Ïß³ÌÊýÁ¿£¬Ò»°ãcpuºËÐÄµÄ2-4±¶*
-*-c ²¢·¢ÊýÁ¿*
-*-d Ê±¼ä*
-*-T ³¬Ê±Ê±¼ä*
+*-t è¡¨ç¤ºçº¿ç¨‹æ•°é‡ï¼Œä¸€èˆ¬cpuæ ¸å¿ƒçš„2-4å€*    
+*-c å¹¶å‘æ•°é‡*    
+*-d æ—¶é—´*    
+*-T è¶…æ—¶æ—¶é—´*    
