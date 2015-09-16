@@ -19,7 +19,7 @@ enabled=1
 
 > RPM Forge    
 https://wiki.centos.org/AdditionalResources/Repositories/RPMForge    
-i686 http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el6.rf.i686.rpm
+i686 http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el6.rf.i686.rpm    
 x86_64 http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el6.rf.x86_64.rpm
 
 > EPEL    
