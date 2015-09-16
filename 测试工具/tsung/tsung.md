@@ -7,6 +7,7 @@
 > RPM packages are signed. To add Erlang Solutions key, execute command:
 > 
 rpm --import http://packages.erlang-solutions.com/rpm/erlang_solutions.asc
+> 
 Add the following lines to some file in /etc/yum.repos.d/:
 > 
 [erlang-solutions]
