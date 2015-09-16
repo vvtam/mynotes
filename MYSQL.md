@@ -1,10 +1,11 @@
-#MySQLÓö¼ûµÄÎÊÌâÕûÀí
+#MySQLé‡è§çš„é—®é¢˜æ•´ç†
 
-1. Error: 1114 SQLSTATE: HY000 The table '%s' is full
+- Error: 1114 SQLSTATE: HY000 The table '%s' is full
+
 > Error: 1114 SQLSTATE: HY000 (ER_RECORD_FILE_FULL)
-Message: The table '%s' is full
+> Message: The table '%s' is full
 
-±ÈÈçÒıÇæÊÇ memory£¬¾Í¿ÉÒÔÔÚmy.cnfÔö¼Ó max_heap_table_size=1024MÕâ¸ö²ÎÊı
-ÆäËüÒıÇæ±ÈÈç innodbÇë²éÔÄ×ÊÁÏ
+æ¯”å¦‚å¼•æ“æ˜¯ memoryï¼Œå°±å¯ä»¥åœ¨my.cnfå¢åŠ  max_heap_table_size=1024Mè¿™ä¸ªå‚æ•°
+å…¶å®ƒå¼•æ“æ¯”å¦‚ innodbè¯·æŸ¥é˜…èµ„æ–™
 
-2. ÔÚÃüÁîĞĞÓÃsourceµ¼ÈëÊı¾İÊ±ºòÌáÊ¾ server gone away£¬¿ÉÄÜÊÇÒòÎªÔÊĞíµÄ°üÌ«Ğ¡ÁË£¬ĞŞ¸Ämax_allowed_packet»òÕßÆäËüÏà¹Ø²ÎÊı
+- åœ¨å‘½ä»¤è¡Œç”¨sourceå¯¼å…¥æ•°æ®æ—¶å€™æç¤º server gone awayï¼Œå¯èƒ½æ˜¯å› ä¸ºå…è®¸çš„åŒ…å¤ªå°äº†ï¼Œä¿®æ”¹max_allowed_packetæˆ–è€…å…¶å®ƒç›¸å…³å‚æ•°
