@@ -1,13 +1,13 @@
-#编译安装/PECL安装php-amqp插件
-插件版本版本选择
+#缂栬瘧瀹夎/PECL瀹夎php-amqp鎻掍欢
+鎻掍欢鐗堟湰鐗堟湰閫夋嫨
 rabbitmq-c-0.5.2
 
-< https://github.com/alanxz/rabbitmq-c/releases/download/v0.5.2/rabbitmq-c-0.5.2.tar.gz
+> https://github.com/alanxz/rabbitmq-c/releases/download/v0.5.2/rabbitmq-c-0.5.2.tar.gz
 
-如果出现错误，可能缺少头文件，请复制源码目录下面的文件到下列路径
+濡傛灉鍑虹幇閿欒锛屽彲鑳界己灏戝ご鏂囦欢锛岃澶嶅埗婧愮爜鐩綍涓嬮潰鐨勬枃浠跺埌涓嬪垪璺緞
 
-< cp librabbitmq/amqp.h /usr/local/include/
-< 
-< cp ibrabbitmq/amqp_framing.h /usr/local/include/
+> cp librabbitmq/amqp.h /usr/local/include/
+> 
+> cp ibrabbitmq/amqp_framing.h /usr/local/include/
 
-其它类推，然后可以用源码或者pecl安装amqp
+鍏跺畠绫绘帹锛岀劧鍚庡彲浠ョ敤婧愮爜鎴栬�卲ecl瀹夎amqp
