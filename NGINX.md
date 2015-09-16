@@ -1,5 +1,6 @@
-#nginxÊ¹ÓÃÓöµ½µÄÒ»Ğ©ÎÊÌâ
-- nginx³öÏÖ502£¬Èç¹ûÊÇºó¶ËÊÇphp-fpm£¬¿ÉÄÜĞèÒªµ÷Õûphp-fpmµÄ²ÎÊı£¬±ÈÈç
-< pm.max_children
-< 
-< pm.max_spare_servers
+#nginxä½¿ç”¨é‡åˆ°çš„ä¸€äº›é—®é¢˜
+- nginxå‡ºç°502ï¼Œå¦‚æœæ˜¯åç«¯æ˜¯php-fpmï¼Œå¯èƒ½éœ€è¦è°ƒæ•´php-fpmçš„å‚æ•°ï¼Œæ¯”å¦‚
+
+> pm.max_children
+> 
+> pm.max_spare_servers
