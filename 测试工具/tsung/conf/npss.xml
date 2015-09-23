@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE tsung SYSTEM "/usr/local/tsung-1.6.0/share/tsung/tsung-1.0.dtd">
+<!-- dumptraffic是調試模式，如果为true，就會打印詳細的請求返回信息，一般設置为false， -->
+<tsung loglevel="notice" dumptraffic="false" version="1.0">
+<!-- tsung所在的服務器，maxusers就是tsung產生的最大用戶數 -->
+  <clients>
+    <client host="localhost" use_controller_vm="true"  maxusers="100000" />
+  </clients>
+<!-- 被測服務器的ip和端口號，type一般設为tcp -->
+  <servers>
+    <server host="192.168.90.89" port="51003" type="tcp"/>
+  </servers>
+<!-- tsung產生的壓力 -->
+<load>
+<!-- phase="1" 第一階段；duration：測試持續時間；unit：單位秒 -->
+    <arrivalphase phase="1" duration="300" unit="second">
+<!-- maxnumber：最大用戶數；arrivalrate：每秒新增用戶數；unit：單位秒-->
+      <users maxnumber="3000" arrivalrate="10" unit="second"/>
+    </arrivalphase>
+  </load>
+<!-- 外部變量 -->
+<!-- 會話，每個用戶都按照sessions中的配置發送請求 -->
+  <sessions>
+<!--probability=“100”:這個session的請求概率是100%，如果要同時測多個api，可以設置請求概率；請求類型为http -->
+    <session name="npss" probability="100" type="ts_http">
+<!-- 請求次數，to是最大請求數，如果設为100，就是每個用戶請求100次 -->
+      <for from="1" to="100" incr="1" var="counter">
+<!-- subst="true"：如果在request中使用變量，需要設置subst -->
+        <request subst="true">
+<!-- url：被測試的url；method：GET、POST等；contents：POST請求的参數 -->
+          <http url="/nl.ts?id=TSCHNWS&amp;nn_from_epg_server=1" method="GET" version="1.1">
+          </http>
+        </request>
+<!-- thinktime：兩次請求之間的間隔時間，一般小於10s -->
+        <thinktime value="1"/>
+      </for>
+    </session>
+  </sessions>
+</tsung>
