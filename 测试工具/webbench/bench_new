@@ -1,0 +1,16 @@
+#!/bin/sh
+echo ------------------- >> result.csv
+#echo `date`, benching $1... >>result.csv
+echo `date` >>result.csv
+
+for url in $(/bin/cat bench.txt); do
+	#target_url=$1$url;
+	echo benching... $url
+	echo "  800 clients..."
+	result1=`webbench -c 800 -t 60 "$url" 2>/dev/null | grep "Requests" | grep -o -E "[0-9,]+"`;
+	echo "  1500 clients..."
+	result2=`webbench -c 1500 -t 60 "$url" 2>/dev/null | grep "Requests" | grep -o -E "[0-9,]+"`;
+	echo "  2000 clients..."
+	result3=`webbench -c 2000 -t 60 "$url" 2>/dev/null | grep "Requests" | grep -o -E "[0-9,]+"`;
+	echo \"$url\", $result1, $result2, $result3 >>result.csv
+done;

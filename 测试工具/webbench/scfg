@@ -1,0 +1,1088 @@
+#!/bin/sh
+###########################################################################################################
+# system configure
+###########################################################################################################
+#----------------------------------------------------------------------------------------------------------
+# tx_queue_len: send queue length
+#----------------------------------------------------------------------------------------------------------
+CONF_NET_NIC_TX_QUEUE_LEN=2000
+
+#----------------------------------------------------------------------------------------------------------
+# net device setting
+# CONF_NET_ITEM_<net device name>=("net device name", "onboot status [up/down]" "ipaddr" "mask" "broadcast")
+# CONF_NET_ITEM_<net device name>=("net device name", "onboot status [up/down]" "dhcp" )
+#----------------------------------------------------------------------------------------------------------
+# CONF_NET_ITEM_em0=("em0" "down" "192.168.1.33" "255.255.255.0" "192.168.1.255")
+# CONF_NET_ITEM_em1=("em1" "down" "192.168.1.34" "255.255.255.0" "192.168.1.255")
+
+#----------------------------------------------------------------------------------------------------------
+# bonding setting
+# CONF_NET_ITEM_<bonding device name>=("bonding devicename", "onboot status [up/down]" "ipaddr" "mask" "broadcast" "slaves list" "bonding mode")
+# CONF_NET_ITEM_<bonding device name>=("bonding devicename", "onboot status [up/down]" "dhcp" "slaves list" "bonding mode")
+# remark:
+#   slaves list = * for all usable nics
+#		mask and broadcast is empty for ignore these settings
+#----------------------------------------------------------------------------------------------------------
+# CONF_NET_ITEM_bond0=("bond0" "up" "192.168.1.41" "255.255.255.0" "192.168.1.255" "p1p1 p1p3 p1p4 p1p2" "0")
+# CONF_NET_ITEM_bond0=("bond0" "up" "dhcp" "*" "0")
+
+#----------------------------------------------------------------------------------------------------------
+# /etc/sysctl.conf
+#----------------------------------------------------------------------------------------------------------
+CONF_SYSCTL_ITEM0=("net.ipv4.ip_forward" "0")
+CONF_SYSCTL_ITEM1=("net.ipv4.tcp_tw_reuse" "1")
+CONF_SYSCTL_ITEM2=("net.ipv4.tcp_tw_recycle" "0")
+CONF_SYSCTL_ITEM3=("net.ipv4.tcp_syncookies" "1")
+CONF_SYSCTL_ITEM4=("net.core.netdev_max_backlog" "8192")
+CONF_SYSCTL_ITEM5=("net.ipv4.tcp_max_syn_backlog" "8192")
+CONF_SYSCTL_ITEM6=("net.core.rmem_default" "124928")
+CONF_SYSCTL_ITEM7=("net.core.wmem_default" "124928")
+CONF_SYSCTL_ITEM8=("net.core.wmem_max" "8388608")
+
+#----------------------------------------------------------------------------------------------------------
+# /etc/selinux/conf
+#----------------------------------------------------------------------------------------------------------
+CONF_SELINUX_ITEM0=("SELINUX" "permissive")
+
+#----------------------------------------------------------------------------------------------------------
+# service setting
+#----------------------------------------------------------------------------------------------------------
+CONF_SERVICE_ITEM0=("irqbalance" "stop")
+CONF_SERVICE_ITEM1=("iptables" "running")
+
+#----------------------------------------------------------------------------------------------------------
+# disk setting
+#----------------------------------------------------------------------------------------------------------
+CONF_DISK_SCHEDULER="deadline"
+CONF_DISK_NR_REQUESTS=1024
+CONF_DISK_READ_AHEAD_KB=1024
+CONF_DISK_IOSCHED_FIFO_BATCH=24
+
+#----------------------------------------------------------------------------------------------------------
+# ulimit setting
+#----------------------------------------------------------------------------------------------------------
+CONF_ULIMIT_MAX_FILE=65535
+CONF_ULIMIT_CORE_DUMP="unlimited"
+
+
+
+
+###########################################################################################################
+#	system configure verfing/updating script
+###########################################################################################################
+
+CONF_NET_TYPE="nic"
+CONF_ULIMIT_TYPE="ulimit"
+CONF_SERVICE_TYPE="service"
+CONF_DISK_TYPE="disk"
+
+CONF_SYSCTL_TYPE="ini"
+CONF_SYSCTL_FILE="/etc/sysctl.conf"
+CONF_SYSCTL_APPLY="sysctl -p"
+
+CONF_SELINUX_TYPE="ini"
+CONF_SELINUX_FILE="/etc/selinux/config"
+CONF_SELINUX_APPLY="setenforce 0"
+
+CONF_IPTABLES_TYPE="iptables"
+###########################################################################################################
+
+RC_LOCAL_PATH=/etc/rc.d/rc.local
+
+
+function get_all_server_ports() {
+	# lsof -nP -c /^n..s_/|sed -nre s/^.*TCP.*:\([[:digit:]]+\).*LISTEN.*$/\\1/p;
+	local SERVER_HOME_PATH=("/home/starcor" "/home/starcor/server");
+	local NMDS_CONF;
+	local NCDS_CONF;
+	local NPSS_CONF;
+	local NNDAEMON_CONF;
+
+	local BASE_PATH;
+	for BASE_PATH in ${SERVER_HOME_PATH[*]}; do
+		if [[ -z "$BASE_PATH" ]]; then
+			# skip empty base path
+			continue;
+		fi;
+
+		if [[ -e $BASE_PATH ]]; then
+			if [[ -z "$NMDS_CONF" ]] && [[ -e ${BASE_PATH}/nn_nmds/nmds.conf ]]; then
+				NMDS_CONF=${BASE_PATH}/nn_nmds/nmds.conf
+			fi;
+
+			if [[ -z "$NCDS_CONF" ]] && [[ -e ${BASE_PATH}/nn_ncds/ncds.conf ]]; then
+				NCDS_CONF=${BASE_PATH}/nn_ncds/ncds.conf
+			fi;
+
+			if [[ -z "$NPSS_CONF" ]] && [[ -e ${BASE_PATH}/nn_npss/npss.conf ]]; then
+				NPSS_CONF=${BASE_PATH}/nn_npss/npss.conf
+			fi;
+
+			if [[ -z "$NNDAEMON_CONF" ]] && [[ -e ${BASE_PATH}/nn_daemon/daemon.ini ]]; then
+				NNDAEMON_CONF=${BASE_PATH}/nn_daemon/daemon.ini
+			fi;
+		fi;
+	done;
+
+	local SERVER_PORTS=();
+
+	if [[ -n "$NMDS_CONF" ]]; then
+		SERVER_PORTS[${#SERVER_PORTS[*]}]=$(cat $NMDS_CONF|ini_find_key_value "media.port");
+		SERVER_PORTS[${#SERVER_PORTS[*]}]=$(cat $NMDS_CONF|ini_find_key_value "web.port");
+	fi;
+	if [[ -n "$NCDS_CONF" ]]; then
+		SERVER_PORTS[${#SERVER_PORTS[*]}]=$(cat $NCDS_CONF|ini_find_key_value "media.port");
+		SERVER_PORTS[${#SERVER_PORTS[*]}]=$(cat $NCDS_CONF|ini_find_key_value "web.port");
+	fi;
+	if [[ -n "$NPSS_CONF" ]]; then
+		SERVER_PORTS[${#SERVER_PORTS[*]}]=$(cat $NPSS_CONF|ini_find_key_value "policy.port");
+		SERVER_PORTS[${#SERVER_PORTS[*]}]=$(cat $NPSS_CONF|ini_find_key_value "web.port");
+	fi;
+	if [[ -n "$NNDAEMON_CONF" ]]; then
+		SERVER_PORTS[${#SERVER_PORTS[*]}]=$(cat $NNDAEMON_CONF|ini_find_key_value "server.port");
+	fi;
+	for BASE_PATH in ${!SERVER_PORTS[*]}; do
+		echo ${SERVER_PORTS[$BASE_PATH]//;/ }|xargs -n1;
+	done;
+}
+
+function color_echo() {
+	echo $*|color_info
+}
+function color_info() {
+	local INFO=$(cat);
+	eval $(echo $INFO|sed -nre s/^\\[\(.\)\\]\ \+\(.\+\)/local\ INFO_ARRAY\=\(\\1\ \"\\2\"\)/p|sed -r -e s/@RED/\\\\033[21\;31m/g -e s/@ORG/\\\\033[0m/g -e s/@BLUE/\\\\033[21\;34m/g -e s/@GREEN/\\\\033[21\;32m/g -e s/@YELLOW/\\\\033[21\;33m/g);
+	case ${INFO_ARRAY[0]} in
+	"i") {
+		echo -e "\033[01;32m[i]\033[0m ${INFO_ARRAY[1]}";
+	};;
+	"E") {
+		echo -e "\033[22;31m[E]\033[0m ${INFO_ARRAY[1]}";
+	};;
+	"W") {
+		echo -e "\033[01;33m[W]\033[0m ${INFO_ARRAY[1]}";
+	};;
+	"*") {
+		echo ${INFO_ARRAY[0]} ${INFO_ARRAY[1]}
+	};; 
+	esac;
+}
+
+function insert_line() {
+	cat|sed -r -e {${1}bins} -e "bend" -e ":ins"  -e "i$2" -e ":end"
+}
+function ini_has_key() {
+	if [[ `sed -nre s/^${1//./\.}\ *=.*/\\1/p` = "" ]]; then
+		echo no 
+	else
+		echo yes
+	fi
+}
+function ini_find_key_value() {
+	sed -nre s/^${1//./\.}\ *=\ *\(\[^\n\r\]\+\)/\\1/p
+}
+function ini_change_key_value() {
+	sed -re s/^\(${1//./\.}\ *=\ *\).*/\\1$2/
+} 
+function ini_append_key_value() {
+	cat
+	echo "$1 = $2"
+}
+
+function update_file() {
+	cat >$1._tmp
+	cat $1._tmp > $1
+	rm -rf $1._tmp
+}
+
+function build_conf_list() {
+	local ALL_CONF=${!CONF_*}
+	local CONF_NAME
+	local CONF_LIST=""
+	for CONF_NAME in ${ALL_CONF}; do
+		local CONF_NAME=${CONF_NAME/CONF_/};
+		CONF_LIST="${CONF_LIST} ${CONF_NAME/_*/}";
+	done;
+	CONF_LIST=`echo ${CONF_LIST}|xargs -n1|uniq`
+	echo $CONF_LIST
+}
+
+function verify_ini_conf() {
+	local CONF_ITEM
+	local CONF_NAME=CONF_$1_TYPE
+	local CONF_TYPE=${!CONF_NAME}
+
+	local CONF_NAME=CONF_$1_FILE
+	local CONF_FILE=${!CONF_NAME}
+
+	local CONF_NAME=CONF_$1_APPLY
+	local CONF_APPLY=${!CONF_NAME}
+
+	color_echo [i] checking $CONF_FILE...
+	local CONF_NAME=CONF_$1_ITEM
+	for CONF_ITEM in $(eval `printf 'echo ${!%s*}' $CONF_NAME`); do
+		eval `printf 'local CONF_VALUES=(${%s[*]})' $CONF_ITEM`
+		if [[ `cat $CONF_FILE|ini_has_key "${CONF_VALUES[0]}"` = "no" ]]; then
+			color_echo [E] $CONF_FILE has no ${CONF_VALUES[0]} value.
+			continue;
+		fi;
+		local CURRENT_CONF_VALUE=`cat $CONF_FILE|ini_find_key_value "${!CONF_ITEM[0]}"`
+		if [[ "${CURRENT_CONF_VALUE}" !=  "${CONF_VALUES[1]}" ]]; then
+			color_echo "[E] ${CONF_VALUES[0]} = ${CURRENT_CONF_VALUE} ... @REDerror@ORG, suggested value is @RED${CONF_VALUES[1]}@ORG"
+		else
+			color_echo "[i] ${CONF_VALUES[0]} = ${CURRENT_CONF_VALUE} ... @GREENok@ORG"
+		fi;
+	done;
+}
+
+function update_ini_conf() {
+	local CONF_ITEM
+	local CONF_NAME=CONF_$1_TYPE
+	local CONF_TYPE=${!CONF_NAME}
+
+	local CONF_NAME=CONF_$1_FILE
+	local CONF_FILE=${!CONF_NAME}
+
+	local CONF_NAME=CONF_$1_APPLY
+	local CONF_APPLY=${!CONF_NAME}
+
+	color_echo [i] configuring $CONF_FILE...
+	local CONF_NAME=CONF_$1_ITEM
+	for CONF_ITEM in $(eval `printf 'echo ${!%s*}' $CONF_NAME`); do
+		eval `printf 'local CONF_VALUES=(${%s[*]})' $CONF_ITEM`
+		if [[ `cat $CONF_FILE|ini_has_key "${CONF_VALUES[0]}"` = "no" ]]; then
+			cat $CONF_FILE|ini_append_key_value "${CONF_VALUES[0]}" "${CONF_VALUES[1]}"|update_file $CONF_FILE 
+			color_echo "[i] $CONF_FILE: setting ${CONF_VALUES[0]} = ${CONF_VALUES[1]}..."
+			continue;
+		fi;
+		local CURRENT_CONF_VALUE=`cat $CONF_FILE|ini_find_key_value "${!CONF_ITEM[0]}"`
+		if [[ "${CURRENT_CONF_VALUE}" !=  "${CONF_VALUES[1]}" ]]; then
+			cat $CONF_FILE|ini_change_key_value "${CONF_VALUES[0]}" "${CONF_VALUES[1]}"|update_file $CONF_FILE 
+			color_echo "[i] $CONF_FILE: setting ${CONF_VALUES[0]} = ${CONF_VALUES[1]}..."
+		fi;
+	done;
+
+	if [[ "${CONF_APPLY}" != "" ]]; then
+		${CONF_APPLY} > /dev/null 2>&1;
+	fi;
+}
+
+function update_nic_bonding_conf() {
+	local HAS_BONDING_MOD=$(if [[ -z `lsmod|grep bonding` ]]; then echo no; else echo yes; fi;);
+
+	color_echo "[i] configuring bonding net dev @YELLOW$1@ORG..."
+	if [[ $HAS_BONDING_MOD != yes ]]; then
+		modprobe bonding > /dev/null 2>&1
+		color_echo "[i] modprobe bonding...";
+	fi;
+
+	local MODPROBE_ALIAS=$(modprobe -c 2>/dev/null|grep -E "alias\\s+$1\\s+bonding");
+	local MODPROBE_OPTIONS=$(modprobe -c 2>/dev/null|grep -E "options\\s+$1");
+	local BONDING_MODE=$(echo "$MODPROBE_OPTIONS"|sed -nre s/^.*mode\=\(\[0-9]\+\).*$/\\1/p)
+	local BONDING_MIIMON=$(echo "$MODPROBE_OPTIONS"|sed -nre s/^.*miimon\=\(\[0-9]\+\).*$/\\1/p)
+	local BONDING_SLAVES=$( if [[ -e /proc/net/bonding/$1 ]]; then cat /proc/net/bonding/$1|sed -nre s/^Slave\ Interface:\ \(.*\)/\\1/p|sort; fi;)
+	local BONDING_IF_INFO=( $(ifconfig $1 2>/dev/null|grep -E "HWaddr|inet addr"|xargs -n1|sed -nre s/addr:.\+\|bcast:.\+\|mask:.\+\|^[0-9A-F:]\+$/\\0/ip) );
+	local BONDING_IF_MAC=${BONDING_IF_INFO[0]};
+	local BONDING_IF_ADDR=${BONDING_IF_INFO[1]/addr:/};
+	local BONDING_IF_BCAST=${BONDING_IF_INFO[2]/Bcast:/};
+	local BONDING_IF_MASK=${BONDING_IF_INFO[3]/Mask:/};
+
+	local BONDING_CFG_NAME="CONF_NET_ITEM_$1";
+	local BONDING_CFG_name="${!BONDING_CFG_NAME[0]}";
+	eval `echo local BONDING_CFG_state="\\${$BONDING_CFG_NAME[1]}";`
+	eval `echo local BONDING_CFG_addr="\\${$BONDING_CFG_NAME[2]}";`
+	eval `echo local BONDING_CFG_mask="\\${$BONDING_CFG_NAME[3]}";`
+	eval `echo local BONDING_CFG_bcast="\\${$BONDING_CFG_NAME[4]}";`
+	eval `echo local BONDING_CFG_slaves="\\${$BONDING_CFG_NAME[5]}";`
+	eval `echo local BONDING_CFG_mode="\\${$BONDING_CFG_NAME[6]}";`
+	
+	if [[ $BONDING_CFG_addr == "dhcp" ]]; then
+		BONDING_CFG_slaves="$BONDING_CFG_mask";
+		BONDING_CFG_mode="$BONDING_CFG_bcast";
+		unset BONDING_CFG_mask;
+		unset BONDING_CFG_bcast;
+	fi;
+
+	if [[	${BONDING_CFG_slaves} == "*" ]]; then
+		BONDING_CFG_slaves="$2"
+	fi;
+	BONDING_CFG_slaves=`echo "$BONDING_CFG_slaves"|xargs -n1|sort`
+
+	if [[ -e /etc/modprobe.conf ]]; then
+		cat /etc/modprobe.conf|sed -re /$1/d|update_file "/etc/modprobe.conf"
+	fi;
+	
+	local BONDING_CONF_PATH=/etc/modprobe.d/$1.conf
+	if [[ -z "$BONDING_CFG_name" ]]; then
+		color_echo "[W] $1: bonding not required!"
+		rm -rf $BONDING_CONF_PATH >/dev/null 2>&1
+		return;
+	fi;
+	
+	echo "alias $1 bonding" >$BONDING_CONF_PATH
+	echo "options $1 mode=$BONDING_CFG_mode miimon=100" >>$BONDING_CONF_PATH
+
+	local BONDING_SLAVE;
+	for BONDING_SLAVE in $BONDING_CFG_slaves; do
+		local BONDING_SLAVE_CFG_PATH=/etc/sysconfig/network-scripts/ifcfg-$BONDING_SLAVE
+		echo "DEVICE=$BONDING_SLAVE" >$BONDING_SLAVE_CFG_PATH
+		echo "ONBOOT=yes" >>$BONDING_SLAVE_CFG_PATH
+		echo "NM_CONTROLLED=no" >>$BONDING_SLAVE_CFG_PATH
+		echo "SLAVE=yes" >>$BONDING_SLAVE_CFG_PATH
+		echo "MASTER=$BONDING_CFG_name" >>$BONDING_SLAVE_CFG_PATH
+		echo "BOOTPROTO=none" >>$BONDING_SLAVE_CFG_PATH
+	done;
+	
+	BONDING_CONF_PATH=/etc/sysconfig/network-scripts/ifcfg-$BONDING_CFG_name
+	echo "DEVICE=$BONDING_CFG_name" >$BONDING_CONF_PATH
+	echo "ONBOOT=yes" >>$BONDING_CONF_PATH
+	echo "NM_CONTROLLED=no" >>$BONDING_CONF_PATH
+
+	if [[ "$BONDING_CFG_addr" == "dhcp" ]]; then
+		echo "BOOTPROTO=dhcp" >>$BONDING_CONF_PATH
+	else
+		echo "IPADDR=$BONDING_CFG_addr" >>$BONDING_CONF_PATH
+		[[ -n "$BONDING_CFG_mask" ]] && echo "NETMASK=$BONDING_CFG_mask" >>$BONDING_CONF_PATH
+		[[ -n "$BONDING_CFG_bcast" ]] && echo "BROADCAST=$BONDING_CFG_bcast" >>$BONDING_CONF_PATH
+	fi;
+	return 0;
+}
+
+
+function verify_nic_bonding_conf() {
+	local HAS_BONDING_MOD=$(if [[ -z `lsmod|grep bonding` ]]; then echo no; else echo yes; fi;);
+
+	color_echo "[i] configuring bonding net dev @YELLOW$1@ORG..."
+	if [[ $HAS_BONDING_MOD != yes ]]; then
+		color_echo "[E] module: bonding mod not found!";
+	fi;
+
+	local MODPROBE_ALIAS=$(modprobe -c 2>/dev/null|grep -E "alias\\s+$1\\s+bonding");
+	local MODPROBE_OPTIONS=$(modprobe -c 2>/dev/null|grep -E "options\\s+$1");
+	local BONDING_MODE=$(echo "$MODPROBE_OPTIONS"|sed -nre s/^.*mode\=\(\[0-9]\+\).*$/\\1/p)
+	local BONDING_MIIMON=$(echo "$MODPROBE_OPTIONS"|sed -nre s/^.*miimon\=\(\[0-9]\+\).*$/\\1/p)
+	local BONDING_SLAVES=$( if [[ -e /proc/net/bonding/$1 ]]; then cat /proc/net/bonding/$1|sed -nre s/^Slave\ Interface:\ \(.*\)/\\1/p|sort; fi;)
+	local BONDING_IF_INFO=( $(ifconfig $1 2>/dev/null|grep -E "HWaddr|inet addr"|xargs -n1|sed -nre s/addr:.\+\|bcast:.\+\|mask:.\+\|^[0-9A-F:]\+$/\\0/ip) );
+	local BONDING_IF_MAC=${BONDING_IF_INFO[0]};
+	local BONDING_IF_ADDR=${BONDING_IF_INFO[1]/addr:/};
+	local BONDING_IF_BCAST=${BONDING_IF_INFO[2]/Bcast:/};
+	local BONDING_IF_MASK=${BONDING_IF_INFO[3]/Mask:/};
+
+	local BONDING_CFG_NAME="CONF_NET_ITEM_$1";
+	local BONDING_CFG_name="${!BONDING_CFG_NAME[0]}";
+	eval `echo local BONDING_CFG_state="\\${$BONDING_CFG_NAME[1]}";`
+	eval `echo local BONDING_CFG_addr="\\${$BONDING_CFG_NAME[2]}";`
+	eval `echo local BONDING_CFG_mask="\\${$BONDING_CFG_NAME[3]}";`
+	eval `echo local BONDING_CFG_bcast="\\${$BONDING_CFG_NAME[4]}";`
+	eval `echo local BONDING_CFG_slaves="\\${$BONDING_CFG_NAME[5]}";`
+	eval `echo local BONDING_CFG_mode="\\${$BONDING_CFG_NAME[6]}";`
+	
+	if [[ $BONDING_CFG_addr == "dhcp" ]]; then
+		BONDING_CFG_slaves="$BONDING_CFG_mask";
+		BONDING_CFG_mode="$BONDING_CFG_bcast";
+		unset BONDING_CFG_mask;
+		unset BONDING_CFG_bcast;
+	fi;
+	if [[	${BONDING_CFG_slaves} == "*" ]]; then
+		BONDING_CFG_slaves="$2"
+	fi;
+	BONDING_CFG_slaves=`echo "$BONDING_CFG_slaves"|xargs -n1|sort`
+
+	if [[ -z "$BONDING_IF_INFO" ]]; then
+		color_echo "[E] $1: bonding not found!"
+	else
+		color_echo "[i] $1: mac:$BONDING_IF_MAC addr:$BONDING_IF_ADDR broadcast:$BONDING_IF_BCAST mask:$BONDING_IF_MASK"
+		color_echo "[i] $1: slaves: $BONDING_SLAVES"
+	fi;
+	
+	if [[ -z "$MODPROBE_ALIAS" ]]; then
+		color_echo "[E] $1: modprobe alias not found!";
+	fi;
+
+	if [[ -z "$MODPROBE_OPTIONS" ]]; then
+		color_echo "[E] $1: modprobe options not found!";
+	fi;
+
+	if [[ -z "$BONDING_IF_INFO" ]]; then
+		# bonding not found
+		return;
+	fi;
+
+	if [[ -z "$BONDING_CFG_name" ]]; then
+		color_echo "[W] $1: bonding not required!"
+		return;
+	fi;
+	if [[ "$BONDING_MODE" != "$BONDING_CFG_mode" ]]; then
+		color_echo "[E] $1: bonding mode is $BONDING_MODE, suggested value is @RED$BONDING_CFG_name@ORG";
+	fi;
+	
+	if [[ "$BONDING_MIIMON" != "100" ]]; then
+		color_echo "[E] $1: miimon is $BONDING_MIIMON, suggested value is @RED100@ORG";
+	fi;
+
+	if [[ "$BONDING_SLAVES" != "$BONDING_CFG_slaves" ]]; then
+		color_echo "[E] $1: [$BONDING_SLAVES], suggested slaves [@RED$BONDING_CFG_slaves@ORG]";
+	fi;
+	
+	if [[ "$BONDING_CFG_addr" == "dhcp" ]]; then
+		# skip dhcp check
+		return;
+	fi;
+
+	if [[ "$BONDING_IF_ADDR" != "$BONDING_CFG_addr" ]]; then
+		color_echo "[E] $1: address $BONDING_IF_ADDR, suggested address is @RED$BONDING_CFG_addr@ORG";
+	fi;
+
+	if [[ -n "$BONDING_CFG_mask" ]] && [[ "$BONDING_IF_MASK" != "$BONDING_CFG_mask" ]]; then
+		color_echo "[E] $1: mask $BONDING_IF_MASK, suggested mask is @RED$BONDING_CFG_mask@ORG";
+	fi;
+
+	if [[ -n "$BONDING_CFG_bcast" ]] && [[ "$BONDING_IF_BCAST" != "$BONDING_CFG_bcast" ]]; then
+		color_echo "[E] $1: broadcast is $BONDING_IF_BCAST, suggested broadcast is @RED$BONDING_CFG_bcast@ORG";
+	fi;
+	return 0;
+}
+
+function verify_nic_conf() {
+	local CPU_COUNT=`lscpu -p |sed -nre /^[0-9]+/p|wc -l`;
+	local NIC_LIST=$(ls /sys/class/net|grep -vE "lo|master");
+	local NIC_INFO=("[i]" "net devices")
+	local NONMASTER_NICS=();
+	for NIC_NAME in $NIC_LIST; do
+		local NIC_PATH=/sys/class/net/$NIC_NAME
+		if [[ -f $NIC_PATH ]]; then
+			continue; # skip none NIC name
+		fi;
+		local INFO_IDX=${#NIC_INFO[*]};
+		if [[ `cat $NIC_PATH/operstate` != up ]]; then
+			NIC_INFO[$INFO_IDX]="@RED$NIC_NAME@ORG";
+			NONMASTER_NICS[${#NONMASTER_NICS[*]}]=$NIC_NAME;
+			continue;
+		fi;
+		NIC_INFO[$INFO_IDX]="@GREEN$NIC_NAME@ORG";
+		if [[ -d $NIC_PATH/bonding ]]; then
+			continue;
+		fi;
+		NONMASTER_NICS[${#NONMASTER_NICS[*]}]=$NIC_NAME;
+	done;
+	color_echo "${NIC_INFO[*]}";
+
+	if [[ -z "${!CONF_NET_ITEM_*}" ]]; then
+		color_echo "[W] no network configured!!";
+	fi;
+
+	local BONDING_NIC;
+	
+	for NIC_NAME in $NIC_LIST; do
+		local NIC_PATH=/sys/class/net/$NIC_NAME
+		if [[ -f $NIC_PATH ]]; then
+			continue; # skip none NIC name
+		fi;
+		if [[ `cat $NIC_PATH/operstate` != up ]]; then
+			color_echo [W] $NIC_NAME: nic is down!
+			continue; # skip offline nic
+		fi;
+		if [[ -d $NIC_PATH/bonding ]]; then
+			BONDING_NIC[${#BONDING_NIC[*]}]=$NIC_NAME;
+			continue;
+		fi;
+		color_echo "[i] checking net dev @YELLOW$NIC_NAME@ORG...";
+
+		local CUR_IF_INFO=( $(ifconfig $NIC_NAME 2>/dev/null|grep -E "HWaddr|inet addr"|xargs -n1|sed -nre s/addr:.\+\|bcast:.\+\|mask:.\+\|^[0-9A-F:]\+$/\\0/ip) );
+		local CUR_IF_MAC=${CUR_IF_INFO[0]};
+		local CUR_IF_ADDR=${CUR_IF_INFO[1]/addr:/};
+		local CUR_IF_BCAST=${CUR_IF_INFO[2]/Bcast:/};
+		local CUR_IF_MASK=${CUR_IF_INFO[3]/Mask:/};
+		if [[ -z "$CUR_IF_INFO" ]]; then
+			color_echo "[E] $NIC_NAME: status info not found!"
+		elif [[ -z "$CUF_IF_ADDR" ]]; then
+			color_echo "[W] $NIC_NAME: mac:$CUR_IF_MAC, @YELLOWDHCP@ORG not started or nic running in @YELLOWSLAVE@ORG mode."
+		else
+			color_echo "[i] $NIC_NAME: mac:$CUR_IF_MAC addr:$CUR_IF_ADDR broadcast:$CUR_IF_BCAST mask:$CUR_IF_MASK"
+		fi;
+
+		local TX_QUEUE_LEN=`cat $NIC_PATH/tx_queue_len`
+		if [[ $TX_QUEUE_LEN != ${CONF_NET_NIC_TX_QUEUE_LEN} ]]; then
+			color_echo [E] $NIC_NAME: tx_queue_len = $TX_QUEUE_LEN ... @REDerror@ORG, suggested value is @RED$CONF_NET_NIC_TX_QUEUE_LEN@ORG
+		else
+			color_echo [i] $NIC_NAME: tx_queue_len = $TX_QUEUE_LEN
+		fi;
+
+		# checking for soft irq setting
+		local IRQ_LIST;
+		if [[ -e $NIC_PATH/device/msi_irqs ]]; then
+			IRQ_LIST=$(ls $NIC_PATH/device/msi_irqs);
+		else
+			IRQ_LIST=$(cat /proc/interrupts|grep -E "\\<$NIC_NAME\\>"|cut -d: -f1)
+		fi;
+		if [[ -n "$IRQ_LIST" ]]; then
+			local IRQ_MAP=(`for ((idx=0;idx<$CPU_COUNT;idx++)); do echo 0; done;`);
+			local irq_index=0;
+			local IRQ_SMP_AFFINITY=();
+			for MSI_IRQ in $IRQ_LIST; do
+				local CPU_IDX=`cat /proc/irq/$MSI_IRQ/smp_affinity_list`;
+				IRQ_SMP_AFFINITY[$irq_index]=$CPU_IDX;
+				let irq_index++;
+				if [[ $irq_index == 1 ]]; then
+					#	color_echo [i] $NIC_NAME: irq-$MSI_IRQ\'s smp affinity $CPU_IDX. 
+					continue;
+				fi;
+				if [[ ${#CPU_IDX} != 1 ]]; then
+					color_echo [E] $NIC_NAME: irq-$MSI_IRQ\'s smp affinity $CPU_IDX. only 1 CPU allowed!!
+					continue;
+				fi;
+				let IRQ_MAP[$CPU_IDX]++;
+			done;
+			color_echo [i] $NIC_NAME: irq\[$IRQ_LIST\] smp affinity ${IRQ_SMP_AFFINITY[*]}, \[${IRQ_MAP[*]}\] count/cpu
+			let irq_index=irq_index/CPU_COUNT;
+			for ((idx=0;idx<$CPU_COUNT;idx++)); do
+				if [[ $irq_index != ${IRQ_MAP[$idx]} ]]; then
+					color_echo [E] $NIC_NAME: irq smp affinity imbalance!!
+					break;
+				fi;
+			done;
+
+		else
+			color_echo "[W] $NIC_NAME: IRQ list not found!"
+		fi;
+	done;
+
+	local BONDING_CFG_NAMES=${!CONF_NET_ITEM_bond*};
+	BONDING_CFG_NAMES=$(echo "${BONDING_CFG_NAMES//CONF_NET_ITEM_/} ${BONDING_NIC[*]}"|xargs -n1|sort|uniq);
+	for BONDING_NIC in $BONDING_CFG_NAMES; do
+		verify_nic_bonding_conf "$BONDING_NIC" "${NONMASTER_NICS[*]}"
+	done;
+
+}
+
+function get_conf_first_line() {
+	local CONF_FIRST_LINE=$( if [[ -e $1 ]]; then
+			cat $1| sed -nr -e /^\#/bend -e /^$/bend -e /^[^\#]/{=} -e q -e \:end
+		fi;	);
+	if [[ -z "$CONF_FIRST_LINE" ]]; then
+		echo "" >> ${RC_LOCAL_PATH};
+		CONF_FIRST_LINE=$(cat $1|wc -l);
+	fi;
+	echo $CONF_FIRST_LINE;
+}
+
+function update_nic_smp_affinity_conf() {
+	local CPU_COUNT=`lscpu -p |sed -nre /^[0-9]+/p|wc -l`;
+	local NIC_LIST=$(ls /sys/class/net|grep -vE "lo|master");
+	local RC_LOCAL_FIRST_LINE=$(get_conf_first_line ${RC_LOCAL_PATH});
+	cat ${RC_LOCAL_PATH}|sed -re /tx_queue_len/d|\
+		sed -re "/update smp_affinity$/d"|insert_line $RC_LOCAL_FIRST_LINE "${BASH_SOURCE} update smp_affinity"|\
+		update_file "${RC_LOCAL_PATH}";
+
+	for NIC_NAME in $NIC_LIST; do
+		local NIC_PATH=/sys/class/net/$NIC_NAME
+		if [[ -f $NIC_PATH ]]; then
+			continue; # skip none NIC name
+		fi;
+		if [[ `cat $NIC_PATH/operstate` != up ]]; then
+			continue; # skip offline nic
+		fi;
+		if [[ -d $NIC_PATH/bonding ]]; then
+			continue;
+		fi;
+		color_echo "[i] configuring net dev @YELLOW$NIC_NAME@ORG...";
+
+		echo $CONF_NET_NIC_TX_QUEUE_LEN > $NIC_PATH/tx_queue_len
+		cat ${RC_LOCAL_PATH}|insert_line ${RC_LOCAL_FIRST_LINE} "echo\\ $CONF_NET_NIC_TX_QUEUE_LEN\\ >\\ $NIC_PATH/tx_queue_len"|update_file "${RC_LOCAL_PATH}"
+
+		# checking for soft irq setting
+		local IRQ_LIST;
+		if [[ -e $NIC_PATH/device/msi_irqs ]]; then
+			IRQ_LIST=$(ls $NIC_PATH/device/msi_irqs);
+		else
+			IRQ_LIST=$(cat /proc/interrupts|grep -E "\\<$NIC_NAME\\>"|cut -d: -f1)
+		fi;
+		if [[ -n "$IRQ_LIST" ]]; then
+			local IRQ_MAP=(`for ((idx=0;idx<$CPU_COUNT;idx++)); do echo 0; done;`);
+			local irq_index=0;
+			local IRQ_SMP_AFFINITY=();
+			for MSI_IRQ in $IRQ_LIST; do
+				local SMP_AFFINITY_PATH="/proc/irq/$MSI_IRQ/smp_affinity_list";
+				local CPU_IDX=`cat /proc/irq/$MSI_IRQ/smp_affinity_list`;
+				let irq_index++;
+				if [[ $irq_index == 1 ]]; then
+					continue;
+				fi;
+				local CUR_CPU_IDX=$(( (irq_index-2) % CPU_COUNT ));
+				echo $CUR_CPU_IDX > $SMP_AFFINITY_PATH
+				IRQ_SMP_AFFINITY[${#IRQ_SMP_AFFINITY[*]}]=$CUR_CPU_IDX;
+			done;
+			color_echo "[i] $NIC_NAME: irq[$IRQ_LIST] smp affinity [${IRQ_SMP_AFFINITY[*]}]"
+		else
+			color_echo "[W] $NIC_NAME: IRQ list not found!"
+		fi;
+	done;
+}
+
+
+function update_nic_conf() {
+	local CPU_COUNT=`lscpu -p |sed -nre /^[0-9]+/p|wc -l`;
+	local NIC_LIST=$(ls /sys/class/net|grep -vE "lo|master");
+	local NIC_INFO=("[i]" "net devices")
+	local NONMASTER_NICS=();
+	for NIC_NAME in $NIC_LIST; do
+		local NIC_PATH=/sys/class/net/$NIC_NAME
+		if [[ -f $NIC_PATH ]]; then
+			continue; # skip none NIC name
+		fi;
+		local INFO_IDX=${#NIC_INFO[*]};
+		if [[ `cat $NIC_PATH/operstate` != up ]]; then
+			NIC_INFO[$INFO_IDX]="@RED$NIC_NAME@ORG";
+			NONMASTER_NICS[${#NONMASTER_NICS[*]}]=$NIC_NAME;
+			continue;
+		fi;
+		NIC_INFO[$INFO_IDX]="@GREEN$NIC_NAME@ORG";
+		if [[ -d $NIC_PATH/bonding ]]; then
+			continue;
+		fi;
+		NONMASTER_NICS[${#NONMASTER_NICS[*]}]=$NIC_NAME;
+	done;
+	color_echo "${NIC_INFO[*]}";
+
+	if [[ -z "${!CONF_NET_ITEM_*}" ]]; then
+		color_echo "[W] no network configured!!";
+		update_nic_smp_affinity_conf
+		return;
+	fi;
+
+	local BONDING_NIC;
+	
+	local RC_LOCAL_FIRST_LINE=$(get_conf_first_line ${RC_LOCAL_PATH});
+
+	cat ${RC_LOCAL_PATH}|sed -re /tx_queue_len/d|\
+		sed -re "/update smp_affinity$/d"|insert_line $RC_LOCAL_FIRST_LINE "${BASH_SOURCE} update smp_affinity"|\
+		update_file "${RC_LOCAL_PATH}";
+
+	for NIC_NAME in $NIC_LIST; do
+		local NIC_PATH=/sys/class/net/$NIC_NAME
+		if [[ -f $NIC_PATH ]]; then
+			continue; # skip none NIC name
+		fi;
+		if [[ `cat $NIC_PATH/operstate` != up ]]; then
+			continue; # skip offline nic
+		fi;
+		if [[ -d $NIC_PATH/bonding ]]; then
+			BONDING_NIC[${#BONDING_NIC[*]}]=$NIC_NAME;
+			continue;
+		fi;
+		color_echo "[i] configuring net dev @YELLOW$NIC_NAME@ORG...";
+
+		echo $CONF_NET_NIC_TX_QUEUE_LEN > $NIC_PATH/tx_queue_len
+		cat ${RC_LOCAL_PATH}|insert_line ${RC_LOCAL_FIRST_LINE} "echo\\ $CONF_NET_NIC_TX_QUEUE_LEN\\ >\\ $NIC_PATH/tx_queue_len"|update_file "${RC_LOCAL_PATH}"
+
+		eval $(printf "local NIC_CONF=(\${CONF_NET_ITEM_%s[*]})" "${NIC_NAME}")
+		local NIC_CONF_PATH=/etc/sysconfig/network-scripts/ifcfg-${NIC_NAME}
+		echo "DEVICE=${NIC_NAME}" > $NIC_CONF_PATH
+		echo "NM_CONTROLLED=no" >> $NIC_CONF_PATH
+		echo "ONBOOT=`if [[ ${NIC_CONF[1]} != up ]]; then echo no; else echo yes; fi;`" >> $NIC_CONF_PATH
+		if [[ ${NIC_CONF[2]} == "dhcp" ]]; then
+			# set nic for dhcp conf
+			echo "BOOTPROTO=dhcp" >> $NIC_CONF_PATH
+		else
+			#
+			echo "BOOTPROTO=static" >> $NIC_CONF_PATH
+			echo "ONBOOT=${NIC_CONF[1]}" >> $NIC_CONF_PATH
+			echo "IPADDR=${NIC_CONF[2]}" >> $NIC_CONF_PATH
+			[[ -n "${NIC_CONF[3]}" ]] && echo "NETMASK=${NIC_CONF[3]}" >> $NIC_CONF_PATH
+			[[ -n "${NIC_CONF[4]}" ]] && echo "BROADCAST=${NIC_CONF[4]}" >> $NIC_CONF_PATH
+		fi;
+
+		# checking for soft irq setting
+		local IRQ_LIST;
+		if [[ -e $NIC_PATH/device/msi_irqs ]]; then
+			IRQ_LIST=$(ls $NIC_PATH/device/msi_irqs);
+		else
+			IRQ_LIST=$(cat /proc/interrupts|grep -E "\\<$NIC_NAME\\>"|cut -d: -f1)
+		fi;
+		if [[ -n "$IRQ_LIST" ]]; then
+			local IRQ_MAP=(`for ((idx=0;idx<$CPU_COUNT;idx++)); do echo 0; done;`);
+			local irq_index=0;
+			local IRQ_SMP_AFFINITY=();
+			for MSI_IRQ in $IRQ_LIST; do
+				local SMP_AFFINITY_PATH="/proc/irq/$MSI_IRQ/smp_affinity_list";
+				local CPU_IDX=`cat /proc/irq/$MSI_IRQ/smp_affinity_list`;
+				let irq_index++;
+				if [[ $irq_index == 1 ]]; then
+					continue;
+				fi;
+				local CUR_CPU_IDX=$(( (irq_index-2) % CPU_COUNT ));
+				echo $CUR_CPU_IDX > $SMP_AFFINITY_PATH
+				IRQ_SMP_AFFINITY[${#IRQ_SMP_AFFINITY[*]}]=$CUR_CPU_IDX;
+			done;
+			color_echo "[i] $NIC_NAME: irq[$IRQ_LIST] smp affinity [${IRQ_SMP_AFFINITY[*]}]"
+		else
+			color_echo "[W] $NIC_NAME: IRQ list not found!"
+		fi;
+	done;
+
+	local BONDING_CFG_NAMES=${!CONF_NET_ITEM_bond*};
+	BONDING_CFG_NAMES=$(echo "${BONDING_CFG_NAMES//CONF_NET_ITEM_/} ${BONDING_NIC[*]}"|xargs -n1|sort|uniq);
+	for BONDING_NIC in $BONDING_CFG_NAMES; do
+		update_nic_bonding_conf "$BONDING_NIC" "${NONMASTER_NICS[*]}"
+	done;
+	color_echo "[i] restarting network...";
+	service network restart>/dev/null 2>&1
+	# modprobe -wr bonding >/dev/null 2>&1
+	if [[ "$BONDING_CFG_NAMES" != "" ]]; then
+		modprobe bonding >/dev/null 2>&1
+	fi;
+}
+
+
+function is_service_running() {
+	if [[ $1 == "iptables" ]]; then
+		if [[ `service $1 status|wc -l` == "1" ]]; then
+			echo 0;
+		else
+			echo 1;
+		fi;
+		return;
+	fi;
+	if [[ -z `service $1 status|egrep "\(pid[ \t]+[0-9]+\)"` ]]; then
+		echo 0;
+	else
+		echo 1;
+	fi;
+}
+
+function verify_service_conf() {
+
+	readonly SERVICE_STATUS_MAP=("stop" "running");
+	local CONF_ITEM;
+	for CONF_ITEM in ${!CONF_SERVICE_ITEM*}; do
+		eval `printf 'local CONF_VALUES=(${%s[*]})' $CONF_ITEM`
+		local SERVICE_STATUS=${SERVICE_STATUS_MAP[`is_service_running ${CONF_VALUES[0]}`]};
+		if [[ $SERVICE_STATUS != ${CONF_VALUES[1]} ]]; then
+			color_echo "[E] service @YELLOW$CONF_VALUES@ORG is @RED$SERVICE_STATUS@ORG ... error, suggested status is @RED${CONF_VALUES[1]}@ORG"
+		else
+			color_echo "[i] service @YELLOW$CONF_VALUES@ORG is $SERVICE_STATUS ... @GREENok@ORG";
+		fi;
+		
+	done;
+}
+
+function update_service_conf() {
+	readonly SERVICE_STATUS_MAP=("stop" "running");
+	local CONF_ITEM;
+	for CONF_ITEM in ${!CONF_SERVICE_ITEM*}; do
+		eval `printf 'local CONF_VALUES=(${%s[*]})' $CONF_ITEM`;
+		local SERVICE_STATUS=${SERVICE_STATUS_MAP[`is_service_running ${CONF_VALUES[0]}`]};
+		color_echo "[i] configuring service ${CONF_VALUES[0]}..."
+		if [[ $SERVICE_STATUS != ${CONF_VALUES[1]} ]]; then
+			if [[ "${CONF_VALUES[1]}" == "stop" ]]; then
+				service ${CONF_VALUES[0]} stop >/dev/null 2>&1
+				chkconfig --levels 2345 ${CONF_VALUES[0]} off >/dev/null 2>&1
+				color_echo "[i] turn off @YELLOW${CONF_VALUES[0]}@ORG"
+			else
+				service ${CONF_VALUES[0]} start >/dev/null 2>&1
+				chkconfig --levels 2345 ${CONF_VALUES[0]} on >/dev/null 2>&1
+				color_echo "[i] turn on @YELLOW${CONF_VALUES[0]}@ORG"
+			fi;
+		fi;
+	done;
+}
+
+function verify_disk_conf() {
+	readonly ARG_COLOR_MAP=("@GREEN" "@RED");
+	local DISK_LIST=( $(ls /sys/class/block|grep -E "^sd.$") );
+
+	for DISK_NAME in ${DISK_LIST[*]}; do
+		local DISK_INFO_PATH=/sys/block/$DISK_NAME
+		local DISK_SCHEDULER=$(sed -nre s/.*\\[\(.\+\)\\].*/\\1/p $DISK_INFO_PATH/queue/scheduler)
+		local DISK_NR_REQUESTS=`cat $DISK_INFO_PATH/queue/nr_requests`
+		local DISK_READ_AHEAD_KB=`cat $DISK_INFO_PATH/queue/read_ahead_kb`
+		local DISK_IOSCHED_FIFO_BATCH=`[[ -e $DISK_INFO_PATH/queue/iosched/fifo_batch ]] && cat $DISK_INFO_PATH/queue/iosched/fifo_batch`
+		DISK_IOSCHED_FIFO_BATCH=${DISK_IOSCHED_FIFO_BATCH:=$CONF_DISK_IOSCHED_FIFO_BATCH}
+		
+		if [[ $DISK_NAME == "sda" ]]; then
+			color_echo [i] $DISK_NAME scheduler:@GREEN$DISK_SCHEDULER@ORG nr_req:@GREEN$DISK_NR_REQUESTS@ORG read_ahead:@GREEN$DISK_READ_AHEAD_KB@ORG fifo_batch:@GREEN$DISK_IOSCHED_FIFO_BATCH@ORG
+		else
+			local DISK_MISCONFIGED=`if [[ $DISK_SCHEDULER != $CONF_DISK_SCHEDULER ]] || [[ $DISK_NR_REQUESTS != $CONF_DISK_NR_REQUESTS ]] || [[ $DISK_READ_AHEAD_KB != $CONF_DISK_READ_AHEAD_KB ]] || [[ $DISK_IOSCHED_FIFO_BATCH != $CONF_DISK_IOSCHED_FIFO_BATCH ]]; then echo 1; else echo 0; fi;`;
+			local C1=${ARG_COLOR_MAP[$(if [[ "$DISK_SCHEDULER" != "$CONF_DISK_SCHEDULER" ]]; then echo 1; fi;)]};
+			local C2=${ARG_COLOR_MAP[$(if [[ "$DISK_NR_REQUESTS" != "$CONF_DISK_NR_REQUESTS" ]]; then echo 1; fi;)]};
+			local C3=${ARG_COLOR_MAP[$(if [[ "$DISK_READ_AHEAD_KB" != "$CONF_DISK_READ_AHEAD_KB" ]]; then echo 1; fi;)]};
+			local C4=${ARG_COLOR_MAP[$(if [[ "$DISK_IOSCHED_FIFO_BATCH" != "$CONF_DISK_IOSCHED_FIFO_BATCH" ]]; then echo 1; fi;)]};
+			color_echo [`if [[ $DISK_MISCONFIGED == 1 ]]; then echo E; else echo i; fi;`] $DISK_NAME scheduler:$C1$DISK_SCHEDULER@ORG/@GREEN$CONF_DISK_SCHEDULER@ORG nr_req:$C2$DISK_NR_REQUESTS@ORG/@GREEN$CONF_DISK_NR_REQUESTS@ORG read_ahead:$C3$DISK_READ_AHEAD_KB@ORG/@GREEN$CONF_DISK_READ_AHEAD_KB@ORG fifo_batch:$C4$DISK_IOSCHED_FIFO_BATCH@ORG/@GREEN$CONF_DISK_IOSCHED_FIFO_BATCH@ORG
+		fi;
+	done;
+}
+
+function update_disk_conf() {
+	local DISK_LIST=( $(ls /sys/class/block|grep -E "^sd.$"|grep -v "sda") );
+	local RC_LOCAL_FIRST_LINE=$(get_conf_first_line ${RC_LOCAL_PATH});
+	cat ${RC_LOCAL_PATH}|sed -re /.sys.block.\+queue.\+/d|update_file "${RC_LOCAL_PATH}";
+	
+	if [[ ${#DISK_LIST[*]} == 0 ]]; then
+		color_echo "[W] no disk found!";
+		return;
+	fi;
+
+	for DISK_NAME in ${DISK_LIST[*]}; do
+		color_echo "[i] configuring $DISK_NAME..."
+		local DISK_INFO_PATH=/sys/block/$DISK_NAME
+		local DISK_SCHEDULER=$(sed -nre s/.*\\[\(.\+\)\\].*/\\1/p $DISK_INFO_PATH/queue/scheduler)
+		local DISK_NR_REQUESTS=`cat $DISK_INFO_PATH/queue/nr_requests`
+		local DISK_READ_AHEAD_KB=`cat $DISK_INFO_PATH/queue/read_ahead_kb`
+		local DISK_IOSCHED_FIFO_BATCH=`[[ -e $DISK_INFO_PATH/queue/iosched/fifo_batch ]] && cat $DISK_INFO_PATH/queue/iosched/fifo_batch`
+		DISK_IOSCHED_FIFO_BATCH=${DISK_IOSCHED_FIFO_BATCH:=$CONF_DISK_IOSCHED_FIFO_BATCH}
+		local DISK_MISCONFIGED=`if [[ $DISK_SCHEDULER != $CONF_DISK_SCHEDULER ]] || [[ $DISK_NR_REQUESTS != $CONF_DISK_NR_REQUESTS ]] || [[ $DISK_READ_AHEAD_KB != $CONF_DISK_READ_AHEAD_KB ]] || [[ $DISK_IOSCHED_FIFO_BATCH != $CONF_DISK_IOSCHED_FIFO_BATCH ]]; then echo 1; else echo 0; fi;`;
+		if [[ $DISK_MISCONFIGED == 1 ]]; then
+			echo $CONF_DISK_SCHEDULER > $DISK_INFO_PATH/queue/scheduler
+			echo $CONF_DISK_NR_REQUESTS > $DISK_INFO_PATH/queue/nr_requests
+			echo $CONF_DISK_READ_AHEAD_KB > $DISK_INFO_PATH/queue/read_ahead_kb
+			echo $CONF_DISK_IOSCHED_FIFO_BATCH > $DISK_INFO_PATH/queue/iosched/fifo_batch
+			color_echo "[i] $DISK_NAME scheduler:@GREEN$CONF_DISK_SCHEDULER@ORG nr_req:@GREEN$CONF_DISK_NR_REQUESTS@ORG read_ahead:@GREEN$CONF_DISK_READ_AHEAD_KB@ORG fifo_batch:@GREEN$CONF_DISK_IOSCHED_FIFO_BATCH@ORG"
+		fi;
+
+		cat ${RC_LOCAL_PATH}|\
+			insert_line ${RC_LOCAL_FIRST_LINE} "echo\\ $CONF_DISK_IOSCHED_FIFO_BATCH\\ >\\ $DISK_INFO_PATH/queue/iosched/fifo_batch"|\
+			insert_line ${RC_LOCAL_FIRST_LINE} "echo\\ $CONF_DISK_SCHEDULER\\ >\\ $DISK_INFO_PATH/queue/scheduler"|\
+			insert_line ${RC_LOCAL_FIRST_LINE} "echo\\ $CONF_DISK_NR_REQUESTS\\ >\\ $DISK_INFO_PATH/queue/nr_requests"|\
+			insert_line ${RC_LOCAL_FIRST_LINE} "echo\\ $CONF_DISK_READ_AHEAD_KB\\ >\\ $DISK_INFO_PATH/queue/read_ahead_kb"|\
+			update_file "${RC_LOCAL_PATH}"
+
+	done;
+}
+
+function verify_ulimit_conf() {
+	local CUR_MAX_FILE=`ulimit -n`;
+	local CUR_CORE_DUMP=`ulimit -c`;
+	local RC_LOCAL_FIRST_LINE=$(get_conf_first_line ${RC_LOCAL_PATH});
+	color_echo "[i] ulimit: -n $CUR_MAX_FILE -c $CUR_CORE_DUMP"
+	if [[ $CUR_MAX_FILE != $CONF_ULIMIT_MAX_FILE ]]; then
+		color_echo "[E] ulimit: incorrect @YELLOWmax file@ORG @RED$CUR_MAX_FILE@ORG, suggested value is @RED$CONF_ULIMIT_MAX_FILE@ORG";
+	fi;
+	if [[ -z $(cat ${RC_LOCAL_PATH}|egrep "^ulimit\s*-HSn\s*${CUR_MAX_FILE}$") ]]; then
+		color_echo "[E] ulimit: @YELLOWmax file@ORG setting not found in rc.local."
+	fi;
+	if [[ $CUR_CORE_DUMP != $CONF_ULIMIT_CORE_DUMP ]]; then
+		color_echo "[E] ulimit: incorrect @YELLOWcore dump@ORG @RED$CUR_CORE_DUMP@ORG, suggested value is @RED$CONF_ULIMIT_CORE_DUMP@ORG";
+	fi;
+	if [[ -z $(cat ${RC_LOCAL_PATH}|egrep "^ulimit\s*-HSc\s*${CUR_CORE_DUMP}") ]]; then
+		color_echo "[E] ulimit: @YELLOWcore dump@ORG setting not found in rc.local."
+	fi;
+}
+
+function update_ulimit_conf() {
+	local CUR_MAX_FILE=`ulimit -n`;
+	local CUR_CORE_DUMP=`ulimit -c`;
+	local RC_LOCAL_FIRST_LINE=$(get_conf_first_line ${RC_LOCAL_PATH});
+
+	cat ${RC_LOCAL_PATH}|sed -re /^ulimit.\+/d|insert_line ${RC_LOCAL_FIRST_LINE} "ulimit -HSn $CONF_ULIMIT_MAX_FILE"|insert_line ${RC_LOCAL_FIRST_LINE} "ulimit -HSc $CONF_ULIMIT_CORE_DUMP"|update_file "${RC_LOCAL_PATH}"
+	color_echo "[i] configuring ulimit..."
+	local LIMITS_CONF=/etc/security/limits.conf
+	if [[ $CUR_MAX_FILE != $CONF_ULIMIT_MAX_FILE ]]; then
+		cat $LIMITS_CONF|sed -re /^\[\ \t\]*\[^\#\].*nofile.*$/d|update_file $LIMITS_CONF
+		echo "*		soft		nofile		$CONF_ULIMIT_MAX_FILE" >> /etc/security/limits.conf
+		echo "*		hard		nofile		$CONF_ULIMIT_MAX_FILE" >> /etc/security/limits.conf
+		color_echo "[i] ulimit: update $LIMITS_CONF set hard/soft nofile to $CONF_ULIMIT_MAX_FILE"
+	fi;
+	if [[ $CUR_CORE_DUMP != $CONF_ULIMIT_CORE_DUMP ]]; then
+		cat $LIMITS_CONF|sed -re /^\[\ \t\]*\[^\#\].*core.*$/d|update_file $LIMITS_CONF
+		echo "*		soft		core		$CONF_ULIMIT_CORE_DUMP" >> /etc/security/limits.conf
+		echo "*		hard		core		$CONF_ULIMIT_CORE_DUMP" >> /etc/security/limits.conf
+		color_echo "[i] ulimit: update $LIMITS_CONF set hard/soft core to $CONF_ULIMIT_CORE_DUMP"
+	fi;
+	ulimit -HSn $CONF_ULIMIT_MAX_FILE -HSc $CONF_ULIMIT_CORE_DUMP
+}
+
+
+function verify_iptables_conf() {
+	local CUR_IPTABLES_LINES=$(( $(iptables --line-number -nL INPUT|wc -l) - 2 ));
+	for SERVER_PORT in $(get_all_server_ports); do
+		SERVER_PORT=${SERVER_PORT:0:4};
+		if [[ -z $(iptables -nL INPUT|grep -E "^ACCEPT\s*tcp.+0.0.0.0/0\s+0.0.0.0/0.+tcp dpt:${SERVER_PORT}") ]]; then
+			color_echo "[E] iptables: port $SERVER_PORT not configured!!"
+		else
+			color_echo "[i] iptables: port $SERVER_PORT configured!!"
+		fi;
+	done;
+}
+
+function update_iptables_conf() {
+	local CUR_IPTABLES_LINES=$(( $(iptables --line-number -nL INPUT|wc -l) - 2 ));
+	for SERVER_PORT in $(get_all_server_ports); do
+		SERVER_PORT=${SERVER_PORT:0:4};
+		if [[ -z $(iptables -nL INPUT|grep -E "^ACCEPT\s*tcp.+0.0.0.0/0\s+0.0.0.0/0.+tcp dpt:${SERVER_PORT}") ]]; then
+			if [[ $CUR_IPTABLES_LINES == 0 ]]; then
+				iptables -A INPUT -p tcp --dport $SERVER_PORT -j ACCEPT
+			else
+				iptables -I INPUT $CUR_IPTABLES_LINES -p tcp --dport $SERVER_PORT -j ACCEPT
+			fi;
+			color_echo "[i] iptables: ACCEPT tcp -s 0.0.0.0/0 -d 0.0.0.0/0 --dport $SERVER_PORT configured!!"
+		fi;
+	done;
+	/etc/init.d/iptables save > /dev/null 2>&1
+	color_echo "[i] iptables saved!"
+}
+
+
+
+function verify_all_system_config() {
+	local CONF_LIST=`build_conf_list`
+	local CONF_NAME
+	color_echo "[i] system checking @YELLOW$CONF_LIST@ORG..."
+	for CONF_NAME in $CONF_LIST; do
+		color_echo "[i] checking @YELLOW$CONF_NAME@ORG..."
+		case $CONF_NAME in
+			"NET") {
+				verify_nic_conf
+			};;
+			"DISK") {
+				verify_disk_conf
+			};;
+			"SERVICE") {
+				verify_service_conf
+			};;
+			"ULIMIT") {
+				verify_ulimit_conf
+			};;
+			"IPTABLES") {
+				verify_iptables_conf
+			};;
+			*) {
+				local CONF_TYPE_NAME="CONF_${CONF_NAME}_TYPE"
+				case ${!CONF_TYPE_NAME} in
+				"ini") {
+					verify_ini_conf "${CONF_NAME}"
+				};;
+				*) {
+					color_echo "[E] unsupported config type $CONF_NAME: @RED${!CONF_TYPE_NAME}@ORG"
+				};;
+				esac;
+			};;
+		esac;
+	done;
+}
+
+function update_all_system_config() {
+	local CONF_LIST=`build_conf_list`
+	local CONF_NAME
+	color_echo "[i] system configuring @YELLOW$CONF_LIST@ORG..."
+	for CONF_NAME in $CONF_LIST; do
+		color_echo "[i] configuring @YELLOW$CONF_NAME@ORG..."
+		case $CONF_NAME in
+			"NET") {
+				update_nic_conf
+			};;
+			"DISK") {
+				update_disk_conf	
+			};;
+			"SERVICE") {
+				update_service_conf
+			};;
+			"ULIMIT") {
+				update_ulimit_conf
+			};;
+			"IPTABLES") {
+				update_iptables_conf
+			};;
+			*) {
+				local CONF_TYPE_NAME="CONF_${CONF_NAME}_TYPE"
+				case ${!CONF_TYPE_NAME} in
+				"ini") {
+					update_ini_conf "${CONF_NAME}"
+				};;
+				*) {
+					color_echo "[E] unsupported config type $CONF_NAME: @RED${!CONF_TYPE_NAME}@ORG"
+				};;
+				esac;
+			};;
+		esac;
+	done;
+	color_echo "[i] all config updated!"
+}
+
+# trap "color_echo \"[i] exiting... ${BASH_SOURCE}\"" EXIT
+
+case $1 in
+	check) {
+		case $2 in
+			net) {
+				verify_nic_conf
+			};;
+			disk) {
+				verify_disk_conf
+			};;
+			ulimit) {
+				verify_ulimit_conf
+			};;
+			iptables) {
+				verify_iptables_conf
+			};;
+			service) {
+				verify_service_conf
+			};;
+			sysctl) {
+				verify_ini_conf "SYSCTL"
+			};;
+			selinux) {
+				verify_ini_conf "SELINUX"
+			};;
+			*) {
+				verify_all_system_config
+			};;
+		esac;
+	};;
+	update) {
+		case $2 in
+			net) {
+				update_nic_conf
+			};;
+			disk) {
+				update_disk_conf
+			};;
+			ulimit) {
+				update_ulimit_conf
+			};;
+			iptables) {
+				update_iptables_conf
+			};;
+			service) {
+				update_service_conf
+			};;
+			sysctl) {
+				update_ini_conf "SYSCTL"
+			};;
+			selinux) {
+				update_ini_conf "SELINUX"
+			};;
+			smp_affinity) {
+				update_nic_smp_affinity_conf
+			};;
+			*) {
+				update_all_system_config
+			};;
+		esac;
+	};;
+	help|-h|--help) {
+		echo "${BASH_SOURCE} [check|update|help] [target name]"
+		echo "  check targets:"
+		echo "    net          - check net device config"
+		echo "    disk         - check block device parameters in rc.local"
+		echo "    ulimit       - check ulimit in rc.local && limits.conf"
+		echo "    service      - check service config"
+		echo "    sysctl       - check /etc/sysctl.conf"
+		echo "    selinux      - check /etc/selinux/config"
+		echo "    iptables     - check iptables"
+		echo "  update targets:"
+		echo "    net          - update net device config"
+		echo "    disk         - update block device parameters in rc.local"
+		echo "    ulimit       - update ulimit in rc.local && limits.conf"
+		echo "    service      - update service config"
+		echo "    sysctl       - update /etc/sysctl.conf"
+		echo "    selinux      - update /etc/selinux/config"
+		echo "    iptables     - update iptables"
+		echo "    smp_affinity - update nic smp affinity only"
+
+	};;
+	*) {
+		verify_all_system_config
+	};;
+esac;
+
