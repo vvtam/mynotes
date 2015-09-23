@@ -1,0 +1,10 @@
+/usr/local/memcached/bin/memcached -d -u root -m 1024 -p 11211 -c 1024 -t 4 -P /var/run/memcached.pid
+
+-p <num>      TCP port number to listen on (default: 11211)
+-U <num>      UDP port number to listen on (default: 11211, 0 is off)
+-d            run as a daemon
+-u <username> assume identity of <username> (only when run as root)
+-m <num>      max memory to use for items in megabytes (default: 64 MB)
+-c <num>      max simultaneous connections (default: 1024)
+-P <file>     save PID in <file>, only used with -d option
+-t <num>      number of threads to use (default: 4)
