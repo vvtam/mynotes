@@ -1,0 +1,100 @@
+[client]
+port   = 3306
+socket = /data/mysql/mysql.sock
+#prompt='\\h \R:\\m:\\s \\u@\\d>'
+#prompt='\R:\\m:\\s \\u@\\d>'
+#tee=/var/log/mysql/console.log
+[mysqld]
+# paths
+bind_address = 0.0.0.0
+read_only = 0
+port	= 3306
+socket = /data/mysql/mysql.sock
+pid-file = /data/mysql/mysql3306.pid
+datadir = /data/mysql
+tmpdir = /tmp/mysqltmp
+character-set-server=utf8 
+#rep
+#old_passwords=1
+#skip-locking
+skip-host-cache
+skip-name-resolve
+
+server-id                = 1
+replicate-same-server-id = 0
+auto-increment-increment = 1
+auto-increment-offset    = 1
+log-slave-updates
+replicate-ignore-db=mysql  
+
+#rpl_recovery_rank = 0
+#rpl_semi_sync_master_enabled = 1
+#rpl_semi_sync_master_timeout = 3000
+#rpl_semi_sync_master_trace_level = 32
+#rpl_semi_sync_master_wait_no_slave = 1
+#rpl_semi_sync_slave_enabled = 0 
+#rpl_semi_sync_slave_trace_level = 32
+
+#binlog-do-db=nmsdb
+#binlog-ignore-db=mysql
+# binary logging format - mixed recommended
+binlog_format=row
+#log-queries-not-using-indexes
+log-bin                 = /data/mysql_binlogs/mysql-bin.log
+relay_log_purge=1
+relay-log               = /data/mysql/slave-relay.log
+relay-log-index         = /data/mysql/slave-relay-log.index
+expire_logs_days        = 3
+max_binlog_size         = 50M
+sync_binlog = 1
+
+#query_cache. 0 = off
+query_cache_type = 0    # 1 is default 
+query_cache_size = 0    # 64M is default
+
+
+# network
+connect_timeout = 60
+wait_timeout = 28800
+max_connections = 2048
+max_allowed_packet = 64M
+max_connect_errors = 1000
+# limits
+max_tmp_tables = 16
+tmp_table_size = 16M
+max_heap_table_size = 128M
+table_open_cache = 256
+table_definition_cache = 32
+# logs
+log_error = /var/log/mysql/mysql-error.log
+
+slow_query_log_file = /var/log/mysql/mysql-slow.log
+slow_query_log = 1      #log_slow_queries=ON    #old_version
+long_query_time = 0.5
+
+# innodb
+innodb_open_files = 300
+innodb_data_home_dir = /data/mysql
+innodb_data_file_path = ibdata1:128M;ibdata2:128M:autoextend
+innodb_file_per_table = 1
+innodb_status_file = 1
+innodb_additional_mem_pool_size = 16M
+innodb_buffer_pool_size = 512M
+innodb_flush_method = O_DIRECT
+innodb_io_capacity = 1500
+innodb_flush_log_at_trx_commit = 1
+innodb_support_xa = 1
+innodb_log_file_size = 64M
+innodb_log_buffer_size = 16M
+innodb_log_files_in_group = 3
+# experimental
+#innodb_stats_update_need_lock = 0
+# other stuff
+event_scheduler = 0
+thread_cache_size = 16
+sort_buffer_size = 16M
+join_buffer_size = 16M
+log-bin-trust-function-creators=1
+transaction_isolation=READ-COMMITTED
+[mysql.server]
+user=mysql
