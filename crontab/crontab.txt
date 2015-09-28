@@ -1,0 +1,13 @@
+*/1 * * * * root /usr/bin/flock -xn /tmp/npss3.tmp /usr/local/bin/webbench -c 200 -t 60 "http://192.168.95.76:51002/nl.ts?id=RANDOM&ndi=device_id001&nn_from_epg_server=1"
+*/1 * * * * root cd /root/nn_npss.3.8.30/201002.run/log/ && cat log_info* > temp && grep monitor ./temp >> ./xxx.txt
+#nmon per one hour
+0 * * * * root cd /root/ && /usr/bin/nmon -f -t -s30 -c120
+
+special time specification nickname
+@reboot    :    Run once after reboot.
+@yearly    :    Run once a year, ie.  "0 0 1 1 *".
+@annually  :    Run once a year, ie.  "0 0 1 1 *".
+@monthly   :    Run once a month, ie. "0 0 1 * *".
+@weekly    :    Run once a week, ie.  "0 0 * * 0".
+@daily     :    Run once a day, ie.   "0 0 * * *".
+@hourly    :    Run once an hour, ie. "0 * * * *".
