@@ -31,3 +31,17 @@ https://fedoraproject.org/wiki/EPEL
 - Tsung
 编译 OR
 yum -y install erlang perl perl-RRD-Simple.noarch perl-Log-Log4perl-RRDs.noarch gnuplot perl-Template-Toolkit
+
+###分布式
+tsung只_识别主机名_，还需要用_密钥登录_其它客户端机器
+```
+ <clients>
+    <client host="localhost" use_controller_vm="true"  maxusers="500000" />
+    <client host="TEST-STC-NPSS-02" use_controller_vm="true"  maxusers="500000" />
+  </clients>
+
+```
+配置好密钥登录和配置完主机名后，需要手动登录一次，比如
+`ssh TEST-STC-NPSS-02`
+
+所以客户端都需要安装erlang环境
