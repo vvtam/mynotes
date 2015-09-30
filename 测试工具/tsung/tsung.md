@@ -2,29 +2,33 @@
 
 ###安装
 **CentOS release 6.6 (Final)**
-
-erlang
 ```
-RPM packages are signed. To add Erlang Solutions key, execute command:    
-rpm --import http://packages.erlang-solutions.com/rpm/erlang_solutions.asc    
+1.Adding repository entry
+
+To add Erlang Solutions repository (including our public key for verifying signed package) to your system, call the following commands:
+
+wget http://packages.erlang-solutions.com/erlang-solutions-1.0-1.noarch.rpm
+rpm -Uvh erlang-solutions-1.0-1.noarch.rpm
+Alternatively: adding the repository entry manually
+
+RPM packages are signed. To add Erlang Solutions key, execute command:
+
+rpm --import http://packages.erlang-solutions.com/rpm/erlang_solutions.asc
 Add the following lines to some file in /etc/yum.repos.d/:
 
-[erlang-solutions]    
-name=Centos $releasever - $basearch - Erlang Solutions    
-baseurl=http://packages.erlang-solutions.com/rpm/centos/$releasever/$basearch    
-gpgcheck=1    
-gpgkey=http://packages.erlang-solutions.com/rpm/erlang_solutions.asc    
-enabled=1    
+[erlang-solutions]
+name=Centos $releasever - $basearch - Erlang Solutions
+baseurl=http://packages.erlang-solutions.com/rpm/centos/$releasever/$basearch
+gpgcheck=1
+gpgkey=http://packages.erlang-solutions.com/rpm/erlang_solutions.asc
+enabled=1
+Note that RPM Forge and EPEL must be also added to repos.
 
-**Note that RPM Forge and EPEL must be also added to repos.**
+2.Installing Erlang
 
-RPM Forge    
-https://wiki.centos.org/AdditionalResources/Repositories/RPMForge    
-i686 http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el6.rf.i686.rpm    
-x86_64 http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el6.rf.x86_64.rpm
+Call the following command:
 
-EPEL    
-https://fedoraproject.org/wiki/EPEL
+sudo yum install erlang
 ```
 gnuplot 绘图工具
 
@@ -45,7 +49,7 @@ tsung只_识别主机名_，还需要用_密钥登录_其它客户端机器
   </clients>
 
 ```
-配置好密钥登录和配置完主机名后，需要手动登录一次，比如
+配置好密钥登录和配置完主机名后，需要手动登录一次，比如  
 `ssh TEST-STC-NPSS-02`
 
-所以客户端都需要安装erlang环境
+所有客户端都需要安装erlang环境
