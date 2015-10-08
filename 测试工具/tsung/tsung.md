@@ -52,4 +52,5 @@ tsung只_识别主机名_，还需要用_密钥登录_其它客户端机器
 配置好密钥登录和配置完主机名后，需要手动登录一次，比如  
 `ssh TEST-STC-NPSS-02`
 
-所有客户端都需要安装erlang环境
+所有客户端都需要安装erlang环境，安装tsung并加入的PATH  
+[FAQ](http://tsung.erlang-projects.org/user_manual/faq.html)
