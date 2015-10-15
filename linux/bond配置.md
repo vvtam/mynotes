@@ -53,6 +53,6 @@ alias bond0 bonding
 options bonding mode=0 miimon=200
 ```
 载入bonding配置  
-`modprobe bongding`
+`modprobe bonding`
 
 *其它配置类似*
