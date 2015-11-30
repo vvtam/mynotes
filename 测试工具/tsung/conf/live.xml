@@ -35,7 +35,7 @@
   <!-- 如果设置多个服务器，请求会轮询到这几个服务器 -->
   <servers>
     <!-- <server host="192.168.91.89" port="51004" type="tcp"/> -->
-    <server host="192.168.91.89" port="51004" type="tcp"/>
+    <server host="192.168.91.89" port="5016" type="tcp"/>
   </servers>
   <!-- tsung產生的壓力 -->
   <load>
@@ -58,14 +58,14 @@
   <!-- 會話，每個用戶都按照sessions中的配置發送請求 -->
   <sessions>
     <!--probability=“100”:這個session的請求概率是100%，如果要同時測多個api，可以設置請求概率；請求類型为http -->
-    <session name="npss" probability="100" type="ts_http">
+    <session name="live" probability="100" type="ts_http">
       <!-- 請求次數，to是最大請求數，如果設为100，就是每個用戶請求100次 -->
       <for from="1" to="100" incr="1" var="counter">
-        <transaction name="npss">
+        <transaction name="live">
           <!-- subst="true"：如果在request中使用變量，需要設置subst -->
           <request subst="true">
             <!-- url：被測試的url；method：GET、POST等；contents：POST請求的参數 -->
-            <http url="/nl.m3u8?id=wmjq_hdzb11_mpp_hd&amp;nn_from_epg_server=1&amp;ndt=phone&amp;nn_ua_ips=182.138.101.47" method="GET" version="1.1"/>
+            <http url="/nl.ts?id=TSCCCTV5" method="GET" version="1.1"/>
           </request>
         </transaction>
         <!-- thinktime：兩次請求之間的間隔時間，一般小於10s -->
