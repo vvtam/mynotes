@@ -46,7 +46,7 @@
       <!-- interarrival定义多久产生一个用户；unit单位可以是分钟minute-->
       <users maxnumber="100000" arrivalrate="500" unit="second"/>
     </arrivalphase>
-    <arrivalphase phase="2" duration="5" unit="minute">
+    <arrivalphase phase="2" duration="5" unit="hour">
       <!-- maxnumber：最大用戶數；arrivalrate：每秒新增用戶數；unit：單位秒-->
       <!-- interarrival定义多久产生一个用户；unit单位可以是分钟minute-->
       <users maxnumber="100000" arrivalrate="1000" unit="second"/>
@@ -60,7 +60,7 @@
     <!--probability=“100”:這個session的請求概率是100%，如果要同時測多個api，可以設置請求概率；請求類型为http -->
     <session name="npss" probability="100" type="ts_http">
       <!-- 請求次數，to是最大請求數，如果設为100，就是每個用戶請求100次 -->
-      <for from="1" to="100" incr="1" var="counter">
+      <for from="1" to="1000" incr="1" var="counter">
         <transaction name="npss">
           <!-- subst="true"：如果在request中使用變量，需要設置subst -->
           <request subst="true">
