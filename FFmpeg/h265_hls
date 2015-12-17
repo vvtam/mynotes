@@ -1,4 +1,14 @@
-/root/bin/ffmpeg -i http://192.168.95.68:80/nl.ts?id=TSCHNWS -c:v libx265 -c:a copy -f hls -hls_time 5 -hls_wrap 100 -hls_list_size 50 -hls_base_url http://192.168.95.67/  /data/www/hls/h265.m3u8
+/root/bin/ffmpeg                                  \
+    -i http://192.168.95.68:80/nl.ts?id=TSCHNWS   \
+    -c:v libx265                                  \
+    -c:a copy                                     \
+    -f hls                                        \
+    -hls_time 5                                   \
+    -hls_wrap 100                                 \
+    -hls_list_size 50                             \
+    -segment_list_flags live                      \
+    -hls_base_url http://192.168.90.120:55555/    \
+    /data/starcor/hls/h265.m3u8
 
 ffmpeg                           \
     -i INPUT_FILE                \
