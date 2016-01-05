@@ -2,7 +2,7 @@
     -re                                           \
     -async 2                                      \
     -vsync 2                                      \
-    -i http://192.168.95.68:80/nl.ts?id=TSCHNWS   \
+    -i http://192.168.90.115:5001/nl.ts?id=FOXYZDY   \
     -c:v libx265                                  \
     -x265-params crf=23:fps=30:keyint=10:min-keyint=10  \
     -c:a copy                                     \
