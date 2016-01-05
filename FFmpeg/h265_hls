@@ -8,8 +8,8 @@
     -c:a copy                                     \
     -f hls                                        \
     -hls_time 5                                   \
-    -hls_wrap 100                                 \
-    -hls_list_size 50                             \
+    -hls_wrap 10                                 \
+    -hls_list_size 0                            \
     -hls_base_url http://192.168.95.67/    \
     /data/www/hls/h265.m3u8
 
