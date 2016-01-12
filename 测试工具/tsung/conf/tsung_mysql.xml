@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!DOCTYPE tsung SYSTEM "/usr/share/tsung/tsung-1.0.dtd">
+<tsung loglevel="debug" dumptraffic="true">
+
+  <clients>
+    <client host="hostname" cpu="24" maxusers="100000"/>
+  </clients>
+
+  <!-- Server side setup -->
+  <servers>
+    <server host="hostIP" port="3306" type="tcp"/>
+  </servers>
+
+  <load>
+    <arrivalphase phase="1" duration="2" unit="hour">
+      <users interarrival="0.0001" unit="second"></users>
+    </arrivalphase>
+  </load>
+
+  <sessions>
+    <session probability="100" name="mysql-epg" type="ts_mysql">
+      <request>
+        <mysql type="connect" />
+      </request>
+      <request>
+        <mysql type="authenticate" database="dbname" username="dbuser" password="dbpassword" />
+      </request>
+      <for from="1" to="9999999" incr="1" var="counter">
+        <for from="1" to="1000" var="counter">
+          <setdynvars sourcetype="random_number" length="7">
+           <var name="buss_id" />
+         </setdynvars>
+         <request>
+          <mysql type="sql">select b.nns_ex_id,b.nns_type,b.nns_url,b.nns_name,a.nns_weight from nns_buss_corner_mark as a inner join nns_corner_mark as b on a.nns_corner_mark_id=b.nns_id where a.nns_buss_id="%%buss_id%%" order by a.nns_weight desc</mysql>
+        </request>
+        <request>
+          <mysql type="sql">select b.nns_ex_id,b.nns_type,b.nns_url,b.nns_name,a.nns_weight from nns_buss_corner_mark as a inner join nns_corner_mark as b on a.nns_corner_mark_id=b.nns_id where a.nns_buss_id="7800005" order by a.nns_weight desc</mysql>
+        </request>
+        <request>
+          <mysql type="sql">select b.nns_ex_id,b.nns_type,b.nns_url,b.nns_name,a.nns_weight from nns_buss_corner_mark as a inner join nns_corner_mark as b on a.nns_corner_mark_id=b.nns_id where a.nns_buss_id="7800002" order by a.nns_weight desc</mysql>
+        </request>
+      </for>
+    </for>
+    <request>
+      <mysql type="close"></mysql>
+    </request>
+  </session>
+</sessions>
+</tsung>

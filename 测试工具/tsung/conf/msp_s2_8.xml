@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<!-- <?xml version="1.0" encoding="ISO-8859-1"?> -->
+<!DOCTYPE tsung SYSTEM "/usr/local/tsung-1.6.0/share/tsung/tsung-1.0.dtd">
+<!-- dumptraffic是調試模式，如果为true，就會打印詳細的請求返回信息，一般設置为false，设置为light只记录前面44个字节内容-->
+<!-- loglevel也会影响tsung的性能，建议设置为warning，默认为notice-->
+<!-- loglevel级别，emergency，critical，error，warning，notice，info，debug-->
+<tsung loglevel="warning" dumptraffic="false" version="1.0">
+  <!-- tsung所在的服務器，maxusers就是tsung產生的最大用戶數 -->
+  <clients>
+    <!-- Must be hostname,can't be IP -->
+    <!-- Install same version of Erlang and Tsung on all machines, at same paths -->
+    <!-- Config SSH login without password -->
+    <!-- Config /etc/hosts,Should not be 127.0.0.1 or localhost -->
+    <!-- Stop firewall and disable SELinux (setenforce 0)-->
+    <!-- Config /etc/hosts,Should not be 127.0.0.1 or localhost -->
+    <!-- Add erl tsung to PATH -->
+    <!-- Install erl tsung,and then copy to others-->
+    <!-- 可以配置虚拟ip来提高并发数 -->
+    <!-- <ip scan="true" value="eth0"/> 扫描eth0可用的ip -->
+    <!-- <client host="TEST-STC-NPSS-01" cpu="4" use_controller_vm="false" weight="1" maxusers="100000"> -->
+    <client host="TEST-STC-NPSS-01" cpu="4" weight="1" maxusers="100000">
+      <ip value="192.168.90.64"/>
+    </client>
+    <client host="TEST-STC-NPSS-02" cpu="4" weight="1" maxusers="100000">
+      <ip value="192.168.90.63"/>
+    </client>
+  </clients>
+  <!-- 被測服務器的ip和端口號，type一般設为tcp -->
+  <!-- 如果设置多个服务器，请求会轮询到这几个服务器 -->
+  <servers>
+    <!-- <server host="192.168.91.89" port="51004" type="tcp"/> -->
+    <server host="192.168.90.61" port="80" type="tcp"/>
+  </servers>
+  <!-- tsung產生的壓力 -->
+  <load>
+    <!-- phase="1" 第一階段；duration：測試持續時間；unit：單位秒 -->
+    <!-- unit：second,minute,hour -->
+    <arrivalphase phase="1" duration="5" unit="minute">
+      <!-- maxnumber：最大用戶數；arrivalrate：每秒新增用戶數；unit：單位秒-->
+      <!-- interarrival定义多久产生一个用户；unit单位可以是分钟minute-->
+      <users maxnumber="100000" arrivalrate="500" unit="second"/>
+    </arrivalphase>
+    <arrivalphase phase="2" duration="5" unit="hour">
+      <!-- maxnumber：最大用戶數；arrivalrate：每秒新增用戶數；unit：單位秒-->
+      <!-- interarrival定义多久产生一个用户；unit单位可以是分钟minute-->
+      <users maxnumber="100000" arrivalrate="1000" unit="second"/>
+    </arrivalphase>
+  </load>
+  <options>
+  </options>
+  <!-- 外部變量 -->
+  <!-- 會話，每個用戶都按照sessions中的配置發送請求 -->
+  <sessions>
+    <!--probability=“100”:這個session的請求概率是100%，如果要同時測多個api，可以設置請求概率；請求類型为http -->
+    <session name="npss" probability="100" type="ts_http">
+      <!-- 請求次數，to是最大請求數，如果設为100，就是每個用戶請求100次 -->
+      <for from="1" to="1000" incr="1" var="counter">
+        <transaction name="npss">
+          <!-- subst="true"：如果在request中使用變量，需要設置subst -->
+          <request subst="true">
+            <!-- url：被測試的url；method：GET、POST等；contents：POST請求的参數 -->
+            <http url="/nn_core/nn_pub_api/nn_pub_api.php?func=report_stat_user_play&amp;server_id=10901&amp;auth_c1=31303930313a" method="POST" version="1.1" contents="<u b='20160924T200012Z' pl='30' t='tstv' ct='20160924T200012Z' u='111' i='1.2.3.2' d='asdfasdf' v='4.24.2' f='adf4adf44ad4wsdf4adf4' n='10240' us='409600' s='session1232212' a='Mozilla/5.0 (Windows; U; Windows NT 5.2; fr-FR; rv:1.7.8) Gecko/20050511 Firefox/1.0.4' ul='http://ssss.ddd.ddd' c='200' r='ok' m='10901' qi='1.3.6.5' qc='12421' qf='6080500' cms='cmsmodify' msp='mspmodify' cp='starcor' via='10301,10901'/>"></http>
+          </request>
+        </transaction>
+        <!-- thinktime：兩次請求之間的間隔時間，一般小於10s -->
+        <!-- <thinktime value="20" random="true"/> 随机，平均值20秒-->
+        <!-- <thinktime min="2" max="10" random="true"/> 随机，2-10秒 -->
+        <thinktime value="1"/>
+      </for>
+    </session>
+  </sessions>
+</tsung>
