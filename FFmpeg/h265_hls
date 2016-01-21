@@ -2,14 +2,14 @@
     -re                                           \
     -async 2                                      \
     -vsync 2                                      \
-    -i http://192.168.95.68:80/nl.ts?id=TSCHNWS   \
+    -i http://192.168.90.115:5001/nl.ts?id=FOXYZDY   \
     -c:v libx265                                  \
     -x265-params crf=23:fps=30:keyint=10:min-keyint=10  \
     -c:a copy                                     \
     -f hls                                        \
     -hls_time 5                                   \
-    -hls_wrap 100                                 \
-    -hls_list_size 50                             \
+    -hls_wrap 10                                 \
+    -hls_list_size 0                            \
     -hls_base_url http://192.168.95.67/    \
     /data/www/hls/h265.m3u8
 
