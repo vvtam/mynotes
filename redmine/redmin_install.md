@@ -12,14 +12,14 @@ mysql
 ruby rails
 ```
 
-1. 新增源
+* 新增源
 
 ```
 新增key和证书
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 561F9B9CAC40B2F7  
 sudo apt-get install apt-transport-https ca-certificates  
 ```
-2. 创建apt-get源
+* 创建apt-get源
 
 ```
 sudo vim /etc/apt/sources.list.d/passenger.list
@@ -31,7 +31,7 @@ sudo chmod 600 /etc/apt/sources.list.d/passenger.list
 sudo apt-get update  
 sudo apt-get upgrade 
 ```
-3. 安装Ruby以及相关
+* 安装Ruby以及相关
 
 ```
 Tip：可以使用taobao的ruby源，比较快速
@@ -43,7 +43,7 @@ bundle config mirror.https://rubygems.org https://ruby.taobao.org
 sudo gem update
 sudo gem install bundler
 ```
-4. 安装Redmine
+* 安装Redmine
 
 ```
 下载源码 http://www.redmine.org
@@ -51,7 +51,7 @@ sudo gem install bundler
 sudo chown -R root:root redmine  
 sudo chown www-data redmine/config/environment.rb 
 ```
-5. 安装配置mysql
+* 安装配置mysql
 
 ```
 安装MySQL略
@@ -60,7 +60,7 @@ cd /opt/redmin/conf
 sudo cp database.yml.example database.yml
 修改 production development test的数据库链接
 ```
-6. 配置redmine
+* 配置redmine
 
 ```
 cd /opt/redmine/
@@ -72,7 +72,7 @@ sudo mkdir public/plugin_assets
 sudo chown -R www-data:www-data files log tmp public/plugin_assets  
 sudo chmod -R 755 files log tmp public/plugin_assets  
 ```
-7. 安装passenger，并且用passenger的脚本安装nginx
+* 安装passenger，并且用passenger的脚本安装nginx
 
 ```
 sudo apt-get install passenger
@@ -205,7 +205,7 @@ http {
 
 }
 ```
-8. 邮件配置
+* 邮件配置
 
 ```
 config/configuration.yml
