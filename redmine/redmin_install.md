@@ -2,7 +2,7 @@
 **请使用普通用户，不要用root，根据提示用sudo即可**
 
 本文参考  
-*http://blog.tc130lab.com/pei-zhi-xue-xi-zheng-li-bi-ji-shi-jian-20150110ling-chen/*
+*http://blog.tc130lab.com/pei-zhi-xue-xi-zheng-li-bi-ji-shi-jian-20150110ling-chen/*  
 *https://ruby.taobao.org/*
 ```
 环境：
@@ -13,8 +13,8 @@ ruby rails
 ```
 
 1. 新增源
- * 新增key和证书
 ```
+新增key和证书
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 561F9B9CAC40B2F7  
 sudo apt-get install apt-transport-https ca-certificates  
 ```
@@ -41,10 +41,12 @@ sudo gem update
 sudo gem install bundler
 ```
 4. 安装Redmine
+```
 下载源码 http://www.redmine.org
 比如解压到 /opt/redmin
 sudo chown -R root:root redmine  
 sudo chown www-data redmine/config/environment.rb 
+```
 5. 安装配置mysql
 ```
 安装MySQL略
