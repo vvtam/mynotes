@@ -10,3 +10,20 @@
 `$ docker exec -it some-mysql bash`  
 * The MySQL Server log is available through Docker's container log:  
 `$ docker logs some-mysql`  
+
+##容器链接##
+* Run MySQL Container  
+`$ sudo docker run --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mysql`  
+see https://github.com/docker-library/docs/tree/master/mysql
+
+* Run WWW Container  
+`$ sudo docker run --name www -d micooz/www`
+
+* Run PHP-FPM Container  
+`$ sudo docker run --name php-fpm --volumes-from www --link mysql:mysql -d micooz/php-fpm`  
+see https://github.com/docker-library/docs/tree/master/php
+
+* Run Nginx Container  
+`$ sudo docker run --name nginx -p 80:80 -p 443:443 --volumes-from www --link php-fpm:fpmservice -d micooz/nginx`  
+see https://github.com/docker-library/docs/tree/master/nginx
+
