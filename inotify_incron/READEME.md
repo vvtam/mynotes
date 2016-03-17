@@ -39,6 +39,27 @@ $@：代表<path>，监控对象
 $#：发生系统事件的对象（例如监控了某个文件夹，其下的某个文件发生了变化，那么$#就代表了该文件名）
 $%：代表<mask>，即发生的事件
 ```
+```
+支持的事件
+IN_ACCESS,
+IN_MODIFY,
+IN_ATTRIB,
+IN_CLOSE_WRITE,
+IN_CLOSE_NOWRITE,
+IN_OPEN,
+IN_MOVED_FROM,
+IN_MOVED_TO,
+IN_CREATE,
+IN_DELETE,
+IN_DELETE_SELF,
+IN_CLOSE,
+IN_MOVE,
+IN_ONESHOT,
+IN_ALL_EVENTS,
+IN_DONT_FOLLOW,
+IN_ONLYDIR,
+IN_MOVE_SELF
+```
 日志记录在 /var/log/cron  
 centos 7 启动   
 systemctl enable incrond.service  
