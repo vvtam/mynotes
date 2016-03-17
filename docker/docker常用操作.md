@@ -20,10 +20,12 @@ see https://github.com/docker-library/docs/tree/master/mysql
 `$ sudo docker run --name www -d micooz/www`
 
 * Run PHP-FPM Container  
-`$ sudo docker run --name php-fpm --volumes-from www --link mysql:mysql -d micooz/php-fpm`  
+`$ sudo docker run --name php-fpm --volumes-from www --link mysql:mysql -d micooz/php-fpm`
+`docker run --name epg-php-fpm --link epg-mysql:mysql --link epg-redis:redis -v /home/data/www:/var/www/html -d php:7.0.4-fpm`  
 see https://github.com/docker-library/docs/tree/master/php
 
 * Run Nginx Container  
 `$ sudo docker run --name nginx -p 80:80 -p 443:443 --volumes-from www --link php-fpm:fpmservice -d micooz/nginx`  
+`docker run --name epg-nginx --link epg-php-fpm:php-fpm -v /home/data/conf/nginx/nginx.conf:/etc/nginx/nginx.conf -d -p 80:80 --volumes-from=epg-php-fpm nginx:1.8`
 see https://github.com/docker-library/docs/tree/master/nginx
 
