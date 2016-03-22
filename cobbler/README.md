@@ -18,7 +18,7 @@ Set the root password for new systems during the kickstart
 You should change this by running  
 `openssl passwd -1`  
 
-###Server and Next_Server### 
+###Server and Next_Server###
 ```
 #server your host ip
 server 127.0.0.1 
