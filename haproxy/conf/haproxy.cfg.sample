@@ -1,0 +1,77 @@
+# This sample configuration makes extensive use of the ACLs. It requires  
+# HAProxy version 1.3.12 minimum.  
+  
+global  #设定全局配置参数，属于进程级的配置，通常和操作系统配置有关  
+    log    127.0.0.1    local0  info    #全局日志配置，local0是日志设备，info表示日志级别，分别有err,warning,info,debug可选。这个配置表示使用127.0.0.1上的rsyslog服务中的local0日志设备，记录日志等级为info  
+    maxconn    4096     #设定每个haproxy进程可接受的最大并发连接数，此选项等同于linux命令选项ulimit -n  
+    uid    nobody   #设定运行haproxy进程的用户和组，也可以使用用户和组的uid和gid的值  
+    gid    nobody  
+    pidfile    /var/run/haproxy.pid  
+    daemon  #设置haproxy进程进入后台运行。这是推荐的运行模式  
+    nbproc  1   #设置haproxy启动时可创建的进程数，此参数要求将haproxy运行模式设置为daemon，默认只启动一个进程。根据使用经验，该值的设置应该小于服务器的cpu核数。  
+      
+defaults    #默认参数配置。在此设置的参数，默认会自动引用到下面frontend/backend/listen部分中。如果某些参数属于公用的配置，在defaults中添加。如果在frontend/backend/listen中也配置了与defaults一样的参数。那么defaults部分参数对应的值自动被覆盖。  
+    mode    http    #设置haproxy实例默认的运行模式，有tcp/http可选值  
+    #tcp模式，客户端与服务端之间将建立一个全双工的连接，不会对七层报文做任何类型的检查，默认为tcp模式，经常用于ssl、ssh、smtp等应用  
+    #http模式，在此模式下，客户端请求在转发至后端服务器之前将会被深度分析，所有不与RFC格式兼容的请求都会被拒绝  
+    retries 3   #设置连接后端服务器的失败重试次数，如果连接失败的次数超过这里设置的值，haproxy会将对应的后端服务器标记为不可用，此参数也可在后面部分进行配置。  
+    timeout connect 10s #设置成功连接到一台服务器的最长等待时间，默认单位是毫秒，但也可以使用其他的时间单位后缀  
+    timeout client  20s #设置连接客户端发送数据时最长等待时间，默认单位是毫秒  
+    timeout server  30s #连接服务器端回应客户端数据发送的最长等待时间，默认单位是毫秒  
+    timeout check   5s  #设置对后端服务器的检测超时时间，默认单位是毫秒  
+      
+frontend www    #设置接收用户请求的前端虚拟节点。定义了一个www的前端虚拟节点  
+    bind       :80  #此选项只能在frontend和listen部分进行定义，用于定义一个或几个监听的套接字。格式  
+    #bind [<address>:<port_range>] interface <interface>  
+    #其中address为可选选项，其可以为主机名或者IP地址，如果将其设置为 * 或者 0.0.0.0，将监听当前系统的所有ipv4  
+    mode       http  
+    option      httplog     #在默认情况下，haproxy日志是不记录http请求的。此选项启用日志记录  
+    option      forwardfor  #如果后端服务器需要获得客户端的真实IP，就需要配置此选项  
+    option      httpclose   #此选项表示在客户端和服务器端完成一次连接请求后，haproxy将主动关闭此tcp请求。增加清能  
+    log         global  #全局的日志配置。global表示在haproxy配置文件global部分中定义的log选项配置格式  
+    default_backend htmpool #制定默认的后端服务器吃，也就是制定一组后端真实服务器。而这些真实服务器组将在backend段进行定义。这里的htmpool就是一个后端服务器组  
+  
+backend htmpool #用于设置集群后端服务集群的配置。也就是用来添加一组真是的服务器，以处理前端用户的请求。添加的真实服务器,类似LVS中的real server节点。  
+    mode    http  
+    option  redispatch  #此参数御用cookie保持的环境中。在默认情况下，haproxy会将其请求的后端服务器的serverID插入cookie中，以保持会话session的持久性。而如果后端服务器出现故障，客户端的cookie是不会刷新的，这就会出现问题。如果设置此参数，就会将客户的请求强制定向到另外一台将抗的后端服务器上，以保证服务正常  
+    option  abortonclose    #如果设置了此参数，可以在服务器负载很高的情况下，自动结束当前队列中处理时间比较长的连接。  
+    balance roundrobin      #此关键字用来定义负载均衡算法。  
+    #roundrobin 基于权重进行轮叫调度的算法，在服务器的性能分部比较均匀时，这是一种最公平最合理的算法  
+    #static-rr 基于权重进行轮叫的调度算法，不过此算法为静态方法，在运行时调整其服务器权重不会生效  
+    #source 基于请求源ip的算法。此算法先对请求的源IP进行hash运算，然后将结果与后端服务器的权重总数相除后转发至某台匹配的后端服务器。这种方式可以使用同一个客户端IP的请求始终被装法到某特定的后端服务器  
+    #leastconn  此算法会将新的连接请求转发到具有最少连接数目的后端服务器。在会话时间较长的场景中推荐使用此算法，例如数据库负载均衡等。此算法不适合会话短的环境，例如http  
+    #此算法会对部分或整个URI进行hash运算，再经过与服务器的总权重相除，最后转发到某台匹配的后端服务器上  
+    #uri_param 此算法会根据url路径中的参数进行转发，这样可保证在后端真实服务器数量不变时，同一个用户的请求始终分发到同一台机器上。  
+    #hdr(<name>)  此算法根据http头进行转发，如果指定的http头名称不存在，则使用roundrobin算法进行策略转发  
+    cookie  SERVERID    #表示允许向cookie插入SERVERI，每台服务器的SERVERID可在下面的server关键字中使用cookie关键字定义  
+    option  httpchk GET /index.php  # option httpchk 选项表示启用http的服务器状态监测功能。以保证在后端backend中某个节点不能服务时，把从frontend端进来的客户端请求分配至backend的其他健康节点上。  
+    #格式 option httpckh <method> <uri> <version>  
+    #method 表示http请求的方式，有OPTIONS/GET/HEAD几种方式。一般的健康检查可以采用HEAD方式进行，而不是采用GET方式，因为HEAD方式没有数据放回，仅检查response的head是不是200。相对于get，head更快  
+    #uri 表示要检测的uri地址，通过执行此uri，获得后端服务器的运行状态。整成200  
+    #version 指定心跳检测时的http版本号  
+    server  web1 10.200.34.181:80   cookie server1 weight 6 check inter 2000 rise 2 fall 3  
+    #server 用来定义多台后端真实服务器，不能用户defaults和frontend部分  
+    #server <name> <address>[:port] [param*]  
+    #name 后端真实服务器指定一个内部名称，随便定义一个即可  
+    #address 后端真实服务器的ip地址或者主机名  
+    #port 指定连接请求发往真实服务器时的目标端口。在未设定时，将使用客户端请求的同一端口  
+    #param 为后端服务器设定的一系列参数，常用的  
+    #check 表示启用对此后端服务器执行健康状态的检查  
+    #inter 设置将抗状态检查的时间间隔，单位为毫秒  
+    #rise 设置从故障状态转换至此正常状态需要成功检查的次数。rise 2 表示2此检查正确就认为此服务器可用  
+    #fall 设置后端服务器从正常状态转换为不可用状态需要检查的次数。fall 3 表示检查3次失败就认定此服务器不可用  
+    #cookie 为指定的后端服务器设定cookie值，此处指定的值将在请求入站时被检查，第一次为此值挑选的后端服务器将在后续的请求中一致被选中，其目的在于实现持久连接的功能。上面的cookie server1表示web1的serverid为server1。  
+    #weight 设置后端真实服务器的权重，默认为1，最大值256.设置为0表示不参与负载均衡。  
+    #backup 设置后端真实服务器的备份服务器，仅仅在后端所有真实服务器均不可用的情况下才启用  
+    server  web2 10.200.34.182:8080 cookie server2 weight 6 check inter 2000 rise 2 fall 3  
+      
+listen admin_stats  #此部分中frontend部分和backend部分的结合体。定义了一个名为admin_stats的实例，其实就是定义了一个haproxy的监控页面  
+    bind 0.0.0.0:9188  
+    mode http  
+    log 127.0.0.1 local0 err  
+    stats refresh 30s   #设置haproxy监控统计页面的自动刷新时间  
+    stats uri /haproxy-status   #设置haproxy监控统计页面的url路径。此设置，可以通过http://ip:9188/haproxy-status 查看  
+    stats realm welcome login\ Haproxy  #设置登录haproxy统计页面时密码框上的文本提示信息  
+    stats auth admin:admin~!@   #设置登录haproxy统计页面的用户名和密码。用户名和密码通过冒号分隔。可为监控页面设置多个用户名密码，每行一个  
+    stats hide-version  #隐藏统计页面上的haproxy版本信息  
+    stats admin if TRUE #可以在监控页面上手工启用或禁用后端真实服务器。  
