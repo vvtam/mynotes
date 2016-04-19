@@ -6,6 +6,8 @@ firewall-cmd --list-services 获取已经启用的services
 systemctl reload firewalld  重新载入配置  
 firewall-cmd --add-service=modssh  添加modssh services  
 firewall-cmd --remove-service=ssh  删除ssh services  
+firewall-cmd --zone=public --add-port=3306/tcp 在public zone 添加3306端口  
+firewall-cmd --zone=public --remove-port=3306/tcp 删除3306端口  
 
 系统自带的zones和services的目录是  
 /usr/lib/firewalld/zones/   
