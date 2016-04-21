@@ -1,6 +1,11 @@
+/usr/local/mysql/bin/mysqld --initialize  初始化数据库  
+
 GRANT ALL PRIVILEGES ON database.tables TO 'user'@'xxx' IDENTIFIED BY 'passwd';  
+
 for new version,change the password  
 UPDATE mysql.user SET authentication_string=PASSWORD('newpasswd') WHERE user='xxx';  
+
+SET PASSWORD FOR 'root'@'localhost' = PASSWORD('admin');
 
 CREATE DATABASE mycat DEFAULT CHARACTER SET utf8;
 
@@ -11,3 +16,15 @@ GRANT ALL PRIVILEGES ON mycat.* TO 'mycat'@'localhost' IDENTIFIED BY 'mycat2016'
 GRANT ALL PRIVILEGES ON mycat.* TO 'mycat'@'127.0.0.1' IDENTIFIED BY 'mycat2016';
 
 GRANT ALL PRIVILEGES ON mycat.* TO 'mycat'@'%' IDENTIFIED BY 'mycat2016';
+
+mysql> CREATE USER 'repl'@'%' IDENTIFIED BY 'password';  
+mysql> GRANT REPLICATION SLAVE ON *.* TO 'repl'@'%';  
+
+```
+mysql> CHANGE MASTER TO
+    -> MASTER_HOST='192.168.0.180',
+    -> MASTER_USER='repl',
+    -> MASTER_PASSWORD='password',
+    -> MASTER_LOG_FILE='mysql-bin.000001',
+    -> MASTER_LOG_POS=595;
+```
