@@ -13,41 +13,60 @@ no-auto-rehash
 
 [mysqld]
 ########basic settings########
-server-id = 11 
 port = 3306
 socket = /tmp/mysql.sock
 
 basedir = /usr/local/mysql
 datadir = /data/mysql
+tmpdir = /tmp/mysqltmp
 pid-file = /data/mysql/mysql.pid
 user = mysql
 bind_address = 0.0.0.0 
+port = 3306
+#read_only = 0
 #关闭自动提交 自动提交可能影响性能
 autocommit = 0
 init-connect = 'SET NAMES utf8mb4'
 character_set_server=utf8mb4
+skip-host-cache = 1
 skip_name_resolve = 1
 #back_log表示连接数达到max_connections后可等待连接的数量 超过后不能连接
 back_log = 300
-max_connections = 800
+max_connections = 2048
+# 对于同一主机 如果有超出该参数值个数的中断错误连接 则该主机将被禁止连接 如需对该主机进行解禁 执行FLUSH HOST
 max_connect_errors = 1000
-transaction_isolation = READ-COMMITTED
+open_files_limit = 65535
+# MySQL每打开一个表 都会读入一些数据到table_open_cache缓存中 当MySQL在这个缓存中找不到相应信息时 才会去磁盘上读取 默认值64
+# 假定系统有200个并发连接，则需将此参数设置为200*N(N为每个连接所需的文件描述符数目)
+# 当把table_open_cache设置为很大时，如果系统处理不了那么多文件描述符，那么就会出现客户端失效 连接不上
+table_open_cache = 256
+table_definition_cache = 32
 explicit_defaults_for_timestamp = 1
-join_buffer_size = 134217728
-tmp_table_size = 67108864
-tmpdir = /tmp
-max_allowed_packet = 16777216
+#performance_schema = 0
+tmp_table_size = 64M
+max_heap_table_size = 128M
+#接受包大小 比如插入更新的时候 下面是16M 16*1024*1024
+#max_allowed_packet = 16777216
+max_allowed_packet = 64M
+#The size of the cache to hold changes to the binary log during a transaction. A binary log cache is allocated for each client if the server supports any transactional storage engines and if the server has the binary log enabled (--log-bin option). If you often use large transactions, you can increase this cache size to get better performance.
+#binlog_cache_size = 1M
 sql_mode = "STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION,NO_ZERO_DATE,NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER"
 interactive_timeout = 1800
+connect_timeout = 60
 wait_timeout = 1800
-read_buffer_size = 16777216
-read_rnd_buffer_size = 33554432
-sort_buffer_size = 33554432
+key_buffer_size = 4M
+
+#query_cache_type = 1
+#query_cache_size = 8M
+#query_cache_limit = 2M
+
+#ft_min_word_len = 4
+#skip-external-locking
 
 ########log settings########
 log_error = /data/mysql/mysql-error.log
 slow_query_log = 1
-long_query_time = 2
+long_query_time = 1
 slow_query_log_file = /data/mysql/mysql-slow.log
 log_queries_not_using_indexes = 1
 log_slow_admin_statements = 1
@@ -57,27 +76,56 @@ expire_logs_days = 90
 min_examined_row_limit = 100
 
 ########replication settings########
+server-id = 11 
 master_info_repository = TABLE
 relay_log_info_repository = TABLE
-log_bin = bin.log
+log_bin = /data/mysql_binlogs/mysql-bin.log
 sync_binlog = 1
 gtid_mode = on
 enforce_gtid_consistency = 1
 log_slave_updates
 binlog_format = row 
-relay_log = relay.log
+#binlog_format = mixed
+relay_log_purge = 1
+relay_log = /data/mysql/slave-relay.log
+relay-log-index = /data/mysql/slave-relay-log.index
+max_binlog_size = 50M
 relay_log_recovery = 1
 binlog_gtid_simple_recovery = 1
 slave_skip_errors = ddl_exist_errors
+expire_logs_days = 7
+#replicate-same-server-id = 0
+#auto-increment-increment = 1
+#auto-increment-offset    = 1
+#log-slave-updates
+replicate-ignore-db=mysql
+
+########semi sync replication settings########
+plugin_dir=/usr/local/mysql/lib/plugin
+plugin_load = "rpl_semi_sync_master=semisync_master.so;rpl_semi_sync_slave=semisync_slave.so"
+loose_rpl_semi_sync_master_enabled = 1
+loose_rpl_semi_sync_slave_enabled = 1
+loose_rpl_semi_sync_master_timeout = 5000
 
 ########innodb settings########
+default_storage_engine = InnoDB
+innodb_file_per_table = 1
+innodb_status_file = 1
+innodb_additional_mem_pool_size = 16M
 innodb_page_size = 8192
-innodb_buffer_pool_size = 6G
+innodb_open_files = 500
+innodb_data_home_dir = /data/mysql
+innodb_data_file_path = ibdata1:128M;ibdata2:128M:autoextend
+#innodb_write_io_threads = 4
+#innodb_read_io_threads = 4
+innodb_flush_log_at_trx_commit = 1
+innodb_support_xa = 1
+innodb_buffer_pool_size = 50G
 innodb_buffer_pool_instances = 8
 innodb_buffer_pool_load_at_startup = 1
 innodb_buffer_pool_dump_at_shutdown = 1
 innodb_lru_scan_depth = 2000
-innodb_lock_wait_timeout = 5
+#innodb_lock_wait_timeout = 5
 innodb_io_capacity = 4000
 innodb_io_capacity_max = 8000
 innodb_flush_method = O_DIRECT
@@ -88,21 +136,24 @@ innodb_undo_directory = /undolog/
 innodb_undo_logs = 128
 innodb_undo_tablespaces = 3
 innodb_flush_neighbors = 1
-innodb_log_file_size = 4G
-innodb_log_buffer_size = 16777216
+innodb_log_file_size = 64M
+innodb_log_buffer_size = 16M
+innodb_log_files_in_group = 3
 innodb_purge_threads = 4
 innodb_large_prefix = 1
 innodb_thread_concurrency = 64
 innodb_print_all_deadlocks = 1
 innodb_strict_mode = 1
 innodb_sort_buffer_size = 67108864 
-
-########semi sync replication settings########
-plugin_dir=/usr/local/mysql/lib/plugin
-plugin_load = "rpl_semi_sync_master=semisync_master.so;rpl_semi_sync_slave=semisync_slave.so"
-loose_rpl_semi_sync_master_enabled = 1
-loose_rpl_semi_sync_slave_enabled = 1
-loose_rpl_semi_sync_master_timeout = 5000
+#innodb_max_dirty_pages_pct = 90
+#innodb_stats_update_need_lock = 0
+thread_cache_size = 16
+transaction_isolation = READ-COMMITTED
+log-bin-trust-function-creators = 1
+#read_buffer_size = 16777216
+#read_rnd_buffer_size = 33554432
+sort_buffer_size = 16M
+join_buffer_size = 16M
 
 [mysqld-5.7]
 innodb_buffer_pool_dump_pct = 40
@@ -114,3 +165,6 @@ binlog_gtid_simple_recovery=1
 log_timestamps=system
 transaction_write_set_extraction=MURMUR32
 show_compatibility_56=on
+
+[mysql.server]
+user=mysql
