@@ -8,8 +8,9 @@ UPDATE mysql.user SET authentication_string=PASSWORD('newpasswd') WHERE user='xx
 SET PASSWORD FOR 'root'@'localhost' = PASSWORD('admin');
 
 CREATE DATABASE mycat DEFAULT CHARACTER SET utf8;
+CREATE DATABASE testdb DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;  
 
-CREATE USER mycat IDENTIFIED BY 'mycat2016';
+CREATE USER 'mycat'@'localhost' IDENTIFIED BY 'mycat2016';
 
 GRANT ALL PRIVILEGES ON mycat.* TO 'mycat'@'localhost' IDENTIFIED BY 'mycat2016';
 
