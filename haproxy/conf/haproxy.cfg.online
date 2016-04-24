@@ -122,8 +122,15 @@ backend server_dynamic
 	bind-process 1-8
         mode            http
         balance         roundrobin
+        #balance         source
+        #将用户IP经过hash计算 指定到固定的真实服务器上 避免session问题
         #option prefer-last-server
         cookie          SERVERID
+        cookie  SESSION_COOKIE insert indirect nocache
+        #在cookie中插入haproxy定义的后端服务器cookie id
+        #appsession 9ai9 len 64 timeout 5h request-learn
+        #9ai9这个值替换成php.ini里的session.name#
+        #haproxy将后端服务器产生的session和后端服务器标识存在haproxy中的一张表里 客户端请求时先查询这张表#
         #retries         2
         #option redispatch
         #timeout connect 5s
