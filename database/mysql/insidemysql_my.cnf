@@ -26,6 +26,7 @@ port = 3306
 #read_only = 0
 #关闭自动提交 自动提交可能影响性能
 autocommit = 0
+#事务自动提交 很多程序里面都没有些提交 一般需要设为1
 init-connect = 'SET NAMES utf8mb4'
 character_set_server=utf8mb4
 skip-host-cache = 1
