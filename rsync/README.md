@@ -1,6 +1,7 @@
 #rsync#
 ##rsync ssh##
 rsync -avlR --exclude-from=rsync_cig_exclude.list -e ssh cig root@test151:/data/wwwroot/
+rsync -avlR --exclude-from=rsync_cig_exclude.list -e 'ssh -p 43211' cig root@test151:/data/wwwroot/
 
 排除文件列表用相对路径，比如下面脚本  
 ```
