@@ -9,8 +9,8 @@
 settings put global captive_portal_detection_enabled 0   #关闭  
 settings put global captive_portal_detection_enabled 1   #恢复  
 
-settings put global captive_portal_server g.cn           #替换
-settings delete global captive_portal_server             #恢复
+settings put global captive_portal_server g.cn           #替换    
+settings delete global captive_portal_server             #恢复   
 
 以上可以在adb 执行，也可以机器上开一个终端来执行(需要root权限)。  
 
