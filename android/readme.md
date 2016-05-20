@@ -3,7 +3,8 @@
 ##wifi出现感叹号，并且提示wifi没有链接到互联网##
 
 应该是android 5.0开始引入的新机制，会连接google的服务器来评估网络情况，墙内，你懂得。  
-所有可以把坚持的网址替换掉，或者关闭次功能。  
+所有可以把检测的网址替换掉，或者关闭此功能。  
+具体就是返回一个204，空内容。  
 
 settings put global captive_portal_detection_enabled 0   #关闭  
 settings put global captive_portal_detection_enabled 1   #恢复  
