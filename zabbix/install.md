@@ -30,3 +30,8 @@ shell> mysql -uzabbix -p<password> zabbix < schema.sql
 shell> mysql -uzabbix -p<password> zabbix < images.sql
 shell> mysql -uzabbix -p<password> zabbix < data.sql
 ```
+修改zabbix web上面的配置  
+修改zabbix server 上的配置  
+以上都需要配置数据库信息 
+
+ 
