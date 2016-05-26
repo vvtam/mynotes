@@ -17,7 +17,7 @@ LOGFILE=
 
 ADMIN_MAIL=
 
-#back to the another server
+#back to remote server
 SERVER_NAME=
 SERVER_IP=
 SERVER_USER= 
