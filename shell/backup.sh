@@ -20,6 +20,7 @@ ADMIN_MAIL=
 #back to remote server
 SERVER_NAME=
 SERVER_IP=
+SERVER_PORT=54321
 SERVER_USER= 
 SERVER_DIR=
 ##########################################
@@ -49,7 +50,7 @@ then
     tar czvf $ARCHIVE_FILE $BACKUP_APP >> $LOGFILE 2>&1 
     echo "$ARCHIVE_FILE backup success" >> $LOGFILE 
     rm -rf $BACKUP_APP
-    scp $ARCHIVE_FIEL $SERVER_USER@$SERVER_IP:$SERVER_DIR >> $LOGFILE 2>&1
+    scp -P $SERVER_PORT $ARCHIVE_FIEL $SERVER_USER@$SERVER_IP:$SERVER_DIR >> $LOGFILE 2>&1
 else
     echo "backup failed" >> $LOGFILE
     #mail -s "backup failed:$ARCHIVE_FILE" $ADMIN_MAIL 
