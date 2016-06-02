@@ -55,3 +55,13 @@ group nobody
 ##客户端##
 OS X https://tunnelblick.net/
 
+##firewalld配置##
+
+```
+firewall-cmd --permanent --add-service openvpn
+firewall-cmd --permanent --zone=trusted --add-interface=tun0
+firewall-cmd --permanent --zone=trusted --add-masquerade
+DEV=$(ip route get 8.8.8.8 | awk 'NR==1 {print $(NF-2)}')
+firewall-cmd --permanent --direct --passthrough ipv4 -t nat -A POSTROUTING -s  10.8.0.0/24 -o $DEV -j MASQUERADE
+firewall-cmd --reload
+```
