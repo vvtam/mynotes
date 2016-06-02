@@ -53,5 +53,5 @@ group nobody
 ```
 
 ##客户端##
-mac https://tunnelblick.net/
+OS X https://tunnelblick.net/
 
