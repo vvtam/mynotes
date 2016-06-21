@@ -37,6 +37,7 @@ function cpfile()
 
 for ((i=1;i<=50;i++));do
     cd "$SOU_DIR"
+    #the find dir must use relative dir,and can't include '/',like './',otherwise the exclude dir will not work well
     find . -path "./video" -prune -o -type f -name "*.ts" -print > filelist
     cpfile $i
 done
