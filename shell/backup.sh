@@ -50,7 +50,8 @@ then
     tar czvf $ARCHIVE_FILE $BACKUP_APP >> $LOGFILE 2>&1 
     echo "$ARCHIVE_FILE backup success" >> $LOGFILE 
     rm -rf $BACKUP_APP
-    scp -P $SERVER_PORT $ARCHIVE_FIEL $SERVER_USER@$SERVER_IP:$SERVER_DIR >> $LOGFILE 2>&1
+    scp -P $SERVER_PORT $ARCHIVE_FILE $SERVER_USER@$SERVER_NAME:$SERVER_DIR >> $LOGFILE 2>&1
+    #scp -P $SERVER_PORT $ARCHIVE_FILE $SERVER_USER@$SERVER_IP:$SERVER_DIR >> $LOGFILE 2>&1
 else
     echo "backup failed" >> $LOGFILE
     #mail -s "backup failed:$ARCHIVE_FILE" $ADMIN_MAIL 
@@ -59,5 +60,5 @@ fi
 echo "backup process done" >> $LOGFILE
 
 #delete the file over xx days
-find $RESTORE_DIR -type f -mtime +$KEEP_DAYS name "*.tar.gz" -exec rm -f {} \;
+find $RESTORE_DIR -type f -mtime +$KEEP_DAYS -name "*.tar.gz" -exec rm -f {} \;
 
