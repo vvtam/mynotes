@@ -26,6 +26,12 @@ vim /etc/ppp/chap-secrets
 # client	server	secret			IP addresses
 pppoe           *      "123456"                 *
 ```
+##防火墙配置##
+```
+iptables -A POSTROUTING -t nat -s 10.10.10.0/24 -j MASQUERADE
+iptables -A FORWARD -p tcp --syn -s 10.10.10.0/24 -j TCPMSS --set-mss 1499
+net.ipv4.ip_forward=1
+```
 
 ##启动##
 ```
