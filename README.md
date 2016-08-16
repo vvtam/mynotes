@@ -1,2 +1,2 @@
 # rs
-你们啊，too young,too simple,sometimes naive.
+你们真的……我以为……遍地……你们有一个好，全世界跑到什么地方，你们比其他的西方记者啊，跑得还快。但是呢，问来问去的问题啊，都 too simple，啊，sometimes naïve!懂了没啊？
