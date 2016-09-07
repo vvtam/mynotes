@@ -1,14 +1,10 @@
 #!/bin/bash
-# Author:  yeho <lj2007331 AT gmail.com>
-# BLOG:  https://blog.linuxeye.com
 #
-# Notes: OneinStack for CentOS/RadHat 5+ Debian 6+ and Ubuntu 12+
-#
-# Project home page:
-#       http://oneinstack.com
-#       https://github.com/lj2007331/oneinstack
 mysql_install_dir=/usr/local/mysql
 mysql_data_dir=/data/mysql
+mysql_version=mysql-5.7.12
+boost_dir=/usr/local/src/mysql57/boost_1_59_0
+mysql_src_dir=/usr/local/src
 
 if [ ! -e "/usr/local/lib/libboost_system.so" ];then
     tar xzf boost_1_59_0.tar.gz
@@ -25,13 +21,14 @@ id -u mysql >/dev/null 2>&1
 [ $? -ne 0 ] && useradd -M -s /sbin/nologin mysql
 [ ! -d "$mysql_install_dir" ] && mkdir -p $mysql_install_dir
 mkdir -p $mysql_data_dir;chown mysql.mysql -R $mysql_data_dir
-tar zxf mysql-5.7.12.tar.gz
-cd mysql-5.7.12
+cd $mysql_src_dir
+tar zxf $mysql_version.tar.gz
+cd $mysql_version
 make clean
 cmake . -DCMAKE_INSTALL_PREFIX=$mysql_install_dir \
 -DMYSQL_DATADIR=$mysql_data_dir \
 -DSYSCONFDIR=/etc \
--DWITH_BOOST=/usr/local/src/mysql57/boost_1_59_0 \
+-DWITH_BOOST=$boost_dir \
 -DWITH_INNOBASE_STORAGE_ENGINE=1 \
 -DWITH_PARTITION_STORAGE_ENGINE=1 \
 -DWITH_FEDERATED_STORAGE_ENGINE=1 \
