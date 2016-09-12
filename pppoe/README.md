@@ -30,6 +30,11 @@ pppoe           *      "123456"                 *
 ```
 iptables -A POSTROUTING -t nat -s 10.10.10.0/24 -j MASQUERADE
 iptables -A FORWARD -p tcp --syn -s 10.10.10.0/24 -j TCPMSS --set-mss 1499
+
+firewall-cmd --direct --add-rule ipv4 nat POSTROUTING 0 -o eno1 -j MASQUERADE
+firewall-cmd --direct --add-rule ipv4 filter FORWARD 0 -i ppp0 -o eno1 -j ACCEPT
+firewall-cmd --direct --add-rule ipv4 filter FORWARD 0 -i eno1 -o ppp0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+
 net.ipv4.ip_forward=1
 ```
 
