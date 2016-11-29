@@ -31,3 +31,6 @@ mysql> CHANGE MASTER TO
 ```
 DELETE FROM video_play_log WHERE dt < DATE_SUB(CURDATE(),INTERVAL 2 MONTH)
 
+CREATE TABLE newtable LIKE oldtable;   
+INSERT newtable SELECT * FROM oldtable;  
+
