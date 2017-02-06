@@ -1,4 +1,4 @@
-FROM ubuntu/latest
+FROM ubuntu:latest
 MAINTAINER Will Tam <t.vv@msn.com>
 
 RUN apt-get update && apt-get install -y openssh-server
