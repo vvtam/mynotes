@@ -1,5 +1,7 @@
 #MacOS buildroot#
 
+https://wiki.openwrt.org/doc/howto/buildroot.exigence.macosx
+
 These instructions worked on OS X 10.12.3 on 15 Feb 2017.
 
 1.Install Xcode or at least Xcode command line tools from the MacOSX App Store
