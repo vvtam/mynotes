@@ -65,3 +65,13 @@ DEV=$(ip route get 8.8.8.8 | awk 'NR==1 {print $(NF-2)}')
 firewall-cmd --permanent --direct --passthrough ipv4 -t nat -A POSTROUTING -s  10.8.0.0/24 -o $DEV -j MASQUERADE
 firewall-cmd --reload
 ```
+```
+iptables 替换成自己的端口
+iptables -A INPUT -i eth1 -m state --state NEW -p udp --dport 1194 -j ACCEPT
+iptables -A INPUT -i tun0 -j ACCEPT
+iptables -A FORWARD -i tun0 -j ACCEPT
+iptables -A FORWARD -i tun0 -o eth1 -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables -A FORWARD -i eth1 -o tun0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth1 -j MASQUERADE
+iptables -A OUTPUT -o tun0 -j ACCEPT
+```
