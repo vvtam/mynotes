@@ -22,12 +22,16 @@ mysql> CREATE USER 'repl'@'%' IDENTIFIED BY 'password';
 mysql> GRANT REPLICATION SLAVE ON *.* TO 'repl'@'%';  
 
 ```
+flush tables with read lock;
+show master status;
 mysql> CHANGE MASTER TO
     -> MASTER_HOST='192.168.0.180',
     -> MASTER_USER='repl',
     -> MASTER_PASSWORD='password',
     -> MASTER_LOG_FILE='mysql-bin.000001',
     -> MASTER_LOG_POS=595;
+start slave;
+unlock tables;
 ```
 DELETE FROM video_play_log WHERE dt < DATE_SUB(CURDATE(),INTERVAL 2 MONTH)
 
