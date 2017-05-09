@@ -34,3 +34,12 @@ DELETE FROM video_play_log WHERE dt < DATE_SUB(CURDATE(),INTERVAL 2 MONTH)
 CREATE TABLE newtable LIKE oldtable;   
 INSERT newtable SELECT * FROM oldtable;  
 
+修改密码
+skip-grant-tables # mysqld段配置
+无密码登录，修改密码
+UPDATE mysql.user SET authentication_string=PASSWORD('WbcLjnR5Kx9QCN9r') WHERE user='root';
+#skip-grant-tables 注释 重启
+登录
+#skip-grant-tables 注释 重启密码后
+#skip-grant-tables 注释 重启密码
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'WbcLjnR5Kx9QCN9r';
