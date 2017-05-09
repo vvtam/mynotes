@@ -41,5 +41,5 @@ skip-grant-tables # mysqld段配置,重启
 UPDATE mysql.user SET authentication_string=PASSWORD('newpw') WHERE user='root';
 #skip-grant-tables 注释重启
 新密码登录,并修改密码
-ALTER USER 'root'@'localhost' IDENTIFIED BY 'WbcLjnR5Kx9QCN9r';
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'newpw';
 ```
