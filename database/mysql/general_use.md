@@ -35,11 +35,11 @@ CREATE TABLE newtable LIKE oldtable;
 INSERT newtable SELECT * FROM oldtable;  
 
 修改密码
-skip-grant-tables # mysqld段配置
+```
+skip-grant-tables # mysqld段配置,重启
 无密码登录，修改密码
-UPDATE mysql.user SET authentication_string=PASSWORD('WbcLjnR5Kx9QCN9r') WHERE user='root';
-#skip-grant-tables 注释 重启
-登录
-#skip-grant-tables 注释 重启密码后
-#skip-grant-tables 注释 重启密码
+UPDATE mysql.user SET authentication_string=PASSWORD('newpw') WHERE user='root';
+#skip-grant-tables 注释重启
+新密码登录,并修改密码
 ALTER USER 'root'@'localhost' IDENTIFIED BY 'WbcLjnR5Kx9QCN9r';
+```
