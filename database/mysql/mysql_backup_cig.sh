@@ -6,9 +6,10 @@
 ##########################################
 
 USER="user"
-PASSWORD="passwd"    #用户名
-DATABASE="database"    #数据库用户密码
-MAIL="xx@xx.com"    #mail
+PASSWORD="passwd"
+DATABASE="database"
+DBHOST="1.2.3.4"
+MAIL="xx@xx.com"
 BACKUP_DIR=/home/mysql_backup/    #备份文件存储路径
 LOGFILE=/home/mysql_backup/mysql_backup.log    #日志文件路径
  
@@ -16,7 +17,8 @@ DATE=`date +%Y%m%d-%H%M`    #用日期格式作为文件名
 DUMPFILE=$DATABASE-$DATE.sql
 ARCHIVE=$DATABASE-$DATE.sql.tar.gz
 OPTIONS="-u$USER -p$PASSWORD $DATABASE"
-
+# OPTIONS="-h$DBHOST -u$USER -p$PASSWORD --set-gtid-purged=OFF $DATABASE"
+ 
 #备份目录是否存在，否则创建该目录
 if [ ! -d $BACKUP_DIR ]
 then
