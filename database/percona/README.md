@@ -12,6 +12,13 @@ make install
 ```
 运行pt-table-checksum
 ```
+
+报错
+install_driver(mysql) failed: Attempt to reload DBD/mysql.pm aborted.
+ 
+解决办法：
+ln -sv /usr/lib64/mysql/libmysqlclient.so.16 /lib64/
+
 pt-table-checksum --nocheck-binlog-format --nocheck-plan --nocheck-replication-filters  --set-vars innodb_lock_wait_timeout=120 --recursion-method=processlist --databases=dbname -u'user' -p'password' -hMasterIP
 
 pt-table-checksum --nocheck-binlog-format --nocheck-plan --nocheck-replication-filters  --set-vars innodb_lock_wait_timeout=120 --recursion-method=processlist --databases=dbname  -u'user' -p'password' --slave-user='' --slave-password='' -hMasterIP
@@ -30,5 +37,5 @@ pt-table-checksum --nocheck-binlog-format --nocheck-plan --nocheck-replication-f
 ./innobackupex --defaults-file=/etc/my.cnf --user=root --password='password' --use-memory=16G --apply-log /home/pxb_backup/full/2017-05-27_17-06-51/
 
 确认数据库是关闭的，并且datadir，目录下为空(一般备份之前目录，新建mysql的各种目录)
-./innobackupex --defaults-file=/etc/my.cnf --user=root --password='password' --use-memory=16G --copy-back /home/pxb_backup/full//home/pxb_backup/full/2017-05-27_17-06-51/
+./innobackupex --defaults-file=/etc/my.cnf --user=root --password='password' --use-memory=16G --copy-back /home/pxb_backup/full/2017-05-27_17-06-51/
 ```
