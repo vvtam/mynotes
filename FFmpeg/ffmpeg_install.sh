@@ -1,9 +1,12 @@
 #!/bin/bash
-#https://trac.ffmpeg.org/wiki/CompilationGuide/Centos
+# https://trac.ffmpeg.org/wiki/CompilationGuide/Centos
+
+# yum-config-manager --add-repo http://www.nasm.us/nasm.repo
+# yum install autoconf automake bzip2 cmake freetype-devel gcc gcc-c++ git libtool make mercurial nasm pkgconfig zlib-devel
 
 yum install autoconf automake cmake freetype-devel gcc gcc-c++ git libtool make mercurial nasm pkgconfig zlib-devel
 
-#In your homedir directory make a new directory to put all of the source code into:
+# In your homedir directory make a new directory to put all of the source code into:
 
 homedir = 
 
