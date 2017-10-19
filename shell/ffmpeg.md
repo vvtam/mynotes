@@ -9,3 +9,9 @@ done < list
 # for 循环读cat，遇到某行里面有空格的时候会读出来很多行，用while read 读不会
 for f in $(cat list); do ffmpeg -y -i "$f" -vcodec h264 -x264-params "nal-hrd=cbr" -acodec aac -b:v 8M -minrate 8M -maxrate 8M -bufsize 1835k -b:a 64K -s 1920x1080 -ar 48000 -r 25 /data/"$f".ts; done
 ```
+
+```
+# 变量f用“”引起来，就会保留原来的格式，不会遇到空格换行
+for f in "$(cat list)"; do ffmpeg -y -i "$f" -vcodec h264 -x264-params "nal-hrd=cbr" -acodec aac -b:v 8M -minrate 8M -maxrate 8M -bufsize 1835k -b:a 64K -s 1920x1080 -ar 48000 -r 25 /data/"$f".ts; don
+e
+```
