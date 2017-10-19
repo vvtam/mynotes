@@ -1,17 +1,17 @@
 # ffmpeg转码
 
 ```
-while read LINE;
-do ffmpeg -y -i "$LINE.mkv.ts" -vcodec h264 -x264-params "nal-hrd=cbr" -acodec aac -b:v 8M -minrate 8M -maxrate 8M -bufsize 1835k -b:a 64K -s 1920x1080 -ar 48000 -r 25 /data/"$LINE".ts;
-done < list
-```
-```
-# for 循环读cat，遇到某行里面有空格的时候会读出来很多行，用while read 读不会
-for f in $(cat list); do ffmpeg -y -i "$f" -vcodec h264 -x264-params "nal-hrd=cbr" -acodec aac -b:v 8M -minrate 8M -maxrate 8M -bufsize 1835k -b:a 64K -s 1920x1080 -ar 48000 -r 25 /data/"$f".ts; done
-```
+#如果文本list每行中没有空格，则line在list中按换行符分隔符循环取值
+#如果list中包括空格或制表符，则不是换行读取，而是按空格分隔符或制表符或换行符循环取值
+#可以通过把IFS设置为换行符来达到逐行读取的功能
+#IFS的默认值为：空白(包括：空格，制表符，换行符)
 
-```
-# 变量f用“”引起来，就会保留原来的格式，不会遇到空格换行
-for f in "$(cat list)"; do ffmpeg -y -i "$f" -vcodec h264 -x264-params "nal-hrd=cbr" -acodec aac -b:v 8M -minrate 8M -maxrate 8M -bufsize 1835k -b:a 64K -s 1920x1080 -ar 48000 -r 25 /data/"$f".ts; don
-e
+#!/bin/bash
+
+OLD_IFS="$IFS"
+IFS=$'\x0A'
+
+for f in $(cat list); do ffmpeg -y -i "$f" -vcodec h264 -x264-params "nal-hrd=cbr" -acodec aac -b:v 8M -minrate 8M -maxrate 8M -bufsize 1835k -b:a 64K -s 1920x1080 -ar 48000 -r 25 /data/"$f".ts; done
+
+IFS="$OLD_IFS"
 ```
