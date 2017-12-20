@@ -1,4 +1,7 @@
+#!/usr/bin/env python2
+
 # -*- coding: utf-8 -*-
+
 import xlrd
 import os
 # import shutil
@@ -18,7 +21,7 @@ nrows = sh.nrows
 # rows
 ncols = sh.ncols
 # cols
-print "nrows %d, ncols %d" % (nrows,ncols)
+print "nrows %d, ncols %d" % (nrows, ncols)
 # cell_value = sh.cell_value(0,0)
 # get the value of x row and y col
 # print cell_value
@@ -28,10 +31,10 @@ print "nrows %d, ncols %d" % (nrows,ncols)
 # cwd_dir = os.getcwd()
 # print cwd_dir
 # exit()
-for num_rows in range(0,nrows):
-    old_name = sh.cell_value(num_rows,0)
+for num_rows in range(0, nrows):
+    old_name = sh.cell_value(num_rows, 0)
     # 第一列是旧目录
-    new_name = sh.cell_value(num_rows,1)
+    new_name = sh.cell_value(num_rows, 1)
     # 第二列是新目录
     # old_name = unicode(old_name, 'utf8')
     # new_name = unicode(new_name, 'utf8')

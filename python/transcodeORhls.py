@@ -34,7 +34,7 @@ def probe(filepath):
     return json.loads(out)
 
 
-def transcode(filepath, resdir):
+def transcode(filepath, outputdir):
     ''' Video's duration in seconds, return a float number
     '''
     _json = probe(filepath)
@@ -60,11 +60,12 @@ def transcode(filepath, resdir):
         if 'h264' in codec and 'aac' in codec:
             command = ["ffmpeg", "-y",
                        "-i", filepath,
-                       "-loglevel",  "quiet",
+                       "-loglevel",  "warning",
+                       "-bsf:v", "h264_mp4toannexb",
                        "-c:a", "copy",
                        "-c:v", "copy",
-                       "-f", "hls", "-hls_time", "10", "-hls_list_size", "0",
-                       resdir + "/playlist.m3u8"
+                       "-f", "h2ls", "-hls_time", "10", "-hls_list_size", "0",
+                       outputdir + "/playlist.m3u8"
                        ]
             pipe = sp.Popen(command, stdout=sp.PIPE, stderr=sp.STDOUT)
             out, err = pipe.communicate()
@@ -81,7 +82,7 @@ def transcode(filepath, resdir):
                        "-c:a", "copy",
                        "-c:v", "copy",
                        "-f", "hls", "-hls_time", "10", "-hls_list_size", "0",
-                       resdir + "/playlist.m3u8"
+                       outputdir + "/playlist.m3u8"
                        ]
             pipe = sp.Popen(command, stdout=sp.PIPE, stderr=sp.STDOUT)
             out, err = pipe.communicate()
@@ -107,24 +108,26 @@ def mkdir(hlsdir):
         print(hlsdir + "already exist")
         return False
 
-
-f = open("videoList", 'r')
-line = f.readline()
-
-while line:
-    filepath = line.strip()  # 去除行尾的"\n"
-    filedir = os.path.splitext(filepath)
-    outputdir = filedir[0]
-    if os.path.exists(os.path.join(os.path.join(os.path.abspath('.'), 'hls'), outputdir)):
-        print(os.path.join(os.path.join(os.path.abspath('.'), 'hls'), outputdir)
-              + ", the dir already exist.")
-    else:
-        print(os.path.join(os.path.join(os.path.abspath('.'), 'hls'), outputdir)
-              + ", the dir create success.")
-        os.makedirs(os.path.join(os.path.join(
-            os.path.abspath('.'), 'hls'), outputdir))
-    resdir = os.path.join(os.path.join(os.path.abspath('.'), 'hls'), outputdir)
-    resdir = resdir.strip()
-    transcode(filepath, resdir)
+# 打开文件
+with open('videoList', 'r') as f:
     line = f.readline()
-f.close
+# 逐行读取文件，并新建输出路径
+    while line:
+        # 输出入文件路径
+        filepath = line.strip()  # 去除行尾的"\n"
+        # 去除文件扩展名，获得一个list
+        filedir = os.path.splitext(filepath)
+        # 去除文件扩展名后的路径作为输出的路径
+        outputdir = filedir[0]
+        # 文件扩展名
+        filesuffix = filedir[1]
+        # raise SystemExit('Debug and Exit!')
+        outputdir = os.path.join(os.path.join(os.path.abspath('.'), 'hls'), outputdir)
+        outputdir = outputdir.replace(" ","_")
+        if os.path.exists(outputdir):
+           print(outputdir + ", the dir already exist.")
+        else:
+            print(outputdir + ", the dir create success.")
+            os.makedirs(outputdir)
+        transcode(filepath, outputdir)
+        line = f.readline()
