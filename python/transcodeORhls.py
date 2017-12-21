@@ -40,6 +40,7 @@ def transcode(filepath, outputdir):
     _json = probe(filepath)
     # 定义一个空的列表用来存音频视频编码
     codec = []
+    outputdir = os.path.join(outputdir, "playlist.m3u8")
     # 定义转码参数
     try:
         if 'streams' in _json:
@@ -65,7 +66,7 @@ def transcode(filepath, outputdir):
                        "-c:a", "copy",
                        "-c:v", "copy",
                        "-f", "h2ls", "-hls_time", "10", "-hls_list_size", "0",
-                       outputdir + "/playlist.m3u8"
+                       outputdir
                        ]
             pipe = sp.Popen(command, stdout=sp.PIPE, stderr=sp.STDOUT)
             out, err = pipe.communicate()
@@ -82,7 +83,7 @@ def transcode(filepath, outputdir):
                        "-c:a", "copy",
                        "-c:v", "copy",
                        "-f", "hls", "-hls_time", "10", "-hls_list_size", "0",
-                       outputdir + "/playlist.m3u8"
+                       outputdir
                        ]
             pipe = sp.Popen(command, stdout=sp.PIPE, stderr=sp.STDOUT)
             out, err = pipe.communicate()
