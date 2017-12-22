@@ -67,20 +67,18 @@ def writexcel(dir, sec, row):
     except OSError:
         print("Can't write the excel file")
 
-f = open("filelist", 'r')
-line = f.readline()
-
-# 初始化行为0
-row = 0
-# 新建excel
-xlsname = xlwt.Workbook()
-# 修改sheet name
-sheet = xlsname.add_sheet("list")
-
-while line:
-    filepath = line.strip()
-    dua = (duration(filepath))
-    writexcel(filepath, dua, row)
+with open("filelist", 'r') as f:
     line = f.readline()
-    row += 1
-f.close
+    # 初始化行为0
+    row = 0
+    # 新建excel
+    xlsname = xlwt.Workbook()
+    # 修改sheet name
+    sheet = xlsname.add_sheet("list")
+
+    while line:
+        filepath = line.strip()
+        dua = (duration(filepath))
+        writexcel(filepath, dua, row)
+        line = f.readline()
+        row += 1
