@@ -1,6 +1,6 @@
-#percona
+# percona
 
-##percona toolkit
+## percona toolkit
 安装
 
 ```
@@ -23,7 +23,7 @@ pt-table-checksum --nocheck-binlog-format --nocheck-plan --nocheck-replication-f
 
 pt-table-checksum --nocheck-binlog-format --nocheck-plan --nocheck-replication-filters  --set-vars innodb_lock_wait_timeout=120 --recursion-method=processlist --databases=dbname  -u'user' -p'password' --slave-user='' --slave-password='' -hMasterIP
 ```
-##Percona Xtrabackup
+## Percona Xtrabackup
 
 ```
 # 第一次完整备份
@@ -38,4 +38,22 @@ pt-table-checksum --nocheck-binlog-format --nocheck-plan --nocheck-replication-f
 
 确认数据库是关闭的，并且datadir，目录下为空(一般备份之前目录，新建mysql的各种目录)
 ./innobackupex --defaults-file=/etc/my.cnf --user=root --password='password' --use-memory=16G --copy-back /home/pxb_backup/full/2017-05-27_17-06-51/
+```
+## Stream and compress
+```
+# stream xbstream and compress
+./xtrabackup --defaults-file=/etc/my.cnf --host=localhost --port=3306 --user=root --password= --backup --throttle=50 --databases=cms --no-lock --stream=xbstream --parallel=4 --compress --compress-threads=2  --target-dir=/home/percona --extra-lsndir=/home/percona_checkpoint > /home/tmp.xbstream
+
+./xtrabackup --defaults-file=/etc/my.cnf --host=localhost --port=3306 --user=root --password= --backup --databases=cms --no-lock --stream=xbstream --parallel=8 --compress --compress-threads=4  --target-dir=/home/percona --extra-lsndir=/home/percona_checkpoint /home/backup > /home/backup/tmp.xbstream
+
+./xbstream -x < /home/tmp.xbstream -C /home/backup/
+
+# stream tar
+./xtrabackup --defaults-file=/etc/my.cnf --host=localhost --port=3306 --user=root --password= --backup --throttle=60 --databases=cms --no-lock --target-dir=/home/percona --extra-lsndir=/home/percona_checkpoint --stream=tar /home/backup > /home/backup/tmp.tar
+
+tar -xizf backup.tar.gz
+
+# stream tar and pigz to gzip
+./xtrabackup --defaults-file=/etc/my.cnf --host=localhost --port=3306 --user=root --password= --backup --databases=cms --no-lock --stream=tar --extra-lsndir=/home/percona_checkpoint | pigz -k -v -9 -p 24 -c > /home/tmp.tar.pigz
+
 ```
