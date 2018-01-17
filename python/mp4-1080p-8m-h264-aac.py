@@ -5,13 +5,12 @@ import subprocess as sp
 import os
 import logging
 
-logging.basicConfig(filename='2mp4.log', level=logging.WARNING)
+logging.basicConfig(filename='2mp4-2.log', level=logging.WARNING)
 # logging.basicConfig(filename='tcTS.log', level=logging.INFO)
 
 
 def transcode(filepath, outputdir):
-    command = ["ffmpeg", "-y",
-               "-i", filepath,
+    command = ["ffmpeg", "-y", "-i", filepath,
                "-loglevel",  "error",
                "-c:v", "h264",
                # "-profile:v", "high", "-level:v", "3.2",
@@ -26,16 +25,16 @@ def transcode(filepath, outputdir):
     pipe = sp.Popen(command, stdout=sp.PIPE, stderr=sp.STDOUT)
     out, err = pipe.communicate()
     if pipe.returncode == 0:
-        logging.info("codec: '%s', command '%s' succeeded, returned: %s"
-                     % (codec, command, str(out)))
+        logging.info("command '%s' succeeded, returned: %s"
+                     % (command, str(out)))
     else:
-        logging.error("codec: '%s', command '%s' failed, exit-code=%d error = %s"
-                      % (codec, command, pipe.returncode, str(err)))
+        logging.error("command '%s' failed, exit-code=%d error = %s"
+                      % (command, pipe.returncode, str(err)))
 
 
 def main():
     # 打开视频列表文件
-    with open('videoList', 'r') as f:
+    with open('video.list.2', 'r') as f:
         line = f.readline()
         # 逐行读取文件，并新建输出路径
         while line:
@@ -49,10 +48,10 @@ def main():
             # filesuffix = filedir[1]
             # raise SystemExit('Debug and Exit!') #调试
             # 输出在当前目录
-            outputdir = os.path.join(os.path.abspath('.'), '2mp4', outputdir)
+            # outputdir = os.path.join(os.path.abspath('.'), '8m1080pmp4', outputdir)
             # 输出不在当前目录
-            #output_basedir = ''
-            #outputdir = os.path.join(output_basedir, '2ts', outputdir)
+            output_basedir = '/mount/sdc'
+            outputdir = os.path.join(output_basedir, 'tc8m1080p', outputdir)
             # 输出不在当前目录end
             # 标准化路径名，合并多余的分隔符和上层引
             outputdir = os.path.normpath(outputdir)
