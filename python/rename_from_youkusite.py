@@ -25,15 +25,15 @@ for firstdir, fulldir, files in os.walk(basedir):
 
 # 定义url里面用到的client_id
 client_id_list = [
-    '9dd9e979d8',
-    '769fb7d9e',
-    'eb056ac45',
-    '2e1af4ff',
-    'd2e7677ce',
-    '11e6648a',
-    '5722cb242',
-    '8f1ab98d8',
-    '4193bebe0'
+    '9ddeeccaa9e979d8',
+    '769664a126fb7d9e',
+    'eb0bb634e556ac45',
+    '2e1aba17542af4ff',
+    'd2ed02fa5e7677ce',
+    '11ecb10af326648a',
+    '572827e9e42cb242',
+    '8f18002ef7ab98d8',
+    '4190804b063bebe0'
 ]
 # 随机使用clinet_id
 client_id = random.choice(client_id_list)

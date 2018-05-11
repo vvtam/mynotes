@@ -15,7 +15,7 @@ def transcode(filepath, outputdir):
                "-c:v", "h264",
                # "-profile:v", "high", "-level:v", "3.2",
                "-x264-params", "nal-hrd=cbr",
-               "-b:v", "8M", "-minrate", "8M", "-maxrate", "8M", "-bufsize", "2M",
+               "-b:v", "4M", "-minrate", "4M", "-maxrate", "4M", "-bufsize", "1M",
                "-s", "1920x1080",
                "-r", "25",
                "-c:a", "aac",
@@ -48,10 +48,10 @@ def main():
             # filesuffix = filedir[1]
             # raise SystemExit('Debug and Exit!') #调试
             # 输出在当前目录
-            #outputdir = os.path.join(os.path.abspath('.'), '8m1080pmp4', outputdir)
+            outputdir = os.path.join(os.path.abspath('.'), '4m1080pmp4', outputdir)
             # ===输出不在当前目录===
-            output_basedir = '/home/pm/transcode'
-            outputdir = os.path.join(output_basedir, 'transcode', outputdir)
+            #output_basedir = '/home/pm/transcode'
+            #outputdir = os.path.join(output_basedir, 'transcode', outputdir)
             # ===输出不在当前目录===
             # 标准化路径名，合并多余的分隔符和上层引
             outputdir = os.path.normpath(outputdir)

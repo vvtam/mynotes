@@ -6,7 +6,7 @@ import json
 import os
 import logging
 
-logging.basicConfig(filename='tcTS.log', level=logging.WARNING)
+logging.basicConfig(filename='2ts.log', level=logging.WARNING)
 # logging.basicConfig(filename='tcTS.log', level=logging.INFO)
 
 
@@ -19,7 +19,7 @@ def probe(filepath):
         raise Exception('Gvie ffprobe a full file path of the video')
 
     prog = ["ffprobe",
-            "-loglevel",  "quiet",
+            "-loglevel",  "error",
             "-print_format", "json",
             "-show_format",
             "-show_streams",
@@ -62,7 +62,7 @@ def transcode(filepath, outputdir):
         if 'h264' in codec and 'aac' in codec:
             command = ["ffmpeg", "-y",
                        "-i", filepath,
-                       "-loglevel",  "warning",
+                       "-loglevel",  "error",
                        "-c:v", "copy",
                        # "-profile:v", "high", "-level:v", "3.2",
                        "-x264-params", "nal-hrd=cbr",
@@ -84,7 +84,7 @@ def transcode(filepath, outputdir):
         elif 'h264' in codec and 'mp3' in codec:
             command = ["ffmpeg", "-y",
                        "-i", filepath,
-                       "-loglevel",  "warning",
+                       "-loglevel",  "error",
                        "-c:v", "copy",
                        # "-profile:v", "high", "-level:v", "3.2",
                        "-x264-params", "nal-hrd=cbr",
@@ -106,7 +106,7 @@ def transcode(filepath, outputdir):
         else:
             command = ["ffmpeg", "-y",
                        "-i", filepath,
-                       "-loglevel",  "warning",
+                       "-loglevel",  "error",
                        "-c:v", "h264",
                        # "-profile:v", "high", "-level:v", "3.2",
                        "-x264-params", "nal-hrd=cbr",
@@ -158,10 +158,10 @@ with open('videoList', 'r') as f:
         # 文件扩展名
         # filesuffix = filedir[1]
         # raise SystemExit('Debug and Exit!')
-        outputdir = os.path.join(os.path.abspath('.'), 'tcToTS', outputdir)
+        outputdir = os.path.join(os.path.abspath('.'), '2ts', outputdir)
         # 如果输出不在当前目录,需要重新定义
         #output_basedir = ''
-        #outputdir = os.path.join(output_basedir, 'hls', outputdir)
+        #outputdir = os.path.join(output_basedir, '2ts', outputdir)
         # 标准化路径名，合并多余的分隔符和上层引
         outputdir = os.path.normpath(outputdir)
         outputdir = outputdir.replace(" ", "_")
@@ -171,5 +171,6 @@ with open('videoList', 'r') as f:
         else:
             logging.info(output_basedir + ", the dir create success.")
             os.makedirs(output_basedir)
+        logging.warning(filepath) #记录进度
         transcode(filepath, outputdir)
         line = f.readline()
