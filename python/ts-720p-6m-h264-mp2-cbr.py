@@ -12,26 +12,21 @@ logging.basicConfig(filename='transcode.log', level=logging.WARNING)
 def transcode(filepath, outputdir):
     command = ["ffmpeg", "-y", "-i", filepath,
                "-loglevel",  "error",
-               #"-metadata", "title='This is the title'",
-               #"-metadata", "author='Push Media'",
+               "-metadata", "service_name='Push Media'",
+               "-metadata", "service_provider='Push Media'",
                #"-metadata", "copyright='Copyright 2018 By PM'",
                #"-metadata", "comment='An exercise in Realmedia metadata'",
                "-c:v", "h264",
-               "-profile:v", "high", "-level:v", "3.2",
-               #"-muxrate", "7M", #复用码率，设置之后整体码率模式是CBR
+               # "-profile:v", "high", "-level:v", "3.2",
                "-x264-params", "nal-hrd=cbr",
-               "-b:v", "6M", "-minrate", "6M", "-maxrate", "6M", "-bufsize", "2M",
-               "-flags", "+ildct+ilme", #Interlaced video,隔行扫描
-               "-top", "1", #隔行扫描前场/后场优先模式 ，1是前场（顶场），0是后场（底场） 
-               "-streamid", "0:481", #视频pid
-               "-streamid", "1:482", #音频pid
-               "-video_format", "pal", # PAL
+               "-b:v", "6M", "-minrate", "6M", "-maxrate", "6M", "-bufsize", "3M",
+               "-preset", "ultrafast", "-tune", "animation",
                "-s", "1280x720",
                "-aspect", "16:9",
                "-r", "25",
                "-c:a", "mp2",
                "-b:a", "224K", "-ar", "48000",
-               #"-f", "mpegts",
+               "-f", "mpegts", "-muxrate", "7M",
                outputdir + ".ts"
                ]
     pipe = sp.Popen(command, stdout=sp.PIPE, stderr=sp.STDOUT)
@@ -60,10 +55,10 @@ def main():
             # filesuffix = filedir[1]
             # raise SystemExit('Debug and Exit!') #调试
             # 输出在当前目录
-            outputdir = os.path.join(os.path.abspath('.'), '6m720its', outputdir)
+            outputdir = os.path.join(os.path.abspath('.'), '6m720pts', outputdir)
             # ===输出不在当前目录===
-            #output_basedir = '/home/pm/transcode'
-            #outputdir = os.path.join(output_basedir, 'transcode', outputdir)
+            #output_basedir = '/mnt/nfs/transcode'
+            #outputdir = os.path.join(output_basedir, 'ts8M1080P', outputdir)
             # ===输出不在当前目录===
             # 标准化路径名，合并多余的分隔符和上层引
             outputdir = os.path.normpath(outputdir)

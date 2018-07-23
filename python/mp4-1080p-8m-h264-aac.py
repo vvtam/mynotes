@@ -48,10 +48,10 @@ def main():
             # filesuffix = filedir[1]
             # raise SystemExit('Debug and Exit!') #调试
             # 输出在当前目录
-            #outputdir = os.path.join(os.path.abspath('.'), '8m1080pmp4', outputdir)
+            outputdir = os.path.join(os.path.abspath('.'), '8m1080pmp4', outputdir)
             # ===输出不在当前目录===
-            output_basedir = '/home/pm/transcode'
-            outputdir = os.path.join(output_basedir, 'transcode', outputdir)
+            #output_basedir = '/home/pm/transcode'
+            #outputdir = os.path.join(output_basedir, 'transcode', outputdir)
             # ===输出不在当前目录===
             # 标准化路径名，合并多余的分隔符和上层引
             outputdir = os.path.normpath(outputdir)
