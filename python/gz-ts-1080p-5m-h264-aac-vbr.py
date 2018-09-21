@@ -15,17 +15,21 @@ def transcode(filepath, outputdir):
                "-metadata", "service_name='Push Media'",
                "-metadata", "service_provider='Push Media'",
                "-c:v", "h264",
-               # "-profile:v", "high", "-level:v", "3.2",
+               "-profile:v", "high", "-level:v", "4.0",
+               #"-refs", "4", "-g", "50", "-bf", "0",
+               "-refs", "4", "-bf", "1",
+               "-keyint_min", "50", "-g", "50", "-sc_threshold", "0",
+               "-flags", "+cgop",
                #"-x264-params", "nal-hrd=cbr",
-               #"-b:v", "8M", "-minrate", "8M", "-maxrate", "8M", "-bufsize", "2M",
-               "-b:v", "8M",
+               #"-b:v", "4M", "-minrate", "4M", "-maxrate", "5M", "-bufsize", "2M",
+               #"-muxrate", "6M",
+               "-b:v", "5M",
                "-preset", "ultrafast", "-tune", "animation",
                "-s", "1920x1080",
-               "-aspect", "16:9",
                "-r", "25",
                "-c:a", "aac",
                "-b:a", "128K", "-ar", "48000",
-               outputdir + ".mp4"
+               outputdir + ".ts"
                ]
     pipe = sp.Popen(command, stdout=sp.PIPE, stderr=sp.STDOUT)
     out, err = pipe.communicate()
@@ -53,7 +57,7 @@ def main():
             # filesuffix = filedir[1]
             # raise SystemExit('Debug and Exit!') #调试
             # 输出在当前目录
-            outputdir = os.path.join(os.path.abspath('.'), '8m1080pmp4', outputdir)
+            outputdir = os.path.join(os.path.abspath('.'), '5m1080pts', outputdir)
             # ===输出不在当前目录===
             #output_basedir = '/home/pm/transcode'
             #outputdir = os.path.join(output_basedir, 'transcode', outputdir)

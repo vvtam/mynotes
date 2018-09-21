@@ -16,16 +16,25 @@ def transcode(filepath, outputdir):
                "-metadata", "service_provider='Push Media'",
                "-c:v", "h264",
                # "-profile:v", "high", "-level:v", "3.2",
-               #"-x264-params", "nal-hrd=cbr",
-               #"-b:v", "8M", "-minrate", "8M", "-maxrate", "8M", "-bufsize", "2M",
-               "-b:v", "8M",
+               # "-muxrate", "4200K", #复用码率，设置之后整体码率模式是CBR
+               # "-x264-params", "nal-hrd=vbr",
+               "-b:v", "3800K", "-minrate", "3800K", "-maxrate", "7600K", "-bufsize", "2M",
                "-preset", "ultrafast", "-tune", "animation",
+               # "-g", "24",
+               "-keyint_min", "24", "-g", "24", "-sc_threshold", "0",
+               "-flags", "+ildct+ilme", #Interlaced video,隔行扫描
+               "-top", "1", #隔行扫描前场/后场优先模式 ，1是前场（顶场），0是后场（底场） 
+               "-streamid", "0:481", #视频pid
+               "-streamid", "1:482", #音频pid
+               # "-video_format", "pal", # PAL
                "-s", "1920x1080",
                "-aspect", "16:9",
-               "-r", "25",
-               "-c:a", "aac",
+               "-r", "50",
+               # "-framerate", "50",
+               "-c:a", "mp2",
                "-b:a", "128K", "-ar", "48000",
-               outputdir + ".mp4"
+               #"-f", "mpegts",
+               outputdir + ".ts"
                ]
     pipe = sp.Popen(command, stdout=sp.PIPE, stderr=sp.STDOUT)
     out, err = pipe.communicate()
@@ -53,7 +62,7 @@ def main():
             # filesuffix = filedir[1]
             # raise SystemExit('Debug and Exit!') #调试
             # 输出在当前目录
-            outputdir = os.path.join(os.path.abspath('.'), '8m1080pmp4', outputdir)
+            outputdir = os.path.join(os.path.abspath('.'), '1080its', outputdir)
             # ===输出不在当前目录===
             #output_basedir = '/home/pm/transcode'
             #outputdir = os.path.join(output_basedir, 'transcode', outputdir)
