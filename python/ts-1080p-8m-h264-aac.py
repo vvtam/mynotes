@@ -12,18 +12,18 @@ logging.basicConfig(filename='transcode.log', level=logging.WARNING)
 def transcode(filepath, outputdir):
     command = ["ffmpeg", "-y", "-i", filepath,
                "-loglevel",  "error",
-               #"-metadata", "title='This is the title'",
-               #"-metadata", "author='Push Media'",
-               #"-metadata", "copyright='Copyright 2018 By PM'",
-               #"-metadata", "comment='An exercise in Realmedia metadata'",
+               "-metadata", "service_name='Push Media'",
+               "-metadata", "service_provider='Push Media'",
                "-c:v", "h264",
                # "-profile:v", "high", "-level:v", "3.2",
-               "-x264-params", "nal-hrd=cbr",
-               "-b:v", "8M", "-minrate", "8M", "-maxrate", "8M", "-bufsize", "2M",
+               # "-x264-params", "nal-hrd=cbr",
+               # "-b:v", "8M", "-minrate", "8M", "-maxrate", "8M", "-bufsize", "2M",
+               "-b:v", "8M",
+               "-preset", "medium", "-tune", "animation",
                "-s", "1920x1080",
                "-r", "25",
                "-c:a", "aac",
-               "-b:a", "64K", "-ar", "48000",
+               "-b:a", "224K", "-ar", "48000",
                outputdir + ".ts"
                ]
     pipe = sp.Popen(command, stdout=sp.PIPE, stderr=sp.STDOUT)
