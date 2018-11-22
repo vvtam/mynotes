@@ -27,7 +27,7 @@ yum install glibc-devel glibc-headers gcc gcc-c++ zlib zlib-devel pam-devel pam 
 make
 #备份之前的配置文件
 mv /etc/ssh /etc/ssh-bak
-#移除之前yum安装的OpenSSH,（如果有）
+#移除之前yum安装的OpenSSH,（如果有），主要是解决systemd和service会冲突
 yum remove openssh
 make install
 
