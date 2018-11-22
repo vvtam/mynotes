@@ -6,6 +6,8 @@ OpenSSH 7.4
 https://www.openssh.com/portable.html#http
 https://www.openssh.com/portable.html#ftp
 https://www.openssh.com/portable.html#rsync
+安装参考：
+https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/INSTALL
 ```
 ## 安装dropbear并启动
 `
