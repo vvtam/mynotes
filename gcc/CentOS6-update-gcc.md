@@ -34,3 +34,5 @@ upate-alternatives --install gcc-old-path gcc gcc-new-path 40
 update-alternatives 升级版本没生效？后面用了软连接
 
 lib库也没更新，用了软连接替换了旧的
+
+可以用 strings /usr/local/lib64/libstdc++.so | grep GLIBC 查看
