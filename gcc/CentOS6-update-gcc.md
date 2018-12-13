@@ -36,3 +36,15 @@ update-alternatives 升级版本没生效？后面用了软连接
 lib库也没更新，用了软连接替换了旧的
 
 可以用 strings /usr/local/lib64/libstdc++.so | grep GLIBC 查看
+
+## yum更新
+```
+#centos 6
+yum install centos-release-scl-rh
+yum install centos-release-scl
+#centos 7
+sudo yum install centos-release-scl
+#for gcc version 5
+sudo yum install devtoolset-4-gcc devtoolset-4-gcc-c++
+source /opt/rh/devtoolset-4/enable
+```
