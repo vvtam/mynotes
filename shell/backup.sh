@@ -6,35 +6,29 @@
 #date:        2016/05/26                ##
 ##########################################
 
-BACKUP_DIR=
-BACKUP_APP=
+APP_DIR=/home/data/wwwroot
+BACKUP_APP=app
 BACKUP_DATE=`date +%Y%m%d-%H%M`
-KEEP_DAYS=7
+KEEP_DAYS=1
 
-RESTORE_DIR=
+BACKUP_DIR=/data/app_backup
 ARCHIVE_FILE=$BACKUP_APP-$BACKUP_DATE.tar.gz
-LOGFILE=
+LOGFILE=/data/app_backup/backup.log
 
 ADMIN_MAIL=
 
 #back to remote server
 SERVER_NAME=
-SERVER_IP=
-SERVER_PORT=54321
-SERVER_USER= 
-SERVER_DIR=
+SERVER_IP=192.168.1.155
+SERVER_PORT=22
+SERVER_USER=root
+SERVER_DIR=/home/data/app_backup
 ##########################################
 
-# check the backup and restore dir
+# check the backup
 if [ ! -d $BACKUP_DIR ]
 then
     mkdir -p "$BACKUP_DIR"
-fi
-
-
-if [ ! -d $RESTORE_DIR ]
-then
-    mkdir -p "$RESTORE_DIR"
 fi
 
 #create log
@@ -42,23 +36,14 @@ echo "--------------------" >> $LOGFILE
 echo "BACKUP DATE:" $BACKUP_DATE >> $LOGFILE
 
 #cd backup dir
+cd $APP_DIR
+tar czvf $BACKUP_DIR/$ARCHIVE_FILE $BACKUP_APP >> $LOGFILE 2>&1 
+echo "$ARCHIVE_FILE backup success" >> $LOGFILE
 cd $BACKUP_DIR
-cp -r "$BACKUP_APP" $RESTORE_DIR
-if [[ $? == 0 ]]
-then
-    cd $RESTORE_DIR
-    tar czvf $ARCHIVE_FILE $BACKUP_APP >> $LOGFILE 2>&1 
-    echo "$ARCHIVE_FILE backup success" >> $LOGFILE 
-    rm -rf $BACKUP_APP
-    scp -P $SERVER_PORT $ARCHIVE_FILE $SERVER_USER@$SERVER_NAME:$SERVER_DIR >> $LOGFILE 2>&1
-    #scp -P $SERVER_PORT $ARCHIVE_FILE $SERVER_USER@$SERVER_IP:$SERVER_DIR >> $LOGFILE 2>&1
-else
-    echo "backup failed" >> $LOGFILE
-    #mail -s "backup failed:$ARCHIVE_FILE" $ADMIN_MAIL 
-fi
+scp -P $SERVER_PORT $ARCHIVE_FILE $SERVER_USER@$SERVER_IP:$SERVER_DIR >> $LOGFILE 2>&1
+#scp -P $SERVER_PORT $ARCHIVE_FILE $SERVER_USER@$SERVER_NAME:$SERVER_DIR >> $LOGFILE 2>&1
 
 echo "backup process done" >> $LOGFILE
 
 #delete the file over xx days
-find $RESTORE_DIR -type f -mtime +$KEEP_DAYS -name "*.tar.gz" -exec rm -f {} \;
-
+find $BACKUP_DIR -type f -mtime +$KEEP_DAYS -name "*.tar.gz" -exec rm -f {} \;
