@@ -18,3 +18,15 @@ BEGIN;COMMIT;
 SET GTID_NEXT="AUTOMATIC";
 START SLAVE;
 ```
+
+## master-to-master复制
+```
++--------------------------+-------+
+| Variable_name            | Value |
++--------------------------+-------+
+| auto_increment_increment | 1     # 增长值 一般设置为master的个数
+| auto_increment_offset    | 1     # 初始的值  每个master应该设置不同的值 并且应该小于increment的值
++--------------------------+-------+
+# When the value of auto_increment_offset is greater than that of auto_increment_increment, the value of auto_increment_offset is ignored.
+```
+
