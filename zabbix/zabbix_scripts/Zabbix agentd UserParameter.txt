@@ -1,0 +1,7 @@
+UserParameter=nginx.status[*],/usr/local/etc/zabbix_nginx_status.sh $1
+
+UserParameter=tcp.list,./alertscripts/tcp_status list
+UserParameter=tcp.status[*],.alertscripts/tcp_status status $1
+
+UserParameter=shaoer.name,./alertscripts/process.sh project_process_discovery
+UserParameter=shaoer.num[*],./alertscripts/process.sh process_number_code $1
