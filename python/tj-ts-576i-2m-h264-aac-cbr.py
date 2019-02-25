@@ -10,25 +10,32 @@ logging.basicConfig(filename='transcode.log', level=logging.WARNING)
 
 
 def transcode(filepath, outputdir):
-    command = ["ffmpeg", "-y", "-i", filepath,
+    command = ["/root/ffmpeg41/ffmpeg", "-y", "-i", filepath,
                "-loglevel",  "error",
                "-metadata", "service_name='Push Media'",
                "-metadata", "service_provider='Push Media'",
                #"-metadata", "copyright='Copyright 2018 By PM'",
                #"-metadata", "comment='An exercise in Realmedia metadata'",
-               "-c:v", "h264",
-               "-profile:v", "high", "-level:v", "4.0",
-               "-x264-params", "nal-hrd=cbr",
-               "-b:v", "8M", "-minrate", "8M", "-maxrate", "8M", "-bufsize", "4M",
-               "-preset", "ultrafast", "-tune", "animation",
+               "-c:v", "libx264",
+               "-profile:v", "main", "-level:v", "3.0",
+               #"-x264-params", "nal-hrd=cbr:bitrate=8000:vbv-maxrate=8000:vbv-minrate=8000:vbv-bufsize=4000:cabac=1:ref=3",
+               "-x264-params", "bitrate=2200:vbv-maxrate=2200:vbv-minrate=2200:vbv-bufsize=2000:cabac=1:ref=3",
+               #"-x264-params", "nal-hrd=cbr:cabac=1:ref=3:bitrate=8000:vbv-maxrate=8000:vbv-bufsize=4000",
+               #"-b:v", "8M", "-bufsize", "4M",
+               #"-b:v", "8M", "-maxrate", "8M", "-bufsize", "4M",
+               #"-preset", "ultrafast", "-tune", "animation",
                "-bf", "2", #Bframe
-               "-keyint_min", "25", "-g", "25", "-sc_threshold", "0",
-               "-s", "1920x1080",
-               "-aspect", "16:9",
-               "-r", "25",
+               #"-refs", "3", #参考帧
+               "-flags", "+ildct+ilme", #Interlaced video,隔行扫描
+               "-top", "1", #隔行扫描前场/后场优先模式 ，1是前场（顶场），0是后场（底场）
+               "-keyint_min", "25", "-g", "25", "-sc_threshold", "0", #GOP长度
+               "-s", "720x576",
+               "-aspect", "4:3",
+               #"-r", "25",
+               "-vf", "fps=fps=25",
                "-c:a", "aac",
-               "-b:a", "192K", "-ar", "48000",
-               "-f", "mpegts", "-muxrate", "9M",
+               "-b:a", "64K", "-ar", "48000",
+               "-f", "mpegts", "-muxrate", "2.5M",
                outputdir + ".ts"
                ]
     pipe = sp.Popen(command, stdout=sp.PIPE, stderr=sp.STDOUT)
@@ -57,10 +64,10 @@ def main():
             # filesuffix = filedir[1]
             # raise SystemExit('Debug and Exit!') #调试
             # 输出在当前目录
-            #outputdir = os.path.join(os.path.abspath('.'), '8m1080pts', outputdir)
+            outputdir = os.path.join(os.path.abspath('.'), 'tc', outputdir)
             # ===输出不在当前目录===
-            output_basedir = '/mnt/nfs/transcode'
-            outputdir = os.path.join(output_basedir, 'ts8M1080P', outputdir)
+            #output_basedir = '/mnt/nfs/transcode'
+            #outputdir = os.path.join(output_basedir, 'ts8M1080P', outputdir)
             # ===输出不在当前目录===
             # 标准化路径名，合并多余的分隔符和上层引
             outputdir = os.path.normpath(outputdir)
