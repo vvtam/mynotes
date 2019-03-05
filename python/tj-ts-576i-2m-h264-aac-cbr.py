@@ -11,6 +11,8 @@ logging.basicConfig(filename='transcode.log', level=logging.WARNING)
 
 def transcode(filepath, outputdir):
     command = ["/root/ffmpeg41/ffmpeg", "-y", "-i", filepath,
+               "-r", "25", #帧率25
+               "-vsync", "cfr", #恒定帧率
                "-loglevel",  "error",
                "-metadata", "service_name='Push Media'",
                "-metadata", "service_provider='Push Media'",
@@ -19,23 +21,22 @@ def transcode(filepath, outputdir):
                "-c:v", "libx264",
                "-profile:v", "main", "-level:v", "3.0",
                #"-x264-params", "nal-hrd=cbr:bitrate=8000:vbv-maxrate=8000:vbv-minrate=8000:vbv-bufsize=4000:cabac=1:ref=3",
-               "-x264-params", "bitrate=2200:vbv-maxrate=2200:vbv-minrate=2200:vbv-bufsize=2000:cabac=1:ref=3",
+               # force-cfr 恒定帧率
+               "-x264-params", "force-cfr=1:bitrate=2200:vbv-maxrate=2200:vbv-minrate=2200:vbv-bufsize=2000:cabac=1:ref=3:b-pyramid=0",
                #"-x264-params", "nal-hrd=cbr:cabac=1:ref=3:bitrate=8000:vbv-maxrate=8000:vbv-bufsize=4000",
                #"-b:v", "8M", "-bufsize", "4M",
                #"-b:v", "8M", "-maxrate", "8M", "-bufsize", "4M",
-               #"-preset", "ultrafast", "-tune", "animation",
-               "-bf", "2", #Bframe
+               "-preset", "ultrafast", "-tune", "animation",
                #"-refs", "3", #参考帧
                "-flags", "+ildct+ilme", #Interlaced video,隔行扫描
                "-top", "1", #隔行扫描前场/后场优先模式 ，1是前场（顶场），0是后场（底场）
-               "-keyint_min", "25", "-g", "25", "-sc_threshold", "0", #GOP长度
+               "-g", "25", "-bf", "2", #GOP长度
+               #"-keyint_min", "25", "-g", "25", "-sc_threshold", "0", #GOP长度
                "-s", "720x576",
                "-aspect", "4:3",
-               #"-r", "25",
-               "-vf", "fps=fps=25",
                "-c:a", "aac",
                "-b:a", "64K", "-ar", "48000",
-               "-f", "mpegts", "-muxrate", "2.5M",
+               "-muxrate", "2.5M",
                outputdir + ".ts"
                ]
     pipe = sp.Popen(command, stdout=sp.PIPE, stderr=sp.STDOUT)
