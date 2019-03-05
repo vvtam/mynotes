@@ -10,13 +10,13 @@ PASSWORD="passwd"
 DATABASE="database"
 DBHOST="1.2.3.4"
 MAIL="xx@xx.com"
-BACKUP_DIR=/home/mysql_backup/    #备份文件存储路径
-LOGFILE=/home/mysql_backup/mysql_backup.log    #日志文件路径
+BACKUP_DIR=/data/mysql_backup/    #备份文件存储路径
+LOGFILE=/data/mysql_backup/mysql_backup.log    #日志文件路径
  
 DATE=`date +%Y%m%d-%H%M`    #用日期格式作为文件名
 DUMPFILE=$DATABASE-$DATE.sql
 ARCHIVE=$DATABASE-$DATE.sql.tar.gz
-OPTIONS="-u$USER -p$PASSWORD $DATABASE"
+OPTIONS="-h$DBHOST -u$USER -p$PASSWORD $DATABASE"
 # OPTIONS="-h$DBHOST -u$USER -p$PASSWORD --set-gtid-purged=OFF $DATABASE"
  
 #备份目录是否存在，否则创建该目录
@@ -45,7 +45,7 @@ then
 else
     echo "Database Backup Fail!" >> $LOGFILE
     #备份失败后向管理者发送邮件提醒
-    mail -s "database:$DATABASE Backup Fail!" $MAIL
+    #mail -s "database:$DATABASE Backup Fail!" $MAIL
 fi
 echo "Backup Process Done"
 #删除7天以上的备份文件
