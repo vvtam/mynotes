@@ -11,35 +11,25 @@ logging.basicConfig(filename='transcode.log', level=logging.WARNING)
 
 def transcode(filepath, outputdir):
     command = ["/root/ffmpeg41/ffmpeg", "-y", "-i", filepath,
-               "-r", "25",
+               "-r", "25", #帧率25
                "-vsync", "cfr", #恒定帧率
                "-loglevel",  "error",
                "-metadata", "service_name='Push Media'",
                "-metadata", "service_provider='Push Media'",
-               #"-metadata", "copyright='Copyright 2018 By PM'",
-               #"-metadata", "comment='An exercise in Realmedia metadata'",
                "-c:v", "libx264",
-               "-profile:v", "high",
-               #"-profile:v", "high", "-level:v", "4.0",
-               # force-cfr 恒定帧率模式
-               "-x264-params", "level=4.0:force-cfr=1:bitrate=8000:vbv-maxrate=8000:vbv-minrate=8000:vbv-bufsize=4000:cabac=1:ref=3:b-pyramid=0",
-               #"-x264-params", "force-cfr=1:crf=20:bitrate=8000:vbv-maxrate=8000:vbv-minrate=8000:vbv-bufsize=4000:cabac=1:ref=3:b-pyramid=0:bframes=2",
-               #"-b:v", "8M", "-bufsize", "4M",
-               #"-b:v", "8M", "-maxrate", "8M", "-bufsize", "4M",
                #"-preset", "ultrafast", "-tune", "animation",
+               #用ultrafast,profile 变成main,官方文档说的有冲突
                "-preset", "fast",
-               #"-refs", "3", #参考帧
+               #"-profile:v", "high", "-level:v", "4.0",
                "-flags", "+ildct+ilme", #Interlaced video,隔行扫描
                "-top", "1", #隔行扫描前场/后场优先模式 ，1是前场（顶场），0是后场（底场）
-               #"-bf", "2", #Bframe
-               "-g", "25", "-bf", "2", #GOP长度
-               #"-keyint_min", "25", "-g", "25", "-bf", "2", "-sc_threshold", "0", #GOP长度
+               "-keyint_min", "25", "-g", "25", "-bf", "2", "-sc_threshold", "0", #GOP长度
+               #b_adapt=0 连续B帧force-cfr 恒定帧率
+               "-x264-params", "profile:v=high:level=4.0:force-cfr=1:bitrate=8000:vbv-maxrate=8000:vbv-minrate=8000:vbv-bufsize=8000:cabac=1:ref=3:b-pyramid=0:b_adapt=0",
                "-s", "1920x1080",
                "-aspect", "16:9",
-               #"-vf", "fps=fps=25",
                "-c:a", "aac",
                "-b:a", "128K", "-ar", "48000",
-               #"-af", "aresample=async=1000",
                "-muxrate", "9M",
                outputdir + ".ts"
                ]

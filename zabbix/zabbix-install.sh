@@ -1,8 +1,10 @@
 #!/bin/bash
-#zabbix version 4.0.3
+#zabbix version 4.0.5
 
-ZABBIX_VERSION="zabbix-4.0.3"
-SERVER_IP="10.255.53.75"
+yum -y install net-tools
+
+ZABBIX_VERSION="zabbix-4.0.5"
+SERVER_IP="ip"
 AGENT_IP=$(ifconfig eth0 | grep netmask | awk '{print $2}') #eth0 need ifconfig
 WORK_DIR="/root"
 WWW_ROOT="/data/wwwroot/zabbix4"

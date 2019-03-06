@@ -16,18 +16,12 @@ def transcode(filepath, outputdir):
                "-loglevel",  "error",
                "-metadata", "service_name='Push Media'",
                "-metadata", "service_provider='Push Media'",
-               #"-metadata", "copyright='Copyright 2018 By PM'",
-               #"-metadata", "comment='An exercise in Realmedia metadata'",
                "-c:v", "libx264",
                "-profile:v", "main", "-level:v", "3.0",
-               #"-x264-params", "nal-hrd=cbr:bitrate=8000:vbv-maxrate=8000:vbv-minrate=8000:vbv-bufsize=4000:cabac=1:ref=3",
                # force-cfr 恒定帧率
                "-x264-params", "force-cfr=1:bitrate=2200:vbv-maxrate=2200:vbv-minrate=2200:vbv-bufsize=2000:cabac=1:ref=3:b-pyramid=0",
-               #"-x264-params", "nal-hrd=cbr:cabac=1:ref=3:bitrate=8000:vbv-maxrate=8000:vbv-bufsize=4000",
-               #"-b:v", "8M", "-bufsize", "4M",
                #"-b:v", "8M", "-maxrate", "8M", "-bufsize", "4M",
                "-preset", "ultrafast", "-tune", "animation",
-               #"-refs", "3", #参考帧
                "-flags", "+ildct+ilme", #Interlaced video,隔行扫描
                "-top", "1", #隔行扫描前场/后场优先模式 ，1是前场（顶场），0是后场（底场）
                "-g", "25", "-bf", "2", #GOP长度
@@ -65,7 +59,7 @@ def main():
             # filesuffix = filedir[1]
             # raise SystemExit('Debug and Exit!') #调试
             # 输出在当前目录
-            outputdir = os.path.join(os.path.abspath('.'), 'tc', outputdir)
+            outputdir = os.path.join(os.path.abspath('.'), 'tc2', outputdir)
             # ===输出不在当前目录===
             #output_basedir = '/mnt/nfs/transcode'
             #outputdir = os.path.join(output_basedir, 'ts8M1080P', outputdir)
