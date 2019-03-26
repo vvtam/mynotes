@@ -26,7 +26,7 @@ def transcode(filepath, outputdir):
                "-keyint_min", "25", "-g", "25", "-bf", "2", "-sc_threshold", "0", #GOP长度
                #b_adapt=0 连续B帧force-cfr 恒定帧率
                "-x264-params", "profile:v=high:level=4.0:force-cfr=1:bitrate=8000:vbv-maxrate=8000:vbv-minrate=8000:vbv-bufsize=8000:cabac=1:ref=3:b-pyramid=0:b_adapt=0",
-               "-s", "1920x1080",
+               "-s", "1920x1080", #hd1080
                "-aspect", "16:9",
                "-c:a", "aac",
                "-b:a", "128K", "-ar", "48000",

@@ -19,7 +19,7 @@ def transcode(filepath, outputdir):
                # "-x264-params", "nal-hrd=cbr",
                # "-b:v", "8M", "-minrate", "8M", "-maxrate", "8M", "-bufsize", "2M",
                "-b:v", "4M",
-               "-preset", "medium", "-tune", "animation",
+               "-preset", "fast", "-tune", "animation",
                "-s", "1920x1080",
                "-aspect", "16:9",
                "-r", "25",
