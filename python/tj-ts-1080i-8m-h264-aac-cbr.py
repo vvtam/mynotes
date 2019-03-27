@@ -10,7 +10,7 @@ logging.basicConfig(filename='transcode.log', level=logging.WARNING)
 
 
 def transcode(filepath, outputdir):
-    command = ["/root/ffmpeg41/ffmpeg", "-y", "-i", filepath,
+    command = ["ffmpeg", "-y", "-i", filepath,
                "-r", "25", #帧率25
                "-vsync", "cfr", #恒定帧率
                "-loglevel",  "error",
