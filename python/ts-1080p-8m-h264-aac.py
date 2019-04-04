@@ -19,11 +19,13 @@ def transcode(filepath, outputdir):
                # "-x264-params", "nal-hrd=cbr",
                # "-b:v", "8M", "-minrate", "8M", "-maxrate", "8M", "-bufsize", "2M",
                "-b:v", "8M",
-               "-preset", "medium", "-tune", "animation",
+               "-preset", "fast",
+               #"-preset", "medium", "-tune", "animation",
                "-s", "1920x1080",
+               "-aspect", "16:9",
                "-r", "25",
                "-c:a", "aac",
-               "-b:a", "224K", "-ar", "48000",
+               "-b:a", "128K", "-ar", "48000",
                outputdir + ".ts"
                ]
     pipe = sp.Popen(command, stdout=sp.PIPE, stderr=sp.STDOUT)
