@@ -22,6 +22,18 @@ systemctl start dropbear
 # 安装各种依赖
 yum install glibc-devel glibc-headers gcc gcc-c++ zlib zlib-devel pam-devel pam bzip2 kernel-headers openssl-devel
 ```
+## 编译安装dropbear
+```
+https://matt.ucc.asn.au/dropbear/dropbear.html
+
+./configure --prefix=/usr/local/dropbear
+make && make install
+
+mkdir /etc/dropbear/
+dropbearkey -t rsa -f /etc/dropbear/dropbear_rsa_host_key
+dropbearkey -t dss -f /etc/dropbear/dropbear_dss_host_key
+dropbear -p :54321
+```
 ## 编译安装OpenSSH
 ```
 ./configure --prefix=/usr  --sysconfdir=/etc/ssh  --with-md5-passwords  --with-pam  --with-zlib --with-ssh1
