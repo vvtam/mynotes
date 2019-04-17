@@ -55,7 +55,8 @@ def main():
             # filesuffix = filedir[1]
             # raise SystemExit('Debug and Exit!') #调试
             # 输出在当前目录
-            outputdir = os.path.join(os.path.abspath('.'), '6m720pts', outputdir)
+            outputdir = os.path.join(
+                os.path.abspath('.'), '6m720pts', outputdir)
             # ===输出不在当前目录===
             #output_basedir = '/mnt/nfs/transcode'
             #outputdir = os.path.join(output_basedir, 'ts8M1080P', outputdir)
@@ -73,6 +74,7 @@ def main():
             logging.warning(filepath)  # 记录进度
             transcode(filepath, outputdir)
             line = f.readline()
+
 
 if __name__ == '__main__':
     main()
