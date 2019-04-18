@@ -1,4 +1,6 @@
 ## 使用access_log支持变量来分割日志
+来源 https://jingsam.github.io
+
 ```
 if ($time_iso8601 ~ "^(\d{4})-(\d{2})-(\d{2})") {
   set $year $1;
