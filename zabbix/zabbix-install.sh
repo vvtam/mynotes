@@ -17,7 +17,7 @@ SERVER_INSTALL() {
 	if [ -s /usr/local/sbin/zabbix_server ]; then
 		echo "zabbix server already installed"
 	else
-		yum -y install curl curl-devel net-snmp net-snmp-devel perl-DBI
+		yum -y install curl curl-devel net-snmp net-snmp-devel perl-DBI mariadb-devel #mariadb-devel for mysql library
 		groupadd --system zabbix
 		useradd --system -g zabbix -d /usr/lib/zabbix -s /sbin/nologin -c "Zabbix Monitoring System" zabbix
 
