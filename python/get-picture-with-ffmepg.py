@@ -104,7 +104,7 @@ def main():
             # filesuffix = filedir[1]
             # raise SystemExit('Debug and Exit!') #调试
             # 输出在当前目录
-            outputdir = os.path.join(os.path.abspath('.'), 'pic01', outputdir)
+            outputdir = os.path.join(os.path.abspath('.'), 'capture', outputdir)
             # ===输出不在当前目录===
             #output_basedir = '/home/pm/transcode'
             #outputdir = os.path.join(output_basedir, 'transcode', outputdir)
@@ -120,7 +120,7 @@ def main():
                 logging.info(output_basedir + ", the dir create success.")
                 os.makedirs(output_basedir)
             logging.warning(filepath)  # 记录进度
-            transcode(filepath, outputdir)
+            getpic(filepath, outputdir)
             line = f.readline()
 
 if __name__ == '__main__':

@@ -17,7 +17,7 @@ def main():
             endip = i[1]
             cidrs = netaddr.iprange_to_cidrs(startip, endip)
             for k, v in enumerate(cidrs):
-                ipmask = k
+                ipmask = v
                 ipmask = str(ipmask)
                 open('cidrs_' + fname, 'a+').write(ipmask + '\n')
 

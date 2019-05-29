@@ -5,7 +5,7 @@ import subprocess as sp
 import os
 import logging
 
-logging.basicConfig(filename='transcode.log', level=logging.WARNING)
+logging.basicConfig(filename='error.log', level=logging.WARNING)
 # logging.basicConfig(filename='tcTS.log', level=logging.INFO)
 
 
@@ -20,7 +20,8 @@ def transcode(filepath, outputdir):
                # "-profile:v", "high", "-level:v", "3.2",
                "-x264-params", "nal-hrd=cbr",
                "-b:v", "6M", "-minrate", "6M", "-maxrate", "6M", "-bufsize", "3M",
-               "-preset", "ultrafast", "-tune", "animation",
+               #"-preset", "ultrafast", "-tune", "animation",
+               "-preset", "ultrafast",
                "-s", "1280x720",
                "-aspect", "16:9",
                "-r", "25",

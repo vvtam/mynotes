@@ -5,7 +5,7 @@ import subprocess as sp
 import os
 import logging
 
-logging.basicConfig(filename='transcode.log', level=logging.WARNING)
+logging.basicConfig(filename='error.log', level=logging.WARNING)
 # logging.basicConfig(filename='tcTS.log', level=logging.INFO)
 
 

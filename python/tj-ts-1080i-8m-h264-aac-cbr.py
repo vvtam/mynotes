@@ -5,7 +5,7 @@ import subprocess as sp
 import os
 import logging
 
-logging.basicConfig(filename='transcode.log', level=logging.WARNING)
+logging.basicConfig(filename='error.log', level=logging.WARNING)
 # logging.basicConfig(filename='tcTS.log', level=logging.INFO)
 
 
@@ -59,7 +59,7 @@ def main():
             # filesuffix = filedir[1]
             # raise SystemExit('Debug and Exit!') #调试
             # 输出在当前目录
-            outputdir = os.path.join(os.path.abspath('.'), 'tc', outputdir)
+            outputdir = os.path.join(os.path.abspath('.'), '8m1080its', outputdir)
             # ===输出不在当前目录===
             #output_basedir = '/mnt/nfs/transcode'
             #outputdir = os.path.join(output_basedir, 'ts8M1080P', outputdir)
