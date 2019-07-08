@@ -1,17 +1,17 @@
 #!/bin/bash
-#zabbix version 4.0.5
 
 yum -y install net-tools
 
-ZABBIX_VERSION="zabbix-4.0.5"
+ZABBIX_VERSION="4.0.10"
 SERVER_IP="ip"
+
 AGENT_IP=$(ifconfig eth0 | grep netmask | awk '{print $2}') #eth0 need ifconfig
 WORK_DIR="/root"
 WWW_ROOT="/data/wwwroot/zabbix4"
 
 yum -y install wget
 cd $WORK_DIR
-wget -O $ZABBIX_VERSION.tar.gz "https://sourceforge.net/projects/zabbix/files/ZABBIX%20Latest%20Stable/4.0.3/zabbix-4.0.3.tar.gz/download"
+wget -O zabbix-$ZABBIX_VERSION.tar.gz "https://sourceforge.net/projects/zabbix/files/ZABBIX%20Latest%20Stable/$ZABBIX_VERSION/zabbix-$ZABBIX_VERSION.tar.gz/download"
 
 SERVER_INSTALL() {
 	if [ -s /usr/local/sbin/zabbix_server ]; then
@@ -22,11 +22,11 @@ SERVER_INSTALL() {
 		useradd --system -g zabbix -d /usr/lib/zabbix -s /sbin/nologin -c "Zabbix Monitoring System" zabbix
 
 		cd $WORK_DIR
-		tar xzf $ZABBIX_VERSION.tar.gz
-		cd $ZABBIX_VERSION
+		tar xzf zabbix-$ZABBIX_VERSION.tar.gz
+		cd zabbix-$ZABBIX_VERSION
 		./configure --enable-server --enable-agent --with-mysql --enable-ipv6 --with-net-snmp --with-libcurl --with-libxml2 && make install
 
-		cd $WORK_DIR/$ZABBIX_VERSION
+		cd $WORK_DIR/zabbix-$ZABBIX_VERSION
 		cp misc/init.d/tru64/{zabbix_agentd,zabbix_server} /etc/init.d/ && chmod o+x /etc/init.d/zabbix_*
 		mkdir -p $WWW_ROOT/zabbix/ && cp -r frontends/php/* $WWW_ROOT/zabbix/
 
@@ -51,6 +51,15 @@ EOF
 /usr/local/sbin/zabbix_server -c /usr/local/etc/zabbix_server.conf
 /usr/local/sbin/zabbix_agentd -c /usr/local/etc/zabbix_agentd.conf
 EOF
+
+		# MySQL Database creation
+		mysql -uroot -pZJV7UnqQHrz9hKkZrtzx -e "create database zabbix character set utf8 collate utf8_bin;"
+		mysql -uroot -pZJV7UnqQHrz9hKkZrtzx -e "grant all privileges on zabbix.* to zabbix@$SERVER_IP identified by 'zabbix';"
+		mysql -h$SERVER_IP -uzabbix -pzabbix zabbix < $WORK_DIR/zabbix-$ZABBIX_VERSION/database/mysql/schema.sql
+		# stop here if you are creating database for Zabbix proxy
+		mysql -h$SERVER_IP -uzabbix -pzabbix zabbix < $WORK_DIR/zabbix-$ZABBIX_VERSION/database/mysql/images.sql
+		mysql -h$SERVER_IP -uzabbix -pzabbix zabbix < $WORK_DIR/zabbix-$ZABBIX_VERSION/database/mysql/data.sql
+
 		#start zabbix agentd
 		/etc/init.d/zabbix_server restart
 		/etc/init.d/zabbix_agentd restart
@@ -66,11 +75,11 @@ AGENT_INSTALL() {
 		useradd --system -g zabbix -d /usr/lib/zabbix -s /sbin/nologin -c "Zabbix Monitoring System" zabbix
 
 		cd $WORK_DIR
-		tar xzf $ZABBIX_VERSION.tar.gz
-		cd $ZABBIX_VERSION
+		tar xzf zabbix-$ZABBIX_VERSION.tar.gz
+		cd zabbix-$ZABBIX_VERSION
 		./configure --enable-agent && make install
 
-		cd $WORK_DIR/$ZABBIX_VERSION
+		cd $WORK_DIR/zabbix-$ZABBIX_VERSION
 		cp misc/init.d/tru64/zabbix_agentd /etc/init.d/zabbix_agentd && chmod o+x /etc/init.d/zabbix_agentd
 
 		#config zabbix agentd
@@ -99,5 +108,5 @@ if [ $USER_INPUT == "yes" ]; then
 elif [ $USER_INPUT == "no" ]; then
 	AGENT_INSTALL
 else
-    exit;
+	exit
 fi
