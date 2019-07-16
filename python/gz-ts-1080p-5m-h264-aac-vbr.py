@@ -5,7 +5,7 @@ import subprocess as sp
 import os
 import logging
 
-logging.basicConfig(filename='transcode.log', level=logging.WARNING)
+logging.basicConfig(filename='info.log', level=logging.WARNING)
 # logging.basicConfig(filename='tcTS.log', level=logging.INFO)
 
 
@@ -42,8 +42,9 @@ def transcode(filepath, outputdir):
 
 
 def main():
+    os.system('find ./ -size +1M > videolist')
     # 打开视频列表文件
-    with open('list', 'r') as f:
+    with open('videolist', 'r') as f:
         line = f.readline()
         # 逐行读取文件，并新建输出路径
         while line:

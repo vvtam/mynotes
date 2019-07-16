@@ -6,23 +6,23 @@
 #date:        2016/05/26                ##
 ##########################################
 
-APP_DIR=/home/data/wwwroot
-BACKUP_APP=app
+APP_DIR=/data/wwwroot
+BACKUP_APP=cms
 BACKUP_DATE=`date +%Y%m%d-%H%M`
-KEEP_DAYS=1
+KEEP_DAYS=5
 
-BACKUP_DIR=/data/app_backup
+BACKUP_DIR=/data/backup/
 ARCHIVE_FILE=$BACKUP_APP-$BACKUP_DATE.tar.gz
-LOGFILE=/data/app_backup/backup.log
+LOGFILE=/data/backup/cms_backup.log
 
 ADMIN_MAIL=
 
 #back to remote server
-SERVER_NAME=
+#SERVER_NAME=
 SERVER_IP=192.168.1.155
 SERVER_PORT=22
 SERVER_USER=root
-SERVER_DIR=/home/data/app_backup
+SERVER_DIR=/data/backup
 ##########################################
 
 # check the backup

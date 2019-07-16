@@ -10,8 +10,8 @@ PASSWORD="passwd"
 DATABASE="database"
 DBHOST="1.2.3.4"
 MAIL="xx@xx.com"
-BACKUP_DIR=/data/mysql_backup/    #备份文件存储路径
-LOGFILE=/data/mysql_backup/mysql_backup.log    #日志文件路径
+BACKUP_DIR=/data/backup/mysql/    #备份文件存储路径
+LOGFILE=/data/backup/mysql/backup.log    #日志文件路径
  
 DATE=`date +%Y%m%d-%H%M`    #用日期格式作为文件名
 DUMPFILE=$DATABASE-$DATE.sql
@@ -41,12 +41,12 @@ then
     echo "[$ARCHIVE] Backup Successful!" >> $LOGFILE
     rm -f $DUMPFILE    #删除原始备份文件,只需保留备份压缩包
     #把压缩包文件备份到其他机器上。
-    scp $BACKUP_DIR$ARCHIVE root@172.17.3.35:/home/mysql_backup/ >> $LOGFILE  2>&1
+    scp $ARCHIVE root@172.17.3.35:/home/mysql_backup/ >> $LOGFILE  2>&1
 else
     echo "Database Backup Fail!" >> $LOGFILE
     #备份失败后向管理者发送邮件提醒
     #mail -s "database:$DATABASE Backup Fail!" $MAIL
 fi
 echo "Backup Process Done"
-#删除7天以上的备份文件
-find $BACKUP_DIR  -type f -mtime +7 -name "*.tar.gz" -exec rm -f {} \;
+#删除5天以上的备份文件
+find $BACKUP_DIR  -type f -mtime +5 -name "*.tar.gz" -exec rm -f {} \;

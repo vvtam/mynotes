@@ -5,7 +5,7 @@ import subprocess as sp
 import os
 import logging
 
-logging.basicConfig(filename='error.log', level=logging.WARNING)
+logging.basicConfig(filename='info.log', level=logging.WARNING)
 # logging.basicConfig(filename='tcTS.log', level=logging.INFO)
 
 
@@ -16,10 +16,7 @@ def transcode(filepath, outputdir):
                "-metadata", "service_provider='Push Media'",
                "-c:v", "h264",
                "-profile:v", "high", "-level:v", "4.1",
-               # "-x264-params", "nal-hrd=cbr",
-               # "-b:v", "8M", "-minrate", "8M", "-maxrate", "8M", "-bufsize", "2M",
                "-b:v", "4M",
-               #"-preset", "fast", "-tune", "animation",
                "-preset", "faster",
                "-s", "1920x1080",
                "-aspect", "16:9",
@@ -39,8 +36,9 @@ def transcode(filepath, outputdir):
 
 
 def main():
+    os.system('find ./ -size +1M > videolist')
     # 打开视频列表文件
-    with open('list', 'r') as f:
+    with open('videolist', 'r') as f:
         line = f.readline()
         # 逐行读取文件，并新建输出路径
         while line:

@@ -4,6 +4,7 @@
 import subprocess as sp 
 import os
 import logging
+import findVideoFile
 
 logging.basicConfig(filename='info.log', level=logging.WARNING)
 # logging.basicConfig(filename='tcTS.log', level=logging.INFO)
@@ -38,34 +39,33 @@ def transcode(filepath, outputdir):
 
 def main():
     # 查找视频文件
-    os.system('find ./ -size +1M > videolist')
-    #findfile = sp.Popen('find ./ -size +1M > list', shell=False)
-    #findfile.wait()
+    #os.system('find ./ -size +1M > videolist')
+    absdir = os.path.abspath('.')
+    findVideoFile.getvideofile(absdir) #外部查找文件生成videolist
 
-    # 打开视频列表文件
     with open('videolist', 'r') as f:
-        line = f.readline()
-        # 逐行读取文件，并新建输出路径
-        while line:
-            # 输出入文件路径
+        line = f.readline() # 逐行读取文件，并新建输出路径
+        while line: # 输出入文件路径
             filepath = line.strip()  # 去除行尾的"\n"
-            # 去除文件扩展名，获得一个list
-            filedir = os.path.splitext(filepath)
-            # 去除文件扩展名后的路径作为输出的路径
-            outputdir = filedir[0]
+            filedir = os.path.splitext(filepath) # 去除文件扩展名，获得一个list
+            outputdir = filedir[0] # 去除文件扩展名后的路径作为输出的路径
             # 文件扩展名
             # filesuffix = filedir[1]
             # raise SystemExit('Debug and Exit!') #调试
+            print(outputdir)
             # 输出在当前目录
-            outputdir = os.path.join(os.path.abspath('.'), '4m1080pts', outputdir)
+            #outputdir = os.path.join(os.path.abspath('.'), '4m1080pts', outputdir)
+            outputdir = os.path.join('4m1080pts')
+            print(outputdir)
+            exit(0)
+            
             # ===输出不在当前目录===
-            #output_basedir = '/home/pm/transcode'
-            #outputdir = os.path.join(output_basedir, 'transcode', outputdir)
+            # output_basedir = '/data'
+            # outputdir = os.path.join(output_basedir, 'transcode', outputdir)
             # ===输出不在当前目录===
-            # 标准化路径名，合并多余的分隔符和上层引
-            outputdir = os.path.normpath(outputdir)
-            # 替换空格
-            #outputdir = outputdir.replace(" ", "_")
+        
+            outputdir = os.path.normpath(outputdir) # 标准化路径名，合并多余的分隔符
+            #outputdir = outputdir.replace(" ", "_")  # 替换空格
             output_basedir = os.path.dirname(outputdir)
             if os.path.exists(output_basedir):
                 logging.info(output_basedir + ", the dir already exist.")

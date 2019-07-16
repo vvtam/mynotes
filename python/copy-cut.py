@@ -1,30 +1,24 @@
 #!/usr/bin/env python3
 # _*_ coding:utf-8 _*_
 
-import subprocess as sp 
+import subprocess as sp
 import os
 import logging
 
 logging.basicConfig(filename='info.log', level=logging.WARNING)
 # logging.basicConfig(filename='tcTS.log', level=logging.INFO)
 
-def transcode(filepath, outputdir):
+
+def transcode(filepath, outputdir, tline, filesuffix):
     command = ["ffmpeg", "-y", "-i", filepath,
+               "-ss", "00:00:00",
                "-loglevel",  "error",
                "-metadata", "service_name='Push Media'",
                "-metadata", "service_provider='Push Media'",
-               "-c:v", "h264",
-               "-profile:v", "high", "-level:v", "4.1",
-               # "-x264-params", "nal-hrd=cbr",
-               # "-b:v", "8M", "-minrate", "8M", "-maxrate", "8M", "-bufsize", "2M",
-               "-b:v", "4M",
-               "-preset", "faster",
-               "-s", "1920x1080",
-               "-aspect", "16:9",
-               "-r", "25",
-               "-c:a", "aac",
-               "-b:a", "128K", "-ar", "48000",
-               outputdir + ".ts"
+               "-c:v", "copy",
+               "-c:a", "copy",
+               "-t", tline,
+               outputdir + filesuffix
                ]
     pipe = sp.Popen(command, stdout=sp.PIPE, stderr=sp.STDOUT)
     out, err = pipe.communicate()
@@ -37,27 +31,24 @@ def transcode(filepath, outputdir):
 
 
 def main():
-    # 查找视频文件
-    os.system('find ./ -size +1M > videolist')
-    #findfile = sp.Popen('find ./ -size +1M > list', shell=False)
-    #findfile.wait()
-
     # 打开视频列表文件
-    with open('videolist', 'r') as f:
+    with open('list', 'r') as f, open('tlist', 'r') as t:
+        tline = t.readline()
         line = f.readline()
         # 逐行读取文件，并新建输出路径
         while line:
-            # 输出入文件路径
+            # 输出入文件路径 需要截取的时间
+            tline = tline.strip()  # 去除行尾换行"\n"
             filepath = line.strip()  # 去除行尾的"\n"
             # 去除文件扩展名，获得一个list
             filedir = os.path.splitext(filepath)
             # 去除文件扩展名后的路径作为输出的路径
             outputdir = filedir[0]
             # 文件扩展名
-            # filesuffix = filedir[1]
+            filesuffix = filedir[1]
             # raise SystemExit('Debug and Exit!') #调试
             # 输出在当前目录
-            outputdir = os.path.join(os.path.abspath('.'), '4m1080pts', outputdir)
+            outputdir = os.path.join(os.path.abspath('.'), 'ctest', outputdir)
             # ===输出不在当前目录===
             #output_basedir = '/home/pm/transcode'
             #outputdir = os.path.join(output_basedir, 'transcode', outputdir)
@@ -71,10 +62,12 @@ def main():
                 logging.info(output_basedir + ", the dir already exist.")
             else:
                 logging.info(output_basedir + ", the dir create success.")
-                os.makedirs(output_basedir)
-            logging.warning(filepath)  # 记录进度
-            transcode(filepath, outputdir)
+                os.makedirs(output_basedir)            
+            logging.warning(filepath + ' ' + tline)  # 记录进度 对应时间
+            transcode(filepath, outputdir, tline, filesuffix)
             line = f.readline()
+            tline = t.readline()
+
 
 if __name__ == '__main__':
     main()
