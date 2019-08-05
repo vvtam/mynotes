@@ -44,6 +44,8 @@ mv /etc/ssh /etc/ssh-bak
 #移除之前yum安装的OpenSSH,（如果有），主要是解决systemd和service会冲突
 yum remove openssh
 make install
+#不移除，可以mask之前的sshd服务
+systemctl stop sshd && systemctl disable sshd && systemctl mask sshd
 
 cp openssh-src-path/contrib/redhat/sshd.init /etc/init.d/sshd
 chkconfig --add sshd
