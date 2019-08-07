@@ -2,7 +2,7 @@
 
 yum -y install net-tools
 
-ZABBIX_VERSION="4.0.10"
+ZABBIX_VERSION="4.0.11"
 SERVER_IP="ip"
 
 AGENT_IP=$(ifconfig eth0 | grep netmask | awk '{print $2}') #eth0 need ifconfig
