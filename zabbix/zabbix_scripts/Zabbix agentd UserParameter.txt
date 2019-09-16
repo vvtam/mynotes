@@ -1,5 +1,14 @@
 UserParameter=nginx.status[*],/usr/local/etc/zabbix_nginx_status.sh $1
 
+    server {
+        listen 80;
+        location /nginx_status/ {
+            stub_status on;
+            allow 127.0.0.1;
+            deny all;
+        }
+    }
+
 UserParameter=tcp.list,./alertscripts/tcp_status list
 UserParameter=tcp.status[*],.alertscripts/tcp_status status $1
 

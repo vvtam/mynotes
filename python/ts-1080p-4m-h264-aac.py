@@ -14,11 +14,11 @@ def transcode(filepath, outputdir):
                "-metadata", "service_name='Push Media'",
                "-metadata", "service_provider='Push Media'",
                "-c:v", "h264",
-               "-profile:v", "high", "-level:v", "4.1",
+               #"-profile:v", "high", "-level:v", "4.1",
                # "-x264-params", "nal-hrd=cbr",
                # "-b:v", "8M", "-minrate", "8M", "-maxrate", "8M", "-bufsize", "2M",
                "-b:v", "4M",
-               "-preset", "faster",
+               "-preset", "ultrafast",
                "-s", "1920x1080",
                "-aspect", "16:9",
                "-r", "25",
@@ -39,7 +39,7 @@ def transcode(filepath, outputdir):
 def main():
     # 查找视频文件
     os.system('find ./ -size +1M > videolist')
-    #findfile = sp.Popen('find ./ -size +1M > list', shell=False)
+    #findfile = sp.Popen('find ./ -size +1M > list' shell=False)
     #findfile.wait()
 
     # 打开视频列表文件
@@ -48,7 +48,7 @@ def main():
         # 逐行读取文件，并新建输出路径
         while line:
             # 输出入文件路径
-            filepath = line.strip()  # 去除行尾的"\n"
+            filepath = line.strip()  # 去除行尾的\n
             # 去除文件扩展名，获得一个list
             filedir = os.path.splitext(filepath)
             # 去除文件扩展名后的路径作为输出的路径

@@ -13,7 +13,7 @@ KEEP_DAYS=5
 
 BACKUP_DIR=/data/backup/
 ARCHIVE_FILE=$BACKUP_APP-$BACKUP_DATE.tar.gz
-LOGFILE=/data/backup/cms_backup.log
+LOGFILE=/data/backup/cms.log
 
 ADMIN_MAIL=
 

@@ -19,7 +19,7 @@ def transcode(filepath, outputdir):
                #"-x264-params", "nal-hrd=cbr",
                #"-b:v", "4M", "-minrate", "4M", "-maxrate", "4M", "-bufsize", "1M",
                "-b:v", "4M",
-               "-preset", "ultrafast", "-tune", "animation",
+               "-preset", "ultrafast",
                "-s", "1920x1080",
                "-r", "25",
                "-c:a", "aac",
@@ -38,6 +38,7 @@ def transcode(filepath, outputdir):
 
 def main():
     # 打开视频列表文件
+    os.system('find ./ -size +1M > list')
     with open('list', 'r') as f:
         line = f.readline()
         # 逐行读取文件，并新建输出路径

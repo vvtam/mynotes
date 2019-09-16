@@ -10,8 +10,8 @@ PASSWORD="passwd"
 DATABASE="database"
 DBHOST="1.2.3.4"
 MAIL="xx@xx.com"
-BACKUP_DIR=/data/backup/mysql/    #备份文件存储路径
-LOGFILE=/data/backup/mysql/backup.log    #日志文件路径
+BACKUP_DIR=/data/backup/    #备份文件存储路径
+LOGFILE=/data/backup/mysql.log    #日志文件路径
  
 DATE=`date +%Y%m%d-%H%M`    #用日期格式作为文件名
 DUMPFILE=$DATABASE-$DATE.sql
