@@ -1,29 +1,32 @@
 #!/usr/bin/env python3
 # _*_ coding:utf-8 _*_
 
-import subprocess as sp 
+import subprocess as sp
 import os
 import logging
 
-logging.basicConfig(filename='info.log', level=logging.WARNING)
+logging.basicConfig(filename='transcode.log', level=logging.WARNING)
 # logging.basicConfig(filename='tcTS.log', level=logging.INFO)
+
 
 def transcode(filepath, outputdir):
     command = ["ffmpeg", "-y", "-i", filepath,
                "-loglevel",  "error",
                "-metadata", "service_name='Push Media'",
                "-metadata", "service_provider='Push Media'",
+               #"-metadata", "copyright='Copyright 2018 By PM'",
+               #"-metadata", "comment='An exercise in Realmedia metadata'",
                "-c:v", "h264",
-               #"-profile:v", "high", "-level:v", "4.1",
-               # "-x264-params", "nal-hrd=cbr",
-               # "-b:v", "8M", "-minrate", "8M", "-maxrate", "8M", "-bufsize", "2M",
-               "-b:v", "4M",
-               "-preset", "ultrafast",
+               "-profile:v", "high", "-level:v", "4.0",
+               "-x264-params", "nal-hrd=cbr",
+               "-b:v", "4M", "-minrate", "4M", "-maxrate", "4M", "-bufsize", "4M",
+               "-preset", "faster",
                "-s", "1920x1080",
                "-aspect", "16:9",
                "-r", "25",
                "-c:a", "aac",
-               "-b:a", "128K", "-ar", "48000",
+               "-b:a", "192K", "-ar", "48000",
+               "-f", "mpegts", "-muxrate", "6M",
                outputdir + ".ts"
                ]
     pipe = sp.Popen(command, stdout=sp.PIPE, stderr=sp.STDOUT)
@@ -37,18 +40,13 @@ def transcode(filepath, outputdir):
 
 
 def main():
-    # 查找视频文件
-    os.system('find ./ -size +1M > videolist')
-    #findfile = sp.Popen('find ./ -size +1M > list' shell=False)
-    #findfile.wait()
-
     # 打开视频列表文件
-    with open('videolist', 'r') as f:
+    with open('list', 'r') as f:
         line = f.readline()
         # 逐行读取文件，并新建输出路径
         while line:
             # 输出入文件路径
-            filepath = line.strip()  # 去除行尾的\n
+            filepath = line.strip()  # 去除行尾的"\n"
             # 去除文件扩展名，获得一个list
             filedir = os.path.splitext(filepath)
             # 去除文件扩展名后的路径作为输出的路径
@@ -57,10 +55,10 @@ def main():
             # filesuffix = filedir[1]
             # raise SystemExit('Debug and Exit!') #调试
             # 输出在当前目录
-            outputdir = os.path.join(os.path.abspath('.'), '4m1080ptsvbr', outputdir)
+            outputdir = os.path.join(os.path.abspath('.'), '4m1080pts', outputdir)
             # ===输出不在当前目录===
-            #output_basedir = '/home/pm/transcode'
-            #outputdir = os.path.join(output_basedir, '4m1080ptsvbr', outputdir)
+            #output_basedir = '/mnt/nfs/transcode'
+            #outputdir = os.path.join(output_basedir, 'ts8M1080P', outputdir)
             # ===输出不在当前目录===
             # 标准化路径名，合并多余的分隔符和上层引
             outputdir = os.path.normpath(outputdir)

@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 # _*_ coding:utf-8 _*_
 
-import subprocess as sp
 import json
-import os
 import logging
+import os
+import subprocess as sp
 
-logging.basicConfig(filename='2hls.log',level=logging.WARNING)
+logging.basicConfig(filename='2hls.log', level=logging.WARNING)
+
 
 def probe(filepath):
     ''' Give a json from ffprobe command line
@@ -17,7 +18,7 @@ def probe(filepath):
         raise Exception('Gvie ffprobe a full file path of the video')
 
     prog = ["ffprobe",
-            "-loglevel",  "error",
+            "-loglevel", "error",
             "-print_format", "json",
             "-show_format",
             "-show_streams",
@@ -27,11 +28,11 @@ def probe(filepath):
     out, err = pipe.communicate()
 
     if pipe.returncode == 0:
-       logging.info("command '%s' succeeded, returned: %s" \
-               % (prog, str(out)))
+        logging.info("command '%s' succeeded, returned: %s" \
+                     % (prog, str(out)))
     else:
         logging.error("command '%s' failed, exit-code=%d error = %s" \
-               % (prog, pipe.returncode, str(err)))
+                      % (prog, pipe.returncode, str(err)))
     return json.loads(out)
 
 
@@ -62,7 +63,7 @@ def transcode(filepath, outputdir):
         if 'h264' in codec and 'aac' in codec:
             command = ["ffmpeg", "-y",
                        "-i", filepath,
-                       "-loglevel",  "error",
+                       "-loglevel", "error",
                        "-bsf:v", "h264_mp4toannexb",
                        "-c:a", "copy",
                        "-c:v", "copy",
@@ -80,7 +81,7 @@ def transcode(filepath, outputdir):
         elif 'h264' in codec and 'mp3' in codec:
             command = ["ffmpeg", "-y",
                        "-i", filepath,
-                       "-loglevel",  "error",
+                       "-loglevel", "error",
                        "-c:a", "copy",
                        "-c:v", "copy",
                        "-f", "hls", "-hls_time", "10", "-hls_list_size", "0",
@@ -97,7 +98,7 @@ def transcode(filepath, outputdir):
         else:
             command = ["ffmpeg", "-y",
                        "-i", filepath,
-                       "-loglevel",  "error",
+                       "-loglevel", "error",
                        "-c:a", "aac",
                        "-c:v", "h264",
                        "-f", "hls", "-hls_time", "10", "-hls_list_size", "0",
@@ -111,6 +112,7 @@ def transcode(filepath, outputdir):
             else:
                 logging.error("codec: '%s', command '%s' failed, exit-code=%d error = %s"
                               % (codec, command, pipe.returncode, str(err)))
+
 
 # 创建目录函数，未使用
 
@@ -133,7 +135,7 @@ def mkdir(hlsdir):
 # 打开文件
 with open('videoList', 'r') as f:
     line = f.readline()
-# 逐行读取文件，并新建输出路径
+    # 逐行读取文件，并新建输出路径
     while line:
         # 输出入文件路径
         filepath = line.strip()  # 去除行尾的"\n"
@@ -146,8 +148,8 @@ with open('videoList', 'r') as f:
         # raise SystemExit('Debug and Exit!')
         outputdir = os.path.join(os.path.abspath('.'), '2hls', outputdir)
         # 如果输出不在当前目录,需要重新定义
-        #output_basedir = ''
-        #outputdir = os.path.join(output_basedir, '2hls', outputdir)
+        # output_basedir = ''
+        # outputdir = os.path.join(output_basedir, '2hls', outputdir)
         # 标准化路径名，合并多余的分隔符和上层引
         outputdir = os.path.normpath(outputdir)
         outputdir = outputdir.replace(" ", "_")
@@ -156,6 +158,6 @@ with open('videoList', 'r') as f:
         else:
             logging.info(outputdir + ", the dir create success.")
             os.makedirs(outputdir)
-        logging.warning(filepath) #记录进度
+        logging.warning(filepath)  # 记录进度
         transcode(filepath, outputdir)
         line = f.readline()

@@ -20,7 +20,7 @@ def transcode(filepath, outputdir):
                "-profile:v", "high", "-level:v", "4.0",
                "-x264-params", "nal-hrd=cbr",
                "-b:v", "8M", "-minrate", "8M", "-maxrate", "8M", "-bufsize", "4M",
-               "-preset", "ultrafast", "-tune", "animation",
+               "-preset", "faster", "-tune", "animation",
                "-bf", "2", #Bframe
                "-keyint_min", "25", "-g", "25", "-sc_threshold", "0",
                "-s", "1920x1080",
