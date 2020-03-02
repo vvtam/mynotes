@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
 # _*_ coding:utf-8 _*_
 
-import subprocess as sp
-import os
 import logging
+import os
+import subprocess as sp
 
 logging.basicConfig(filename='transcode.log', level=logging.WARNING)
+
+
 # logging.basicConfig(filename='tcTS.log', level=logging.INFO)
 
 
 def transcode(filepath, outputdir):
     command = ["ffmpeg", "-y", "-i", filepath,
-               "-loglevel",  "error",
+               "-loglevel", "error",
                "-metadata", "service_name='Push Media'",
                "-metadata", "service_provider='Push Media'",
                "-c:v", "libx264",
@@ -54,13 +56,13 @@ def main():
             # 输出在当前目录
             outputdir = os.path.join(os.path.abspath('.'), 'tc', outputdir)
             # ===输出不在当前目录===
-            #output_basedir = '/home/pm/transcode'
-            #outputdir = os.path.join(output_basedir, 'transcode', outputdir)
+            # output_basedir = '/home/pm/transcode'
+            # outputdir = os.path.join(output_basedir, 'transcode', outputdir)
             # ===输出不在当前目录===
             # 标准化路径名，合并多余的分隔符和上层引
             outputdir = os.path.normpath(outputdir)
             # 替换空格
-            #outputdir = outputdir.replace(" ", "_")
+            # outputdir = outputdir.replace(" ", "_")
             output_basedir = os.path.dirname(outputdir)
             if os.path.exists(output_basedir):
                 logging.info(output_basedir + ", the dir already exist.")
@@ -70,6 +72,7 @@ def main():
             logging.warning(filepath)  # 记录进度
             transcode(filepath, outputdir)
             line = f.readline()
+
 
 if __name__ == '__main__':
     main()

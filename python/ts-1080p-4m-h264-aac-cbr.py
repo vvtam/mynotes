@@ -17,7 +17,10 @@ def transcode(filepath, outputdir):
                #"-metadata", "copyright='Copyright 2018 By PM'",
                #"-metadata", "comment='An exercise in Realmedia metadata'",
                "-c:v", "h264",
+               #"-vf", "scale=2*trunc(iw/2):-2,setsar=1",
+               #scale args ensure an even width and height. The setsar is force a sample aspect ratio of 1 so that players don't #resize the video during display.
                "-profile:v", "high", "-level:v", "4.0",
+               #"-pix_fmt", "yuv420p",
                "-x264-params", "nal-hrd=cbr",
                "-b:v", "4M", "-minrate", "4M", "-maxrate", "4M", "-bufsize", "4M",
                "-preset", "faster",
