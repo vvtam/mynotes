@@ -8,13 +8,13 @@
 
 ## 上传到数据区，开启ssh，登录
 
-![img](ESXi 升级.assets/企业微信截图_15877064428763.png)
+![img](pic/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_15877064428763.png)
 
 ## 登录ssh获取相关信息  
 
 esxcli software sources profile list -d /vmfs/volumes/5a4bc461-22a5d0d4-4418-1418776fe650/isoss/ESXi670-202004001.zip  
 
-![](ESXi 升级.assets/企业微信截图_15877065797369.png)
+![img](pic/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_15877065797369.png)
 
 ## 升级
 
