@@ -1,0 +1,45 @@
+global:
+    resolve_timeout: 5m
+    http_config: {}
+    smtp_hello: localhost
+    smtp_require_tls: true
+    pagerduty_url: https://events.pagerduty.com/v2/enqueue
+    hipchat_api_url: https://api.hipchat.com/
+    opsgenie_api_url: https://api.opsgenie.com/
+    wechat_api_url: https://qyapi.weixin.qq.com/cgi-bin/
+    victorops_api_url: https://alert.victorops.com/integrations/generic/20131114/alert/
+  route:
+    receiver: wechat
+    group_by:
+    - alertname
+    group_wait: 10s
+    group_interval: 10s
+    repeat_interval: 1h
+  inhibit_rules:
+  - source_match:
+      severity: critical
+    target_match:
+      severity: warning
+    equal:
+    - alertname
+    - dev
+    - instance
+  receivers:
+  - name: web.hook
+    webhook_configs:
+    - send_resolved: true
+      http_config: {}
+      url: http://127.0.0.1:5001/
+  - name: wechat
+    wechat_configs:
+    - send_resolved: true
+      http_config: {}
+      api_secret: <secret>
+      corp_id: ww544d97b3d1a8f8c3
+      message: '{{ template "wechat.default.message" . }}'
+      api_url: https://qyapi.weixin.qq.com/cgi-bin/
+      to_user: '{{ template "wechat.default.to_user" . }}'
+      to_party: "1"
+      to_tag: '{{ template "wechat.default.to_tag" . }}'
+      agent_id: "1000002"
+  templates: []
