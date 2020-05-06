@@ -1,8 +1,11 @@
-#rsync#
-##rsync ssh##
+# rsync#
+##  rsync ssh
+
+```shell
 rsync -avlR --exclude-from=rsync_cig_exclude.list -e ssh cig root@test151:/data/wwwroot/
 rsync -avlR --exclude-from=rsync_cig_exclude.list -e 'ssh -p 43211' cig root@test151:/data/wwwroot/
 rsync -avlR --exclude 'rsync_cig_exclude.list' -e 'ssh -p 43211' cig root@test151:/data/wwwroot/
+```
 
 排除文件列表用相对路径，比如下面脚本  
 ```
@@ -14,9 +17,10 @@ rsync -avlR --exclude-from=rsync_cig_exclude.list -e ssh cig root@test151:/data/
 ssh root@test151 "rm -rf /data/cache.php"
 ```
 
-rsync_cig_exclude.list  
+rsync_cig_exclude.list  **0**
 相对于上面脚本来说的相对目录，比如一个完整的目录是  
 /data/wwwroot/cig/app/config/*
+
 ```
 app/config/*
 .git*
@@ -33,3 +37,7 @@ rsync -avz --progress --delete --bwlimit=500 /cygdrive/d/web vhost@host < c:\rsy
 路径有空格的时候  
 
 rsync -avz --progress --delete --bwlimit=500 /cygdrive/d/"Program Files"/"Microsoft SQL Server"/MSSQL.1/MSSQL/Data vhost@host::218_172 < c:\rsyncd.secrets  ## Windows下密钥文件 c:\rsyncd.secrets log日志文件c:\rsync.log dos窗口不输出 ，linux下  /usr/local/rsyncd.secrets 读取权限指定600。  183 rsync 配置文件 /etc/rsyncd.conf  密钥文件 /etc/rsyncd.secrets 欢迎信息 /etc/rsyncd.motd  ，启动方式 rsync --daemon --config=/etc/rsyncd.conf  加入到了/etc/rc.local   rsync服务器端的UID GID都设置的root ，设置成nobody 会报错，没有权限操作目录
+
+rsync -av --exclude=Webroot/storage/* --exclude=Webroot/htdocs/asset/* cms cms-0429
+
+rsync -av --exclude=Webroot/storage/* --exclude=Webroot/htdocs/asset/* cms/ cms-0429/  不会复制到目录里面
