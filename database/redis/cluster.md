@@ -49,3 +49,10 @@ cluster forget nodeID #从集群中移除nodeID对应的节点
 cluster replicate nodeID  #当前节点设置为nodeId节点的从
 cluster saveconfig #保存节点配置文件到硬盘
 ```
+
+## 新版配置
+
+```
+./redis-cli --cluster create 172.16.62.46:6380 172.16.62.46:6381 172.16.62.46:6382 172.16.62.46:6383 172.16.62.45:6380 172.16.62.45:6381 172.16.62.45:6382 172.16.62.45:6383 --cluster-replicas 1
+```
+
