@@ -10,5 +10,5 @@ useradd -M -s /sbin/nologin nginx
 
 tar -zxvf $workdir/nginx-"$nginxversion".tar.gz -C $workdir
 cd $workdir/nginx-$nginxversion
-./configure --prefix="$installdir"/nginx  --user=nginx  --group=nginx  --with-http_stub_status_module --with-http_ssl_module --with-pcre --with-stream && make -j$(nproc) && make install
+./configure --prefix="$installdir"/nginx  --user=nginx  --group=nginx  --with-http_stub_status_module --with-http_ssl_module --with-pcre --with-stream --with-http_v2_module && make -j$(nproc) && make install
 rm -rf $workdir/nginx-$nginxversion
