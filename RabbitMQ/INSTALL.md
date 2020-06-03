@@ -33,6 +33,7 @@ vim /etc/rabbitmq/rabbitmq.config
 RabbitMQ-Server默认配置即可满足我们的需求，但是为了避免日增量大，出现堵塞情况，我们需要配置一下队列的最大长度。
 name：队列名称
 max-length：长度  20000
+
 ### 停止服务
 rabbitmqctl stop
 
@@ -41,3 +42,9 @@ rabbitmqctl stop
 需要安装php-amqp扩展（扩展版本号：1.4.0）
 下载地址：http://pecl.php.net/package/amqp 
 安装完成之后，使用php  -m 命令查看amqp是否安装成功
+
+## 插件
+
+rabbitmq-plugins list
+
+rabbitmq-plugins enable xxx xxx

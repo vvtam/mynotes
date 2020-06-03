@@ -3,22 +3,17 @@
 ## 新建库
 ```
 CREATE DATABASE mycat DEFAULT CHARACTER SET utf8;
-
 CREATE DATABASE testdb DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 ```
 ## 新建用户
 ```
 CREATE USER 'repl'@'%' IDENTIFIED BY 'password';
-
 CREATE USER 'db1'@'172.2.16.%' IDENTIFIED BY 'pw1';
-
 ```
 ## 用户权限
 ```
 SHOW GRANTS FOR ''@'';
-
 GRANT ALL PRIVILEGES ON database.tables TO 'user'@'xxx' IDENTIFIED BY 'passwd';
-
 GRANT ALL PRIVILEGES ON mycat.* TO 'mycat'@'%' IDENTIFIED BY 'mycat2016';
 ```
 ## 撤销权限
@@ -64,23 +59,19 @@ mysql> start slave
 ## 修改密码
 ```
 UPDATE mysql.user SET authentication_string=PASSWORD('newpasswd') WHERE user='xxx';  
-
 SET PASSWORD FOR 'root'@'localhost' = PASSWORD('admin');
-
 skip-grant-tables # mysqld段配置,重启
 无密码登录，修改密码
 UPDATE mysql.user SET authentication_string=PASSWORD('newpw') WHERE user='root';
 #skip-grant-tables 注释重启
 新密码登录,并修改密码
 ALTER USER 'root'@'localhost' IDENTIFIED BY 'newpw';
-
 SET PASSWORD = PASSWORD('password');
 ```
 ## 数据操作
 ```
 DELETE FROM video_play_log WHERE dt < DATE_SUB(CURDATE(),INTERVAL 2 MONTH)
-
 CREATE TABLE newtable LIKE oldtable;
-
 INSERT newtable SELECT * FROM oldtable;  
+mysql -uxx -pxx dbname --force < xx.sql > xx.log 2>&1 #强制执行，记录错误
 ```
