@@ -67,6 +67,15 @@ UPDATE mysql.user SET authentication_string=PASSWORD('newpw') WHERE user='root';
 新密码登录,并修改密码
 ALTER USER 'root'@'localhost' IDENTIFIED BY 'newpw';
 SET PASSWORD = PASSWORD('password');
+或者
+mysql> alter user 'root'@'localhost' identified by '123';
+ERROR 1290 (HY000): The MySQL server is running with the --skip-grant-tables option so it cannot execute this statement  #没有加载权限表
+
+mysql> flush privileges;  #加载权限表
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> alter user 'root'@'localhost' identified by '123'; #更新密码
+Query OK, 0 rows affected (0.00 sec)
 ```
 ## 数据操作
 ```
