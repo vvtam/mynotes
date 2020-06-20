@@ -27,10 +27,11 @@ groups:
       summary: "Instance {{ $labels.instance }} MEM usgae high"
       description: "{{ $labels.instance }} MEM usage above 85% (current value: {{ $value }})"
   - alert: Filesystem-Usage-Alert
-    expr: 100 - ((node_filesystem_avail_bytes{mountpoint="/",fstype=~"ext4|xfs"} * 100) / node_filesystem_size_bytes {mountpoint="/",fstype=~"ext4|xfs"}) > 85
+    #expr: 100 - ((node_filesystem_avail_bytes{mountpoint="/",fstype=~"ext4|xfs"} * 100) / node_filesystem_size_bytes {mountpoint="/",fstype=~"ext4|xfs"}) > 85
+    expr: 100-(node_filesystem_free_bytes{fstype=~"ext2|ext3|ext4|xfs"}/node_filesystem_size_bytes {fstype=~"ext2|ext3|ext4|xfs"}*100) > 80
     for: 1m
     labels:
       severity: page
     annotations:
-      summary: "Instance {{ $labels.instance }} root DISK usgae high"
-      description: "{{ $labels.instance }} root DISK usage above 85% (current value: {{ $value }})"
+      summary: "{{ $labels.mountpoint }} usgae high"
+      description: "{{ $labels.mountpoint }} usage above 80% (current value: {{ $value }})"
