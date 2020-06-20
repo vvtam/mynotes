@@ -6,6 +6,7 @@ curl -R -O http://www.lua.org/ftp/lua-5.3.5.tar.gz
 tar zxvf lua-5.3.5.tar.gz
 cd lua-5.3.5
 make linux test
+
 ## haproxy
 make -j $(nproc) TARGET=linux-glibc \
 USE_OPENSSL=1 USE_ZLIB=1 \
