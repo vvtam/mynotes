@@ -2,7 +2,7 @@
 
 workdir=$(pwd)
 installdir=/web/soft
-nginxversion=1.16.0
+nginxversion=1.18.0
 
 yum install -y pcre pcre-devel openssl-devel openssl zlib zlib-devel
 

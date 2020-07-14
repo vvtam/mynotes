@@ -29,6 +29,24 @@ map 可以使用在http中，配置open_log_file_cache可以提高日志效率
 
 ## 使用logrotate分割日志
 
+```
+/web/soft/nginx/logs/*.log {
+  #copytruncate
+  daily
+  rotate 90
+  missingok
+  dateext
+  compress
+  notifempty
+  sharedscripts
+  postrotate
+    [ -e /var/run/nginx.pid ] && kill -USR1 `cat /var/run/nginx.pid`
+  endscript
+}
+```
+
+
+
 ## 使用shell脚本分割日志
 ```
 #!/bin/bash
