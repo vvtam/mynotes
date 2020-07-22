@@ -132,7 +132,7 @@ def main_entrance():
     # zabbix.cmd_sql(sql)
     # serverinfo = zabbix.server_info
     serverinfo = [
-        (2, '甘肃', ' http://125.74.70.5:8081/', 'admin', 'xxx'),
+        (2, 'xx', ' http://1.5.2.0.5/', 'admin', 'xxx'),
     ]
 
     for i in serverinfo:
