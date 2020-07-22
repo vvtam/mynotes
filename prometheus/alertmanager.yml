@@ -42,4 +42,5 @@ global:
       to_party: "1"
       to_tag: '{{ template "wechat.default.to_tag" . }}'
       agent_id: "1000002"
-  templates: []
+  templates:
+  - './templates/wechat.tmpl'

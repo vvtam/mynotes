@@ -1,0 +1,39 @@
+{{- define "_alert_list" -}}
+{{- range .Alerts.Firing -}}
+----
+告警类型：{{ .Labels.alertname }}
+告警主题: {{ .Annotations.summary }}
+告警详情: {{ .Annotations.description }}
+触发时间: {{ (.StartsAt.Add 28800e9).Format "2006-01-02 15:04:05" }}
+{{ end -}}
+{{- end -}}
+
+{{- define "_resolve_list" -}}
+{{- range .Alerts.Resolved -}}
+----
+告警类型：{{ .Labels.alertname }}
+告警主题: {{ .Annotations.summary }}
+告警详情: {{ .Annotations.description }}
+触发时间: {{ (.StartsAt.Add 28800e9).Format "2006-01-02 15:04:05" }}
+恢复时间: {{ (.EndsAt.Add 28800e9).Format "2006-01-02 15:04:05" }}
+{{ end -}}
+{{- end -}}
+
+
+{{- define "wechat.dcos.message" -}}
+{{- if and (gt (len .Alerts.Firing) 0) (gt (len .Alerts.Resolved) 0) -}}
+Alerts Firing:{{.Alerts.Firing | len}}
+Alerts Resolved:{{len .Alerts.Resolved}}
+{{ template "_alert_list" . }}
+{{ template "_resolve_list" . }}
+{{- else -}}
+  {{- if gt (len .Alerts.Firing) 0 -}}
+Alerts Firing:{{.Alerts.Firing | len}}
+{{ template "_alert_list" . }}
+  {{- end -}}
+  {{- if gt (len .Alerts.Resolved) 0 -}}
+Alerts Resolved:{{len .Alerts.Resolved}}
+{{ template "_resolve_list" . }}
+  {{- end -}}
+{{- end -}}
+{{- end -}}
