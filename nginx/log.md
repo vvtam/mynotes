@@ -32,6 +32,7 @@ map 可以使用在http中，配置open_log_file_cache可以提高日志效率
 ```
 /web/soft/nginx/logs/*.log {
   #copytruncate
+  create 644 root root
   daily
   rotate 90
   missingok
