@@ -1,5 +1,7 @@
-#docker常用操作#
-##mysql##
+# docker常用操作
+
+## mysql
+
 * Starting a MySQL instance like this:  
 `$ docker run --name some-mysql -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mysql:tag`  
 * Connect to MySQL from an application in another Docker container  
@@ -11,7 +13,8 @@
 * The MySQL Server log is available through Docker's container log:  
 `$ docker logs some-mysql`  
 
-##容器链接##
+## 容器链接
+
 * Run MySQL Container  
 `$ sudo docker run --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mysql`  
 see https://github.com/docker-library/docs/tree/master/mysql

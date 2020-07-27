@@ -14,6 +14,8 @@
 2. 使用管理员权限运行：`NoLsp.exe c:\windows\system32\wsl.exe`
 3. https://github.com/microsoft/WSL/issues/4177#issuecomment-597736482
 
+### 本地dns服务器冲突，开启53端口启动失败
+
 ### 移除自动加载的window环境变量
 
 建立文件 /etc/wsl.conf 
