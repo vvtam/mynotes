@@ -57,3 +57,14 @@ security:
     
 /usr/local/mongodb/bin/mongod --storageEngine wiredTiger -dbpath=/data/mongodb --fork --bind_ip_all --port 27017 --logpath=/data/mongodb/mongodb.log --logappend --auth
 ```
+
+## 基本使用
+
+use db
+show tables
+show collections
+db.getCollectionNames()
+
+db.表.find({}).count()
+
+db.表.findOne({})

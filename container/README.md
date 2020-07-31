@@ -118,7 +118,15 @@ Error: could not get runtime: error generating default config from memory: canno
 
 buildah build-using-dockerfile -t name .
 
-## 容器构建镜像
+```
+FROM registry.redhat.io/ubi8/ubi
+ADD myecho /usr/local/bin
+ENTRYPOINT "/usr/local/bin/myecho"
+```
+
+
+
+## Modifying a container to create a new image with Buildah
 
 ```
 buildah from daocloud.io/library/centos
@@ -129,7 +137,7 @@ buildah commit centos-working-container centos-httpd
 podman run --name httpd -p 8081:80 centos-httpd #将该容器制作为镜像，保存在 /var/lib/containers/
 ```
 
-## buildah mount
+###  buildah mount
 
 ```
 [root@centos8 hello]# buildah from localhost/centos-httpd
