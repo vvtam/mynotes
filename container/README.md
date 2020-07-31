@@ -154,7 +154,7 @@ buildah commit centos-httpd-working-container centos-httpd
 
 
 ```
-#!/usr/bin/env bash
+#!/usr/bin/env bash 
 
 # https://zdyxry.github.io/2019/10/19/Buildah-初次体验/
 
