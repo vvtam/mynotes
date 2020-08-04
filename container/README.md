@@ -151,6 +151,34 @@ buildah commit centos-httpd-working-container centos-httpd
 
 ```
 
+## Creating images from scratch with Buildah
+
+```
+# buildah from scratch
+working-container
+# scratchmnt=$(buildah mount working-container)
+# echo $scratchmnt
+/var/lib/containers/storage/overlay/38bb43622da3f1a33cfbc8606b7769af54bfe87536d835331283a9234b079ac6/merged
+
+# yum install -y --releasever=8 --installroot=$scratchmnt centos-release
+# yum install -y --setopt=reposdir=/etc/yum.repos.d \
+     --installroot=$scratchmnt \
+     --setopt=cachedir=/var/cache/dnf httpd
+     
+# echo "Your httpd container from scratch worked." > $scratchmnt/var/www/html/index.html
+
+# buildah config --cmd "/usr/sbin/httpd -DFOREGROUND" working-container
+# buildah config --port 80/tcp working-container
+# buildah commit working-container localhost/myhttpd:latest
+
+# podman images
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+localhost/myhttpd   latest              47c0795d7b0e        9 minutes ago       665.6 MB
+# podman run -p 8080:80 -d --name httpd-server 47c0795d7b0e
+# curl localhost:8080
+Your httpd container from scratch worked.
+```
+
 
 
 ```

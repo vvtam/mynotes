@@ -10,6 +10,12 @@ Ubuntu 16.04 , ESXi 6.5
 新pv#    pvcreate /dev/sda3
 扩容vg#  vgextend $vg_name /dev/sda3
 扩容lvm# lvextend --size +750G $lvm_root
+         lvextend +100%FREE $lvm_root
          resize2fs $lvm_root
 	 (xfs_growfs $lvm_root) #用于xfs格式？？？
 ```
+
+pv  >  vg  >  lv
+
+physical volume  >  volume group  >  logical volume
+
