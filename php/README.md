@@ -20,8 +20,8 @@ yum -y install epel-release; yum -y install uw-imap-devel
 
 ```
 ## 问题
-_open_
-version php-7.0.5 centos 7.2
 php-fpm监听的是sock文件，位置为/dev/shm/ (内存)，访问报502，/dev/shm下的sock文件被莫名删除
 
+undefined reference to `libiconv'，安装libticonv-devel libticonv
 
+undefined reference to `FT_Done_Glyph'，安装 freetype
