@@ -2,6 +2,7 @@
 
 ```
 rename old-string new-string files
+rename .log.COMPLETED .log pageinfo-2020-08-17*.log.COMPLETED
 find . -name "*roselove*" | xargs rename roselove love *
 ```
 

@@ -1,4 +1,4 @@
-# rsync#
+# rsync
 ##  rsync ssh
 
 ```shell
@@ -25,7 +25,7 @@ rsync_cig_exclude.list  **0**
 app/config/*
 .git*
 ```
-##rsync daemon##
+## rsync daemon
 rsync -avz --progress --delete --bwlimit=500 --password-file=/usr/local/rsyncd.secrets /host/web vhost@hostname  
 
 /host/web 这种格式会在122_163指定的路径下创建web目录  
@@ -41,3 +41,7 @@ rsync -avz --progress --delete --bwlimit=500 /cygdrive/d/"Program Files"/"Micros
 rsync -av --exclude=Webroot/storage/* --exclude=Webroot/htdocs/asset/* cms cms-0429
 
 rsync -av --exclude=Webroot/storage/* --exclude=Webroot/htdocs/asset/* cms/ cms-0429/  不会复制到目录里面
+
+rsync -av __Webroot/__ --exclude=htdocs/asset --exclude=htdocs/epg NewWebroot  不会在NewWebroot下创建Webroot
+
+rsync -av **Webroot** --exclude=htdocs/asset --exclude=htdocs/epg NewWebroot 会在NewWebroot下创建Webroot
