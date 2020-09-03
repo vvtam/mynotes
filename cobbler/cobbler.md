@@ -1,4 +1,5 @@
-# 安装环境
+## 安装环境
+```
 # cat /etc/redhat-release 
 CentOS Linux release 7.1.1503 (Core) 
 
@@ -13,22 +14,19 @@ Linux localhost.localdomain 3.10.0-229.20.1.el7.x86_64 #1 SMP Tue Nov 3 19:10:07
 
 # rpm -qa cobbler
 cobbler-2.6.10-1.el7.noarch
-
-####################################################################################
-#
-#安装过程
-#
-####################################################################################
-# 增加repo源
+```
+## 安装过程
+### 增加repo源
 rpm -ivh http://mirrors.aliyun.com/epel/epel-release-latest-7.noarch.rpm
-# 或
+
 wget -O /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo
 
-# 安装Cobbler及相关软件
+### 安装Cobbler及相关软件
 yum -y install httpd xinetd tftp-server dnsmasq rsync syslinux
 yum -y install cobbler fence-agents pykickstart
 
-# 关闭selinux
+### 其它
+```
 # vi /etc/selinux/config 
 SELINUX=disabled
 
@@ -298,3 +296,4 @@ http://www.ibm.com/developerworks/cn/linux/l-cobbler/
 http://www.tuicool.com/articles/YZN3qi
 #kickstart配置文件详解
 http://blog.chinaunix.net/uid-17240700-id-2813881.html
+```
