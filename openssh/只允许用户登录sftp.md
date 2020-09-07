@@ -19,3 +19,5 @@ Match User www
         PermitTTY no
         ForceCommand internal-sftp
 ```
+
+sftp不能使用软链接，可以使用 mount -o bind [--bind,-B]
