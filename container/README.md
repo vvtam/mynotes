@@ -1,5 +1,170 @@
 # 安装配置环境
 
+## What is a container
+
+### unshare can launch "contained" processes
+
+````
+sudo unshare --fork --pid --mount-proc bash
+ps
+exit
+````
+
+### nsenter used to attach processed to existing namespaces for debug
+
+`nsenter --target exist_pid --mount --uts --ipc --net --pid ps aux`
+
+with docker, the net namespace will be shared
+
+`docker run -d --name=web --net=container:db nginx:alpine`
+
+```
+$ ls -lha /proc/$WEBPID/ns/ | grep net
+net -> net:[4026532160]
+$ ls -lha /proc/$DBPID/ns/ | grep net
+net -> net:[4026532160]
+```
+
+### chroot
+
+Chroot provides the ability for a process to start with a different root directory to the parent OS. This allows different files to appear in the root.
+
+### cgroups(control groups)
+
+CGroups limit the amount of resources a process can consume. These cgroups are values defined in particular files within the /proc directory.
+
+`cat /proc/$DBPID/cgroup` mapped to `/sys/fs/cgroup/`
+
+The CPU stats and usage is stored within a file too!
+
+```
+cat /sys/fs/cgroup/cpu,cpuacct/docker/$DBID/cpuacct.stat
+```
+
+The CPU shares limit is also defined here.
+
+```
+cat /sys/fs/cgroup/cpu,cpuacct/docker/$DBID/cpu.shares
+```
+
+All the Docker cgroups for the container's memory configuration are stored within:
+
+```
+ls /sys/fs/cgroup/memory/docker/
+```
+
+### how to configure cgroups
+
+`docker stats db --no-stream`
+
+The memory quotes are stored in a file called `memory.limit_in_bytes`.
+
+By writing to the file, we can change the limit limits of a process.
+
+`echo 8000000 > /sys/fs/cgroup/memory/docker/$DBID/memory.limit_in_bytes`
+
+### Seccomp, AppArmor
+
+All actions with Linux is done via syscalls. The kernel has 330 system calls that perform operations such as read files, close handles and check access rights. All applications use a combination of these system calls to perform the required operations.
+
+AppArmor is a application defined profile that describes which parts of the system a process can access.
+
+It's possible to view the current AppArmor profile assigned to a process via `cat /proc/$DBPID/attr/current`
+
+The default AppArmor profile for Docker is `docker-default (enforce)`.
+
+Prior to Docker 1.13, it stored the AppArmor Profile in /etc/apparmor.d/docker-default (which was overwritten when Docker started, so users couldn't modify it. After v1.13, Docker now generates docker-default in tmpfs, uses apparmor_parser to load it into kernel, then deletes the file
+
+The template can be found at https://github.com/moby/moby/blob/a575b0b1384b2ba89b79cbd7e770fbeb616758b3/profiles/apparmor/template.go
+
+Seccomp provides the ability to limit which system calls can be made, blocking aspects such as installing Kernel Modules or changing the file permissions.
+
+The default allowed calls with Docker can be found at https://github.com/moby/moby/blob/a575b0b1384b2ba89b79cbd7e770fbeb616758b3/profiles/seccomp/default.json
+
+When assigned to a process it means the process will be limited to a subset of the ability system calls. If it attempts to call a blocked system call is will recieve the error "Operation Not Allowed".
+
+The status of SecComp is also defined within a file.
+
+```
+cat /proc/$DBPID/status
+cat /proc/$DBPID/status | grep Seccomp
+```
+
+The flag meaning are: 0: disabled 1: strict 2: filtering
+
+### Capabilities
+
+Capabilities are groupings about what a process or user has permission to do. These Capabilities might cover multiple system calls or actions, such as changing the system time or hostname.
+
+The status file also containers the Capabilities flag. A process can drop as many Capabilities as possible to ensure it's secure.
+
+```
+cat /proc/$DBPID/status | grep ^Cap
+```
+
+The flags are stored as a bitmask that can be decoded with `capsh`
+
+```
+capsh --decode=00000000a80425fb
+```
+
+### Container Image
+
+A container image is a tar file containing tar files. Each of the tar file is a layer. Once all tar files have been extract into the same location then you have the container's filesystem.
+
+This can be explored via Docker. Pull the layers onto your local system.
+
+```
+docker pull redis:3.2.11-alpine
+```
+
+Export the image into the raw tar format.
+
+```
+docker save redis:3.2.11-alpine > redis.tar
+```
+
+Extract to the disk
+
+```
+tar -xvf redis.tar
+```
+
+All of the layer tar files are now viewable.
+
+```
+ls
+```
+
+The image also includes metadata about the image, such as version information and tag names.
+
+```
+cat repositories
+cat manifest.json
+```
+
+Extracting a layer will show you which files that layer provides.
+
+```
+tar -xvf da2a73e79c2ccb87834d7ce3e43d274a750177fe6527ea3f8492d08d3bb0123c/layer.tar
+```
+
+### Creating Empty Image
+
+As an image is just a tar file, an empty image can be created using the command below.
+
+```
+tar cv --files-from /dev/null | docker import - empty
+```
+
+By importing the tar, the additional metadata will be created.
+
+```
+docker images
+```
+
+However, as the container doesn't contain anything, it can't start a process.
+
 ##  Getting container tools
 
 ```

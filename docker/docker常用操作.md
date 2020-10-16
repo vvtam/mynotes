@@ -32,3 +32,14 @@ see https://github.com/docker-library/docs/tree/master/php
 `docker run --name epg-nginx --link epg-php-fpm:php-fpm -v /home/data/conf/nginx/nginx.conf:/etc/nginx/nginx.conf -d -p 80:80 --volumes-from=epg-php-fpm nginx:1.8`
 see https://github.com/docker-library/docs/tree/master/nginx
 
+## docker update
+
+Update configuration of one or more containers
+
+`docker update --restart=always id`
+
+## docker inspect
+
+inspect     Return low-level information on Docker objects
+
+`docker inspect id`
