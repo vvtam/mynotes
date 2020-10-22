@@ -22,13 +22,14 @@ rabbitmq-plugins enable rabbitmq_management
 
 ### 配置用户
 vim /etc/rabbitmq/rabbitmq.config
+```
     [
         {rabbit, [{tcp_listeners, [5672]}, {loopback_users, ["admin"]}]}
     ].
  rabbitmqctl add_user admin admin
  rabbitmqctl set_user_tags admin  administrator
  rabbitmqctl set_permissions -p / admin ".*" ".*" ".*"
-
+```
 ### 配置
 RabbitMQ-Server默认配置即可满足我们的需求，但是为了避免日增量大，出现堵塞情况，我们需要配置一下队列的最大长度。
 name：队列名称

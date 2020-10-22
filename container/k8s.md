@@ -87,3 +87,29 @@ We see here that the application is up. This is because the Deployment is managi
 ## scale your app
 
 ### Running Multiple Instances of Your App
+
+## kubectl Cheat Sheet
+
+### Kubectl autocomplete
+
+bash
+
+```
+source <(kubectl completion bash) # setup autocomplete in bash into the current shell, bash-completion package should be installed first.
+echo "source <(kubectl completion bash)" >> ~/.bashrc # add autocomplete permanently to your bash shell.
+```
+
+You can also use a shorthand alias for `kubectl` that also works with completion:
+
+```
+alias k=kubectl
+complete -F __start_kubectl k
+```
+
+zsh
+
+```
+source <(kubectl completion zsh)  # setup autocomplete in zsh into the current shell
+echo "[[ $commands[kubectl] ]] && source <(kubectl completion zsh)" >> ~/.zshrc # add autocomplete permanently to your zsh shell
+```
+
