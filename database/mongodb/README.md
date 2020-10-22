@@ -68,3 +68,7 @@ db.getCollectionNames()
 db.表.find({}).count()
 
 db.表.findOne({})
+
+导出csv
+
+/web/soft/mongodb/bin/mongoexport --port 27017 -d db-c collection --query '{"xx":{"$ne":null}}' --type=csv -f xx,xx -o output.csv
