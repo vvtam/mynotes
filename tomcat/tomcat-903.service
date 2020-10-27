@@ -1,0 +1,18 @@
+[Unit]
+Description=tomcat service Listen on TCP Port 903
+After=network.target
+
+[Service]
+Type=forking
+Environment="JAVA_HOME=/usr/local/jdk1.8.0_131/jre/"
+Environment="CATALINA_BASE=web/soft/tomcat-7.0.90-Client-903"
+Environment="CATALINA_HOME=web/soft/tomcat-7.0.90-Client-903"
+RestartSec=10
+Restart=always
+ExecStart=/web/soft/tomcat-7.0.90-Client-903/bin/startup.sh
+ExecReload=
+ExecStop=/web/soft/tomcat-7.0.90-Client-903/bin/shutdown.sh
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

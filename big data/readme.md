@@ -18,6 +18,10 @@ hadoop fs -du -h /
 hdfs dfs -du -h /
 ```
 
+hadoop 安全模式 ，磁盘不足会进入安全模式
+
+hdfs dfsadmin -safemode enter | leave | get | wait
+
 ## hive-数据仓库
 
 The Apache Hive ™ data warehouse software facilitates reading, writing, and managing large datasets residing in distributed storage using SQL. Structure can be projected onto data already in storage. A command line tool and JDBC driver are provided to connect users to Hive.
