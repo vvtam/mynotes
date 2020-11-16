@@ -71,4 +71,8 @@ db.表.findOne({})
 
 导出csv
 
-/web/soft/mongodb/bin/mongoexport --port 27017 -d db-c collection --query '{"xx":{"$ne":null}}' --type=csv -f xx,xx -o output.csv
+/web/soft/mongodb/bin/mongoexport --port 27017 -d db -c collection --query '{"xx":{"$ne":null}}' --type=csv -f xx,xx -o output.csv
+
+导出json
+
+mongoexport -u user -p password --host ip:port -d db -c collection --type=json -o xx.json
