@@ -1,4 +1,5 @@
-#inotify#
+# inotify
+
 ```
 http://man7.org/linux/man-pages/man7/inotify.7.html
 https://en.wikipedia.org/wiki/Inotify
@@ -14,7 +15,7 @@ total 0
   -rw-r--r-- 1 root root 0 Oct  9 09:36 max_user_instances
   -rw-r--r-- 1 root root 0 Oct  9 09:36 max_user_watches
 ```
-##inotify-tools##
+## inotify-tools
 `https://github.com/rvoicilas/inotify-tools`
 
 inotify tools 提供接口访问系统的inotify  
@@ -22,11 +23,12 @@ inotify tools 提供了2个工具：
 inotifywait 监控文件，目录的变化  
 inotifywatch 统计文件系统的访问次数  
 
-##incron incrond incrontab##
+## incron incrond incrontab
 incrontab tables for driving inotify cron(incron)  
 incron是inotify的cron系统，与操作系统的cron一样，包含一个守护进程 incrond 和 tables incrontab  
 安装 yum install incron  
 编辑 incrontab -e  
+
 ```
 <path> <mask> <command>
 /home/root IN_ALL_EVENTS echo "$% $#"
@@ -134,3 +136,11 @@ Events:
 	delete_self	file or directory was deleted
 	unmount		file system containing file or directory unmounted
 ```
+
+## 问题
+
+`The user limit on the total number of inotify watches was reached or the kernel failed to allocate a needed resource`
+
+修改
+
+`sysctl -w fs.inotify.max_user_watches=xxx`
