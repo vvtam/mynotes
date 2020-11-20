@@ -76,3 +76,7 @@ db.表.findOne({})
 导出json
 
 mongoexport -u user -p password --host ip:port -d db -c collection --type=json -o xx.json
+
+
+
+mongoexport -u -p '' --authenticationDatabase=admin --host 192.168.254.243:8635 -d xx-c xx--type=json -o xxx.json

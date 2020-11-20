@@ -1,4 +1,4 @@
-#
+# 副本集，添加配置
 net:
   port: 27017
   bindIp: 127.0.0.1  # Enter 0.0.0.0,:: to bind to all IPv4 and IPv6 addresses or, alternatively, use the net.bindIpAll setting.
@@ -10,15 +10,3 @@ net:
   bindIp: 127.0.0.1  # Enter 0.0.0.0,:: to bind to all IPv4 and IPv6 addresses or, alternatively, use the net.bindIpAll setting.
 replication:
   replSetName: "rs0"
-#
-rs.initiate( {
-   _id : "rs0",
-   members: [
-      { _id: 0, host: "mongodb0.example.net:27017" },
-      { _id: 1, host: "mongodb1.example.net:27017" },
-      { _id: 2, host: "mongodb2.example.net:27017" }
-   ]
-})
-#
-rs.conf()
-rs.status()
