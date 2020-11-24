@@ -1,0 +1,24 @@
+@startuml
+
+rectangle "113.136.199.130" {
+rectangle "mongos<27017>"
+rectangle "shard1<27018>"
+rectangle "shard2<27019>"
+rectangle "confserver<20000>"
+}
+
+rectangle "113.136.199.147" {
+rectangle "mongos<27017 >"
+rectangle "shard1<27018 >"
+rectangle "shard2<27019 >"
+rectangle "confserver<20000 >"
+}
+
+rectangle "113.136.199.148" {
+rectangle "mongos< 27017>"
+rectangle "shard1< 27018>"
+rectangle "shard2< 27019>"
+rectangle "confserver< 20000>"
+}
+
+@enduml
