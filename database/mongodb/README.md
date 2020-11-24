@@ -80,3 +80,9 @@ mongoexport -u user -p password --host ip:port -d db -c collection --type=json -
 
 
 mongoexport -u -p '' --authenticationDatabase=admin --host 192.168.254.243:8635 -d xx-c xx--type=json -o xxx.json
+
+查询 
+
+gte，greater than and equal
+
+db.msg_history_for_statistics.find({"createTime" : {"$gte" :  ISODate("2020-11-01T00:00:00.000Z")}})
