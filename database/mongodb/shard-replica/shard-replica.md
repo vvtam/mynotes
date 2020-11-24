@@ -2,7 +2,7 @@
 
 
 
-![mongodb分片集群](.images/mongodb分片集群.png)
+![mongodb分片集群](images/mongodb分片集群.png)
 
 ## init replica
 
