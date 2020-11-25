@@ -86,3 +86,20 @@ mongoexport -u -p '' --authenticationDatabase=admin --host 192.168.254.243:8635 
 gte，greater than and equal
 
 db.msg_history_for_statistics.find({"createTime" : {"$gte" :  ISODate("2020-11-01T00:00:00.000Z")}})
+
+聚合查询
+
+```
+db.msg_history.aggregate([
+    {$match: {"createTime" : {"$gte" :  ISODate("2020-10-31T16:00:00.000Z")}}},
+    {
+        $project: {
+            time: { $dateToString: { format: "%Y-%m-%d", date: "$createTime" } },
+        }
+    },
+    { $group: { _id: "$time", count: { $sum: 1 } } },
+    { $sort: { "_id": -1 } },
+    { $project: { count: 1, 日期: { $toUpper: "$_id" }, _id: 0 } }
+])
+```
+
