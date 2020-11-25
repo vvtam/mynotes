@@ -139,3 +139,51 @@ pwd [-LP]
 ```
 
 Print the absolute pathname of the current working directory. If the -P option is supplied, the pathname printed will not contain symbolic links. If the -L option is supplied, the pathname printed may contain symbolic links. The return status is zero unless an error is encountered while determining the name of the current directory or an invalid option is supplied.
+
+## readonly
+```
+readonly [-aAf] [-p] [name[=value]] …
+```
+
+    Mark shell variables as unchangeable.
+    
+    Mark each NAME as read-only; the values of these NAMEs may not be
+    changed by subsequent assignment.  If VALUE is supplied, assign VALUE
+    before marking as read-only.
+    
+    Options:
+      -a	refer to indexed array variables
+      -A	refer to associative array variables
+      -f	refer to shell functions
+      -p	display a list of all readonly variables or functions,
+    		depending on whether or not the -f option is given
+    
+    An argument of `--' disables further option processing.
+    
+    Exit Status:
+    Returns success unless an invalid option is given or NAME is invalid.
+## return
+
+```
+return [n]
+```
+
+## shift
+
+```
+shift [n]
+```
+
+左移参数n位
+
+Shift the positional parameters to the left by n. The positional parameters from n+1 … `$#` are renamed to `$1` … `$#`-n. Parameters represented by the numbers `$#` to `$#`-n+1 are unset. n must be a non-negative number less than or equal to `$#`. If n is zero or greater than `$#`, the positional parameters are not changed. If n is not supplied, it is assumed to be 1. The return status is zero unless n is greater than `$#` or less than zero, non-zero otherwise.
+
+## test
+
+## times
+
+```
+times
+```
+
+Print out the user and system times used by the shell and its children. The return status is zero.
