@@ -5,6 +5,7 @@
 
 import netaddr
 import sys
+import re
 
 
 def main():
@@ -12,7 +13,8 @@ def main():
     with open(fname, 'r') as f:
         ls = f.readlines()
         for i in ls:
-            i = i.strip().split(' ')
+            # i = i.strip().split(' ')
+            i = re.split(',|-|;|:| ', i.strip())
             startip = i[0]
             endip = i[1]
             cidrs = netaddr.iprange_to_cidrs(startip, endip)
