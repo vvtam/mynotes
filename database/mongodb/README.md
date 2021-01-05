@@ -77,7 +77,7 @@ db.表.findOne({})
 
 mongoexport -u user -p password --host ip:port -d db -c collection --type=json -o xx.json
 
-
+mongoexport --host 10.13.6.24:27020 --authenticationDatabase hgdb -u auxmt -p 'pw' -d hgdb -c OrderRequest --query '{"responseBody":{"$regex":"\":\"202012"}}' --type=json -o output.json
 
 mongoexport -u -p '' --authenticationDatabase=admin --host 192.168.254.243:8635 -d xx-c xx--type=json -o xxx.json
 
