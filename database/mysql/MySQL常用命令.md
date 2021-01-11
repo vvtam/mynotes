@@ -83,4 +83,25 @@ DELETE FROM video_play_log WHERE dt < DATE_SUB(CURDATE(),INTERVAL 2 MONTH)
 CREATE TABLE newtable LIKE oldtable;
 INSERT newtable SELECT * FROM oldtable;  
 mysql -uxx -pxx dbname --force < xx.sql > xx.log 2>&1 #强制执行，记录错误
+
+create tables IF NOT EXISTS actor (
+    actor_id INT NOT NULL AUTO_INCREMENT,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    PRIMARY KEY ( actor_id )
+);
 ```
+
+## 索引
+
+```
+CREATE INDEX index_name ON table_name (column_name)
+CREATE UNIQUE INDEX index_name ON table_name (column_name)
+show index from table_name;
+show keys from table_name;
+
+drop index index_name on table_name;
+alter table table_name drop index index_name;
+alter table table_name drop primary key;
+```
+

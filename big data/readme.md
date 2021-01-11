@@ -16,6 +16,10 @@ Use Apache HBase™ when you need random, realtime read/write access to your Big
 hadoop dfsadmin -report
 hadoop fs -du -h /
 hdfs dfs -du -h /
+hdfs dfs -cat /data/clientSummary/2021-01-10/xx* | wc -l 统计文件行数
+hdfs dfs -count /data/* 统计大小
+hdfs dfs -ls /data/*
+hdfs dfs -get /data/
 ```
 
 hadoop 安全模式 ，磁盘不足会进入安全模式
