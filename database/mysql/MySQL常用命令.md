@@ -105,3 +105,55 @@ alter table table_name drop index index_name;
 alter table table_name drop primary key;
 ```
 
+## 触发器
+
+```
+MySQL [sakila]> CREATE TABLE pseudohash (
+    -> id int unsigned NOT NULL auto_increment,
+    -> url varchar(255) NOT NULL,
+    -> url_crc int unsigned NOT NULL DEFAULT 0,
+    -> PRIMARY KEY(id)
+    -> );
+Query OK, 0 rows affected (0.24 sec)
+
+MySQL [sakila]> DELIMITER //
+MySQL [sakila]> CREATE TRIGGER pseudohash_crc_ins BEFORE INSERT ON pseudohash FOR EACH ROW BEGIN
+    -> SET NEW.url_crc=crc32(NEW.url);
+    -> END;
+    -> //
+Query OK, 0 rows affected (0.12 sec)
+
+MySQL [sakila]> CREATE TRIGGER pseudohash_crc_upd BEFORE UPDATE ON pseudohash FOR EACH ROW BEGIN
+    -> SET NEW.url_crc=crc32(NEW.url);
+    -> END;
+    -> //
+Query OK, 0 rows affected (0.21 sec)
+
+MySQL [sakila]> DELIMITER ;
+MySQL [sakila]>
+MySQL [sakila]>
+MySQL [sakila]>
+MySQL [sakila]> insert into pseudohash (url) values ('http://www.mysql.com');
+Query OK, 1 row affected (0.02 sec)
+
+MySQL [sakila]> select * from pseudohash;
++----+----------------------+------------+
+| id | url                  | url_crc    |
++----+----------------------+------------+
+|  1 | http://www.mysql.com | 1560514994 |
++----+----------------------+------------+
+1 row in set (0.00 sec)
+
+MySQL [sakila]> update pseudohash set url='http://www.mysql.com/' where id=1;
+Query OK, 1 row affected (0.05 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MySQL [sakila]> select * from pseudohash;
++----+-----------------------+------------+
+| id | url                   | url_crc    |
++----+-----------------------+------------+
+|  1 | http://www.mysql.com/ | 1558250469 |
++----+-----------------------+------------+
+1 row in set (0.00 sec)
+```
+
