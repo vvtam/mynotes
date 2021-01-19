@@ -7,14 +7,14 @@ After=network.target
 [Service]
 User=mongod
 Group=mongod
-Environment="OPTIONS=-f /etc/mongod.conf"
-EnvironmentFile=-/etc/sysconfig/mongod
-ExecStart=/usr/bin/mongod $OPTIONS
-ExecStartPre=/usr/bin/mkdir -p /var/run/mongodb
-ExecStartPre=/usr/bin/chown mongod:mongod /var/run/mongodb
-ExecStartPre=/usr/bin/chmod 0755 /var/run/mongodb
+Environment="OPTIONS=-f /usr/local/mongodb/mongod.conf"
+# EnvironmentFile=-/etc/sysconfig/mongod
+ExecStart=/usr/local/mongodb/bin/mongod $OPTIONS
+# ExecStartPre=/usr/bin/mkdir -p /var/run/mongodb
+ExecStartPre=/usr/bin/chown -R mongod:mongod /usr/local/mongodb/
+ExecStartPre=/usr/bin/chmod -R 0755 /usr/local/mongodb
 PermissionsStartOnly=true
-PIDFile=/var/run/mongodb/mongod.pid
+PIDFile=/usr/local/mongodb/mongod.pid
 Type=forking
 # file size
 LimitFSIZE=infinity
