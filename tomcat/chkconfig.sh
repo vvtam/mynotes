@@ -19,6 +19,7 @@
 # Initially forked from: gist.github.com/miglen/5590986
 
 export JAVA_OPTS="-Xms1g -Xmx2g"
+# export JAVA_OPTS="-server -Xms4096m -Xmx8192m -XX:PermSize=2048m  -XX:MaxPermSize=4096m"
 export JAVA_HOME="/web/soft/jdk1.8.0_162/"
 export JRE_HOME="/web/soft/jdk1.8.0_162//jre"
 export CATALINA_HOME="/web/soft/tomcat8-bi-8083" #bin, lib dir
