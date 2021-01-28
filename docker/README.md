@@ -94,3 +94,30 @@ CMD command param1 param2在/bin/sh中执行，提供给需要交互的应用；
 CMD["param1"，"param2"]提供给ENTRYPOINT的默认参数。
 ```
 
+## namespace
+
+进程命名空间
+
+网络命名空间
+
+`brctl show # brctl - ethernet bridge administration`
+
+ipc命名空间 （Interprocess Communication，IPC）
+
+挂载命名空间，chroot
+
+UTS命名空间，UNIX Time-sharing system
+
+用户命名空间
+
+## 控制组，CGroups
+
+内存，cpu，磁盘IO
+
+资源，优先级，资源审计，隔离，控制
+
+## 联合文件系统，UnionFS
+
+## Linux网络虚拟化
+
+veth pair，本地虚拟网卡docker0 <--> 容器
