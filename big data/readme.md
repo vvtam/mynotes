@@ -34,6 +34,10 @@ The Apache Hive ™ data warehouse software facilitates reading, writing, and ma
 
 数据仓库的架构包含多个层。顶层是通过报告、分析和数据挖掘工具呈现结果的前端客户端。中间层包括用于访问和分析数据的分析引擎。架构的底层是加载和存储数据的数据库服务器。数据使用两种不同类型的方式存储：1) 经常访问的数据存储在最快的存储装置中（例如，SSD 驱动器），2) 不经常访问的数据存储在便宜的对象存储区中，例如 Amazon S3。数据仓库将自动确保经常访问的数据被移进“快速”存储以便优化查询速度。
 
+### hive metastore服务
+
+nohup hive --service metastore & #默认端口9083
+
 ## ZooKeeper-分布式协调系统
 
 ZooKeeper is a centralized service for maintaining configuration information, naming, providing distributed synchronization, and providing group services. All of these kinds of services are used in some form or another by distributed applications. Each time they are implemented there is a lot of work that goes into fixing the bugs and race conditions that are inevitable. Because of the difficulty of implementing these kinds of services, applications initially usually skimp on them, which make them brittle in the presence of change and difficult to manage. Even when done correctly, different implementations of these services lead to management complexity when the applications are deployed.
@@ -49,6 +53,12 @@ Flume is a distributed, reliable, and available service for efficiently collecti
 like [ActiveMQ](http://activemq.apache.org/) or [RabbitMQ](https://www.rabbitmq.com/)？
 
 Apache Kafka is an open-source distributed event streaming platform used by thousands of companies for high-performance data pipelines, streaming analytics, data integration, and mission-critical applications.
+
+## presto
+
+launcher run #前台运行
+
+launcher start #后台运行
 
 ## 常用端口
 

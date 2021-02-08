@@ -1,3 +1,13 @@
+## 环境
+
+export ALL_PROXY=http://192.168.6.151:51080
+
+export HTTP_PROXY=http://192.168.6.151:51080
+
+export HTTPS_PROXY=http://192.168.6.151:51080
+
+minikube start --driver=docker --docker-env HTTPS_PROXY
+
 ## 创建镜像
 
 ### 基于镜像的容器，commit
@@ -96,19 +106,19 @@ CMD["param1"，"param2"]提供给ENTRYPOINT的默认参数。
 
 ## namespace
 
-进程命名空间
+进程命名空间，Precess ID, pid
 
-网络命名空间
+网络命名空间, Network, net
 
 `brctl show # brctl - ethernet bridge administration`
 
-ipc命名空间 （Interprocess Communication，IPC）
+ipc命名空间 （Inter-process Communication，IPC）
 
-挂载命名空间，chroot
+挂载命名空间，Mount, mnt, chroot
 
-UTS命名空间，UNIX Time-sharing system
+UTS命名空间，UNIX Time-sharing system，看见不同的主机名和域名
 
-用户命名空间
+用户命名空间, User ID, user
 
 ## 控制组，CGroups
 
