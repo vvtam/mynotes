@@ -1,4 +1,9 @@
 ## 基本用法
+
+crond执行的任务输出会通过邮件发送给用户，所以需要自己重定向，比如nohup
+
+`*/1  *  *  *  * root cd /work/dir && /bin/bash /work/dir/check-message-api.sh 1>>nohup.out 2>&1`
+
 ```
 */1 * * * * root /usr/bin/flock -xn /tmp/npss3.tmp /usr/local/bin/webbench -c 200 -t 60 "http://192.168.95.76:51002/nl.ts?id=RANDOM&ndi=device_id001&nn_from_epg_server=1"
 */1 * * * * root cd /root/nn_npss.3.8.30/201002.run/log/ && cat log_info* > temp && grep monitor ./temp >> ./xxx.txt
