@@ -9,6 +9,8 @@ Environment="JRE_HOME=/web/soft/jdk1.8.0_171/jre/"
 Environment="CATALINA_BASE=/web/soft/apache-tomcat-8.5.33/"
 Environment="CATALINA_HOME=/web/soft/apache-tomcat-8.5.33/"
 Environment="CLASSPATH=.:/web/soft/jdk1.8.0_171/lib/dt.jar:/web/soft/jdk1.8.0_171/lib/tools.jar:/web/soft/jdk1.8.0_171/jre/lib"
+# Environment='CATALINE_OPTS=-Xms128M -Xmx765M -server -XX:+UseParallelGC'
+# Environment='JAVA_OPTS=-Djava.awt.haedless=true -Djava.security.egd=file:/dev/./urandom'
 RestartSec=10
 Restart=always
 ExecStart=/web/soft/apache-tomcat-8.5.33/bin/startup.sh
