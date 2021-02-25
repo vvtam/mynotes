@@ -30,9 +30,9 @@ StandardError=inherit
 # Specifies the maximum file descriptor number that can be opened by this process
 LimitNOFILE=100000
 
+# sysctl -w vm.max_map_count=300000
 # max file descriptors [65535] for elasticsearch process is too low, increase to at least [65536]
 # max virtual memory areas vm.max_map_count [65530] is too low, increase to at least [262144]
-# /etc/sysctl.d/elasticsearch.conf
 
 # Specifies the maximum number of processes
 LimitNPROC=100000
