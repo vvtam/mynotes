@@ -1,0 +1,65 @@
+[Unit]
+Description=Elasticsearch
+Documentation=https://www.elastic.co
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+# Type=notify
+RuntimeDirectory=elasticsearch
+PrivateTmp=true
+Environment=JAVA_HOME=/web/soft/jdk1.8.0_281
+Environment=JRE_HOME=/web/soft/jdk1.8.0_281/jre
+Environment=CLASSPATH=.:/web/soft/jdk1.8.0_281/lib/dt.jar:/web/soft/jdk1.8.0_281/lib/tools.jar:/web/soft/jdk1.8.0_281/jre/lib
+Environment=ES_HOME=/web/soft/elasticsearch
+Environment=ES_PATH_CONF=/web/soft/elasticsearch/config
+Environment=PID_DIR=/web/soft/elasticsearch
+Environment=ES_SD_NOTIFY=true
+
+WorkingDirectory=/web/soft/elasticsearch
+
+User=elasticsearch
+Group=elasticsearch
+
+ExecStart=/web/soft/elasticsearch/bin/elasticsearch -p ${PID_DIR}/elasticsearch.pid --quiet
+
+StandardOutput=journal
+StandardError=inherit
+
+# Specifies the maximum file descriptor number that can be opened by this process
+LimitNOFILE=100000
+
+# max file descriptors [65535] for elasticsearch process is too low, increase to at least [65536]
+# max virtual memory areas vm.max_map_count [65530] is too low, increase to at least [262144]
+# /etc/sysctl.d/elasticsearch.conf
+
+# Specifies the maximum number of processes
+LimitNPROC=100000
+
+# Specifies the maximum size of virtual memory
+LimitAS=infinity
+
+# Specifies the maximum file size
+LimitFSIZE=infinity
+
+# Disable timeout logic and wait until process is stopped
+TimeoutStopSec=0
+
+# SIGTERM signal is used to stop the Java process
+KillSignal=SIGTERM
+
+# Send the signal only to the JVM rather than its control group
+KillMode=process
+
+# Java process is never killed
+SendSIGKILL=no
+
+# When a JVM receives a SIGTERM signal it exits with code 143
+SuccessExitStatus=143
+
+# Allow a slow startup before the systemd notifier module kicks in to extend the timeout
+TimeoutStartSec=75
+
+[Install]
+WantedBy=multi-user.target

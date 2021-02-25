@@ -1,0 +1,20 @@
+cluster.name: myes                                        # 集群名称
+node.name: master                                         # 节点名称
+node.master: true                                         # 指定该节点是否有资格被选举成为master节点
+node.data: true                                           # 允许该节点存储数据(默认开启)
+path.data: /web/data/elasticsearch                        # 数据路径
+path.logs: /web/data/elasticsearch/logs                   # 日志路径
+network.host: 0.0.0.0                                     # 监听地址
+http.port: 9200                                           # 服务的端口，9300为集群服务的端口
+bootstrap.memory_lock: false
+bootstrap.system_call_filter: false
+discovery.zen.ping.unicast.hosts: ["11.136.200.109","11.136.200.110","11.136.200.111"]
+discovery.zen.minimum_master_nodes: 1
+thread_pool:
+  search:
+    size: 1000
+    queue_size: 10000
+    min_queue_size: 10000
+    max_queue_size: 10000
+    auto_queue_frame_size: 2000
+    target_response_time: 1s
