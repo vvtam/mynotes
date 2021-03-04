@@ -1,5 +1,6 @@
-#cobbler install#
-##安装环境##
+# cobbler install
+## 安装环境
+
 ```
 cat /etc/redhat-release
 CentOS Linux release 7.2.1511 (Core)
@@ -13,25 +14,29 @@ cobbler-2.6.11-1.el7.x86_64
 cobbler在epel源
 可以用阿里云的repo源
 ```
-##安装包##
+## 安装包
+
 ```
 yum -y install httpd xinetd tftp-server dnsmasq rsync syslinux
 yum -y install cobbler fence-agents pykickstart
 ```
-##配置##
-###关闭selinux###
+## 配置
+### 关闭selinux
+
 ```
 vim /etc/selinux/config
 SELINUX=disabled
 重启生效
 ```
-###关闭firewall（iptables）或者配置端口###
+### 关闭firewall（iptables）或者配置端口
+
 ```
 systemctl stop firewalld
 systemctl disable firewalld
 如果不关闭请添加相应规则，开放端口
 ```
-###配置cobbler###
+### 配置cobbler
+
 ```
 安装系统后默认密码
 ```
