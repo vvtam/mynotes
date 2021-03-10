@@ -24,3 +24,6 @@ Default options are read from the following files in the given order:
 The following groups are read: mysqld server mysqld-5.7
 ```
 
+tac nohup.out | grep -m 10 -C 10 "29072141723"
+
+-m 匹配多少条后停止
