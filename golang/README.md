@@ -242,3 +242,66 @@ dict := map[string]string{"Red": "#da1337", "Orange": "#e95a22"}
 
 ### 5.4.4 多态
 
+## 5.5 嵌入类型
+
+Go 语言允许用户扩展或者修改已有类型的行为。这个功能对代码复用很重要，在修改已有
+类型以符合新类型的时候也很重要。这个功能是通过嵌入类型（type embedding）完成的
+
+```
+type user struct {
+        name  string
+        email string
+}
+
+type admin struct {
+        user  // Embedded Type
+        level string
+}
+```
+
+由于内部类型的提升，内部类型实现的接口会自动提升到外部类型。这意味着由于内部类型的
+实现，外部类型也同样实现了这个接口
+
+```
+type notifier interface {
+	notify()
+}
+
+// user defines a user in the program.
+type user struct {
+	name  string
+	email string
+}
+
+// notify implements a method that can be called via
+// a value of type user.
+func (u *user) notify() {
+	fmt.Printf("Sending user email to %s<%s>\n",
+		u.name,
+		u.email)
+}
+
+// admin represents an admin user with privileges.
+type admin struct {
+	user
+	level string
+}
+
+// main is the entry point for the application.
+func main() {
+	// Create an admin user.
+	ad := admin{
+		user: user{
+			name:  "john smith",
+			email: "john@yahoo.com",
+		},
+		level: "super",
+	}
+
+	// Send the admin user a notification.
+	// The embedded inner type's implementation of the
+	// interface is "promoted" to the outer type.
+	sendNotification(&ad)
+}
+```
+

@@ -1,0 +1,51 @@
+#!/bin/sh
+
+JAVA_HOME="/web/soft/jdk1.8.0_261"
+JRE_HOME="/web/soft/jdk1.8.0_261/jre"
+
+SERVICE_NAME=xxl-job-admin
+PATH_TO_JAR=/web/soft/xxl-job-admin-9002
+JAR_NAME=xxl-job-admin-9002.jar
+
+SCRIPT_USAGE="Usage: $0 {\e[00;32mstart\e[00m|\e[00;31mstop\e[00m|\e[00;31mrestart\e[00m}"
+SERVICE_PID=$(ps -fe | grep $JAR_NAME | grep -v grep | tr -s " " | cut -d" " -f2)
+
+cd $PATH_TO_JAR
+case $1 in
+    start)
+        echo "Starting $SERVICE_NAME ..."
+        if [ -z $SERVICE_PID ]; then
+            nohup $JRE_HOME/bin/java -jar $JAR_NAME >> nohup.out 2>&1 &
+            echo "$SERVICE_NAME started ..."
+        else
+            echo "$SERVICE_NAME is already running ..."
+        fi
+    ;;
+    stop)
+        if [ -n $SERVICE_PID ]; then
+            echo "$SERVICE_NAME stoping ..."
+            kill -9 $SERVICE_PID;
+            echo "$SERVICE_NAME stopped ..."
+        else
+            echo "$SERVICE_NAME is not running ..."
+        fi
+    ;;
+    restart)
+        if [ -z $SERVICE_PID ]; then
+            echo "$SERVICE_NAME is not running...";
+            echo "$SERVICE_NAME starting ..."
+            nohup $JRE_HOME/bin/java -jar $JAR_NAME >> nohup.out 2>&1 &
+            echo "$SERVICE_NAME started ..."
+        else
+            echo "$SERVICE_NAME stoping...";
+            kill -9 $SERVICE_PID;
+            echo "$SERVICE_NAME stopped ...";
+            echo "$SERVICE_NAME starting ..."
+            nohup $JRE_HOME/bin/java -jar $JAR_NAME >> nohup.out 2>&1 &
+            echo "$SERVICE_NAME started ..."
+        fi
+    ;;
+    *)
+        echo -e $SCRIPT_USAGE
+    ;;
+esac
