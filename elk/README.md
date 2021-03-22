@@ -19,6 +19,12 @@ Elasticsearch 是一个分布式、RESTful 风格的搜索和数据分析引擎�
 ```
 curl -XGET 'http://localhost:9200/'
 curl -XGET 'http://localhost:9200/_cluster/health?pretty'
+# 分片状态查看
+curl -XGET 'http://localhost:9200/_cat/shards?v'
+# 查看unsigned 的原因
+curl -GET 'http://localhost:9200/_cluster/allocation/explain'
+# 查看集群中不同节点、不同索引的状态
+curl -GET 'http://localhost:9200/_cat/shards?h=index,shard,prirep,state,unassigned.reason'
 ```
 
 
@@ -26,6 +32,8 @@ curl -XGET 'http://localhost:9200/_cluster/health?pretty'
 ## Logstash
 
 Logstash 是免费且开放的服务器端数据处理管道，能够从多个来源采集数据，转换数据，然后将数据发送到您最喜欢的“存储库”中。
+
+`/web/soft/logstash-6.5.4/bin/logstash -f /web/soft/elasticsearch-6.5.4/config-mysql/mysql_content.conf`
 
 ## Beat
 
