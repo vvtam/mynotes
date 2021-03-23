@@ -103,3 +103,8 @@ db.msg_history.aggregate([
 ])
 ```
 
+The following example returns various size values in kilobytes:
+
+```
+db.stats(1024)
+```
