@@ -51,40 +51,47 @@ export tomcat_root=$KYLIN_HOME/tomcat
 export hive_dependency=$HIVE_HOME/conf:$HIVE_HOME/lib/*:$HIVE_HOME/hcatalog/share/hcatalog/hive-hcatalog-core-2.1.1.jar
 ```
 
-修改 bin/kylin.sh
+~~修改 bin/kylin.sh~~
 
-`export HBASE_CLASSPATH_PREFIX=${tomcat_root}/bin/bootstrap.jar:${tomcat_root}/bin/tomcat-juli.jar:${tomcat_root}/lib/*:$hive_dependency:$HBASE_CLASSPATH_PREFIX`
+~~`export HBASE_CLASSPATH_PREFIX=${tomcat_root}/bin/bootstrap.jar:${tomcat_root}/bin/tomcat-juli.jar:${tomcat_root}/lib/*:$hive_dependency:$HBASE_CLASSPATH_PREFIX~~`
 
 修改配置kylin.properties
 
 ```
-# hbase上存储kylin元数据
-kylin.metadata.url=kylin_metadata@hbase
-# hdfs上kylin工作目录
+###hbase上存储kylin元数据
+#kylin.metadata.url=kylin_metadata@hbase
+###hdfs上kylin工作目录
 kylin.env.hdfs-working-dir=/kylin   
-# kylin主节点模式，从节点的模式为query
-kylin.server.mode=all  
+#kylin.env=DEV
+#kylin.env.zookeeper-base-path=/kylin
+###kylin主节点模式，从节点的模式为query，只有这一点不一样
+kylin.server.mode=all
 # 集群信息
-kylin.rest.servers=node01:7070,node02:7070,node03:7070
+kylin.rest.servers=App-1:7070,App-2:7070,App-3:7070
 # 时区
 kylin.web.timezone=GMT+8
 kylin.job.retry=2
 kylin.job.mapreduce.default.reduce.input.mb=500
 kylin.job.concurrent.max.limit=10
 kylin.job.yarn.app.rest.check.interval.seconds=10
-# build cube 产生的Hive中间表存放的数据库
+###build cube 产生的Hive中间表存放的数据库
 kylin.job.hive.database.for.intermediatetable=kylin_flat_db
-# 不采用压缩
+###不采用压缩
 kylin.hbase.default.compression.codec=none 
 kylin.job.cubing.inmem.sampling.percent=100
 kylin.hbase.regin.cut=5
 kylin.hbase.hfile.size.gb=2
-# 定义kylin用于MR jobs的job.jar包和hbase的协处理jar包，用于提升性能(添加项)
+## hbase集群填写hadoop集群信息
+kylin.hbase.cluster.fs=hdfs://GS:8020
+
+###定义kylin用于MR jobs的job.jar包和hbase的协处理jar包，用于提升性能(添加项)
 kylin.job.jar=/web/soft/apache-kylin-2.6.4-bin/lib/kylin-job-2.6.4.jar
 kylin.coprocessor.local.jar=/web/soft/apache-kylin-2.6.4-bin/lib/kylin-coprocessor-2.6.4.jar
 ```
 
 拷贝 hadoop配置文件core-site.xml，hdfs-site.xml到kylin配置目录
+
+拷贝 hive，hbase配置文件到响应的hive hbase配置目录
 
 启动，会检查各种依赖，会提示各种问题
 
@@ -99,3 +106,22 @@ bin/kylin.sh start
 ```
 bin/sample.sh
 ```
+
+### 其它
+
+如果本机有hbase冲突可以拷贝一份新的，然后把路径加入到 bin/kylin.sh 开头
+
+```
+export HBASE_HOME=/web/soft/apache-kylin-2.6.4-bin/hbase-1.2.5
+export PATH=$PATH:$HBASE_HOME/bi
+```
+
+如果hive设置了系统环境变量，启动还是报错，可以修改bin/find-hive-dependency.sh 文件，比如：
+
+```
+hive_conf_path=
+hive_exec_path=
+```
+
+
+
