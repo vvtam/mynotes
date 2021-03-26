@@ -1,6 +1,12 @@
-# Hadoop
+## Hadoop
 
-zookeeper, hadoop,hbase
+The project includes these modules:
+
+- **Hadoop Common**: The common utilities that support the other Hadoop modules.
+- **Hadoop Distributed File System (HDFS™)**: A distributed file system that provides high-throughput access to application data.
+- **Hadoop YARN**: A framework for job scheduling and cluster resource management.
+- **Hadoop MapReduce**: A YARN-based system for parallel processing of large data sets.
+- **[Hadoop Ozone](https://hadoop.apache.org/ozone/)**: An object store for Hadoop.
 
 数据库 Database (Oracle, Mysql, PostgreSQL)主要用于**事务处理**，数据仓库 Datawarehouse (Amazon Redshift, Hive)主要用于**数据分析**。
 
@@ -55,6 +61,10 @@ like [ActiveMQ](http://activemq.apache.org/) or [RabbitMQ](https://www.rabbitmq.
 Apache Kafka is an open-source distributed event streaming platform used by thousands of companies for high-performance data pipelines, streaming analytics, data integration, and mission-critical applications.
 
 ## presto
+
+Presto is an open source distributed SQL query engine for running interactive analytic queries against data sources of all sizes ranging from gigabytes to petabytes.
+
+Presto was designed and written from the ground up for interactive analytics and approaches the speed of commercial data warehouses while scaling to the size of organizations like Facebook.
 
 launcher run #前台运行
 
