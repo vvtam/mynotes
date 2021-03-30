@@ -10,13 +10,9 @@ The project includes these modules:
 
 数据库 Database (Oracle, Mysql, PostgreSQL)主要用于**事务处理**，数据仓库 Datawarehouse (Amazon Redshift, Hive)主要用于**数据分析**。
 
-## HBase-数据库
+### hdfs
 
-[Apache](https://www.apache.org/) HBase™ is the [Hadoop](https://hadoop.apache.org/) database, a distributed, scalable, big data store.
-
-Use Apache HBase™ when you need random, realtime read/write access to your Big Data.
-
-## hdfs (*Hadoop Distributed File System*)
+*Hadoop Distributed File System*
 
 ```
 hadoop dfsadmin -report
@@ -32,7 +28,31 @@ hadoop 安全模式 ，磁盘不足会进入安全模式
 
 hdfs dfsadmin -safemode enter | leave | get | wait
 
-## hive-数据仓库
+#### namenode
+
+hdfs name-node                http/50070  node/9000               管理数据
+
+#### datanode
+
+hdfs data-node                  http/50075  node/50010 9000   存储数据
+
+### yarn
+
+#### ResourceManager
+
+yarn resource-manager   http/8088
+
+#### NodeManager
+
+yarn node-manager          http/8042  8082  8088
+
+## HBase-数据库
+
+[Apache](https://www.apache.org/) HBase™ is the [Hadoop](https://hadoop.apache.org/) database, a distributed, scalable, big data store.
+
+Use Apache HBase™ when you need random, realtime read/write access to your Big Data.
+
+## Hive-数据仓库
 
 The Apache Hive ™ data warehouse software facilitates reading, writing, and managing large datasets residing in distributed storage using SQL. Structure can be projected onto data already in storage. A command line tool and JDBC driver are provided to connect users to Hive.
 
@@ -40,9 +60,15 @@ The Apache Hive ™ data warehouse software facilitates reading, writing, and ma
 
 数据仓库的架构包含多个层。顶层是通过报告、分析和数据挖掘工具呈现结果的前端客户端。中间层包括用于访问和分析数据的分析引擎。架构的底层是加载和存储数据的数据库服务器。数据使用两种不同类型的方式存储：1) 经常访问的数据存储在最快的存储装置中（例如，SSD 驱动器），2) 不经常访问的数据存储在便宜的对象存储区中，例如 Amazon S3。数据仓库将自动确保经常访问的数据被移进“快速”存储以便优化查询速度。
 
+hive存储元数据到本地内嵌的derby数据库中，本地mysql，远程mysql
+
 ### hive metastore服务
 
 nohup hive --service metastore & #默认端口9083
+
+### hive hiveserver2 服务
+
+10000 端口 使用beeline连接
 
 ## ZooKeeper-分布式协调系统
 
@@ -72,16 +98,8 @@ launcher start #后台运行
 
 ## 常用端口
 
-hdfs 存储
 
-hdfs name-node                http/50070  node/9000               管理数据
 
-hdfs data-node                  http/50075  node/50010 9000   存储数据
 
-yarn 资源管理，任务调度
-
-yarn resource-manager   http/8088
-
-yarn node-manager          http/8042  8082  8088
 
  
