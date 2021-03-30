@@ -46,6 +46,8 @@ yarn resource-manager   http/8088
 
 yarn node-manager          http/8042  8082  8088
 
+### MapReduce 
+
 ## HBase-数据库
 
 [Apache](https://www.apache.org/) HBase™ is the [Hadoop](https://hadoop.apache.org/) database, a distributed, scalable, big data store.

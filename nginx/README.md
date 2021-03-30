@@ -11,7 +11,7 @@ server_tokens on;
 Context:	http, server, location
 ```
 
-## 修改源代码
+### 修改源代码
 
 建议按需修改头文件
 
@@ -32,3 +32,4 @@ src/http/ngx_http_special_response.c:"<hr><center>" NGINX_VER "</center>" CRLF
 src/http/ngx_http_special_response.c:"<hr><center>" NGINX_VER_BUILD "</center>" CRLF
 ```
 
+## POST 静态页面405
