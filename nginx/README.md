@@ -33,3 +33,38 @@ src/http/ngx_http_special_response.c:"<hr><center>" NGINX_VER_BUILD "</center>" 
 ```
 
 ## POST 静态页面405
+
+## location
+
+```
+Syntax:	location [ = | ~ | ~* | ^~ ] uri { ... }
+location @name { ... }
+Default:	—
+Context:	server, location
+```
+
+```
+location = / {
+    [ configuration A ]
+}
+
+location / {
+    [ configuration B ]
+}
+
+location /documents/ {
+    [ configuration C ]
+}
+
+location ^~ /images/ {
+    [ configuration D ]
+}
+
+正则不区分大小写， ~ 区分大小写
+location ~* \.(gif|jpg|jpeg)$ {
+    [ configuration E ]
+}
+```
+
+The “/” request will match configuration A, the “/index.html” request will match configuration B, the “/documents/document.html” request will match configuration C, the “/images/1.gif” request will match configuration D, and the “/documents/1.jpg” request will match configuration E.
+
