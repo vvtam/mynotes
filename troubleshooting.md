@@ -8,7 +8,7 @@ https://access.redhat.com/solutions/18035
 - Network traffic using Transmission Control Protocol (TCP)
 - Network with load balancer (such as BigIP F5) or a router which performs Network Address Translation (NAT)
 
-客户端发送了SYN包，服务器收到后没有回复，客户端会重发，直到*`net.ipv4.tcp_syn_retries`*
+客户端发送了SYN包，服务器收到后没有回复，客户端会重发，直到`net.ipv4.tcp_syn_retries`
 
 SYN packets are usually retransmitted at times 1s, 3s, 7s, 15, 31s.
 
