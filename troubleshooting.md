@@ -62,3 +62,7 @@ tcp_synack_retries - INTEGER
 ```
 
 After transmitting the SYN+ACK, the SYN Queue waits for an ACK packet from the client - the last packet in the three-way-handshake. All received ACK packets must first be matched against the fully established connection table, and only then against data in the relevant SYN Queue. On SYN Queue match, the kernel removes the item from the SYN Queue, happily creates a fully fledged connection (specifically: [`struct inet_sock`](https://elixir.free-electrons.com/linux/v4.14.12/source/include/net/inet_sock.h#L183)), and adds it to the Accept Queue.
+
+### netstat显示源ip和ss显示不一样
+
+netstat某个版本显示的源ip，和ss，tcpdump抓包显示的源ip不一样，特别是ipv4的最后一位
