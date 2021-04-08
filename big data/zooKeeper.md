@@ -1,3 +1,9 @@
+## 环境变量
+
+加入到bin/zkEnv.sh既可，或者全局加到/etc/profile
+
+JAVA_HOME=/web/soft/jdk1.8.0_281
+
 ## 集群
 
 ```
