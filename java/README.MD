@@ -26,5 +26,7 @@ java -Xms8096m -Xmx8096m -XX:+UseG1GC -Xloggc:./gc.log -XX:+PrintGCDetails -XX:+
 
 ```
 
+`java -Xms8096m -Xmx8096m -XX:+UseG1GC -Xloggc:/web/soft/jar/gc.log -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/web/soft/jar/heapdump.hprof -Dserver.undertow.worker-threads=1000 -Dspring.profiles.active=deploy -jar $pwds/worker.jar`
+
 ### 使用 MAT 分析 jvm heap
 
