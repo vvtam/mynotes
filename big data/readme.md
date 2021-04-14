@@ -46,13 +46,15 @@ yarn resource-manager   http/8088
 
 yarn node-manager          http/8042  8082  8088
 
-### MapReduce 
+### MapReduce
 
 ## HBase-数据库
 
 [Apache](https://www.apache.org/) HBase™ is the [Hadoop](https://hadoop.apache.org/) database, a distributed, scalable, big data store.
 
 Use Apache HBase™ when you need random, realtime read/write access to your Big Data.
+
+列数据库
 
 ## Hive-数据仓库
 
@@ -98,9 +100,15 @@ launcher run #前台运行
 
 launcher start #后台运行
 
-## 常用端口
+## spark
 
+Spark不同于MapReduce，计算的中间结果可以保存到内存中，不用读写HDFS；spark还提出了RDD（弹性分布式数据集）概念
 
+## Pig
+
+## Impala
+
+## Spark SQL
 
 
 
