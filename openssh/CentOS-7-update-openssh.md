@@ -26,24 +26,25 @@ yum install glibc-devel glibc-headers gcc gcc-c++ zlib zlib-devel pam-devel pam 
 ```
 https://matt.ucc.asn.au/dropbear/dropbear.html
 
-./configure --prefix=/usr/local/dropbear
-make && make install
+./configure --prefix=/usr/local/dropbear/ && make -j $(nproc) && sudo make install
 
-mkdir /etc/dropbear/
-dropbearkey -t rsa -f /etc/dropbear/dropbear_rsa_host_key
-dropbearkey -t dss -f /etc/dropbear/dropbear_dss_host_key
-dropbear -p :54321
+sudo mkdir /etc/dropbear/ && \
+sudo /usr/local/dropbear/bin/dropbearkey -t dss -f /etc/dropbear/dropbear_dss_host_key && \
+sudo /usr/local/dropbear/bin/dropbearkey -t rsa -f /etc/dropbear/dropbear_rsa_host_key && \
+sudo /usr/local/dropbear/bin/dropbearkey -t ecdsa -f /etc/dropbear/dropbear_ecdsa_host_key && \
+sudo /usr/local/dropbear/bin/dropbearkey -t ed25519 -f /etc/dropbear/dropbear_ed25519_host_key && \
+sudo /usr/local/dropbear/sbin/dropbear -p :12321
 ```
 ## 编译安装OpenSSH
 ```
-./configure --prefix=/usr  --sysconfdir=/etc/ssh  --with-md5-passwords  --with-pam  --with-zlib --with-ssh1
+./configure --prefix=/usr  --sysconfdir=/etc/ssh  --with-md5-passwords  --with-pam  --with-zlib --with-tcp-wrappers --without-hardening --with-ssl-dir=/usr/local/openssl
 
-make
+make -j $(nproc)
 #备份之前的配置文件
 mv /etc/ssh /etc/ssh-bak
 #移除之前yum安装的OpenSSH,（如果有），主要是解决systemd和service会冲突
 yum remove openssh
-make install
+sudo make install
 #不移除，可以mask之前的sshd服务
 systemctl stop sshd && systemctl disable sshd && systemctl mask sshd
 
