@@ -64,6 +64,11 @@ location ^~ /images/ {
 location ~* \.(gif|jpg|jpeg)$ {
     [ configuration E ]
 }
+注意末尾的"/"
+location /dir1/dir2/dir3/ {
+  proxy_pass http://url/dir1/dir2/dir3/;
+}
+
 ```
 
 The “/” request will match configuration A, the “/index.html” request will match configuration B, the “/documents/document.html” request will match configuration C, the “/images/1.gif” request will match configuration D, and the “/documents/1.jpg” request will match configuration E.
