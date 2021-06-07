@@ -71,5 +71,17 @@ location /dir1/dir2/dir3/ {
 
 ```
 
-The “/” request will match configuration A, the “/index.html” request will match configuration B, the “/documents/document.html” request will match configuration C, the “/images/1.gif” request will match configuration D, and the “/documents/1.jpg” request will match configuration E.
+The “/” request will match configuration A, the “/index.html” request will match configuration B, the “/documents/document.html” request will match configuration C, the “/images/1.gif” request will match configuration D, and the “/documents/1.jpg” request will match configuration E
 
+location匹配步骤：
+
+1. 前缀字符串匹配URI(`~`和`~*`是正则，`=`、`^~`及`无修饰符`都是前缀字符串)；
+2. 如果匹配到`=`号修饰的字符串，则终止匹配，进入该location执行；
+3. 如果没有`=`号修饰的字符串，则继续匹配普通前缀字符串(`^~`和`无修饰符`)；
+4. 如果匹配到`^~`或`无修饰符`的URI，则查看最长的那一个是否用`^~`修饰；
+5. 如果最长的那个有用`^~`修饰，则终止匹配；
+6. 如果这个“最长”的匹配没有用`^~`修饰(`无修饰符`)，则暂时存储下来，继续进行后面的正则匹配；
+7. 匹配到第一个正则表达式后终止匹配，使用对应的location；
+8. 如果没有匹配到正则表达式，则使用之前存储的前缀字符串对应的location。
+
+正则出现的顺序很重要，越精细的正则匹配应该放到前面
