@@ -19,3 +19,8 @@ config set xxx yyy
 
 get info
 
+select num #选择库
+
+flushdb #当前库
+
+flushall #所有库
