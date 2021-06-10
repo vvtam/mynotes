@@ -27,7 +27,133 @@ curl -GET 'http://localhost:9200/_cluster/allocation/explain'
 curl -GET 'http://localhost:9200/_cat/shards?h=index,shard,prirep,state,unassigned.reason'
 ```
 
+### 重启elasticsearch集群
 
+1. **Disable shard allocation.**
+
+   When you shut down a data node, the allocation process waits for `index.unassigned.node_left.delayed_timeout` (by default, one minute) before starting to replicate the shards on that node to other nodes in the cluster, which can involve a lot of I/O. Since the node is shortly going to be restarted, this I/O is unnecessary. You can avoid racing the clock by [disabling allocation](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-cluster.html#cluster-routing-allocation-enable) of replicas before shutting down [data nodes](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-node.html#data-node):
+
+   ```console
+   PUT _cluster/settings
+   
+   curl -X PUT "localhost:9200/_cluster/settings?pretty" -H 'Content-Type: application/json' -d'
+   {
+     "persistent": {
+       "cluster.routing.allocation.enable": "primaries"
+     }
+   }
+   ```
+
+2. **Stop indexing and perform a synced flush.**
+
+   Performing a [synced-flush](https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-synced-flush-api.html) speeds up shard recovery.
+
+   ```console
+   POST _flush/synced
+   
+   curl -X POST "localhost:9200/_flush/synced?pretty"
+   ```
+
+   When you perform a synced flush, check the response to make sure there are no failures. Synced flush operations that fail due to pending indexing operations are listed in the response body, although the request itself still returns a 200 OK status. If there are failures, reissue the request.
+
+   Note that synced flush is deprecated and will be removed in 8.0. A flush has the same effect as a synced flush on Elasticsearch 7.6 or later.
+
+3. **Temporarily stop the tasks associated with active machine learning jobs and datafeeds.** (Optional)
+
+   Machine learning features require specific [subscriptions](https://www.elastic.co/subscriptions).
+
+   You have two options to handle machine learning jobs and datafeeds when you shut down a cluster:
+
+   - Temporarily halt the tasks associated with your machine learning jobs and datafeeds and prevent new jobs from opening by using the [set upgrade mode API](https://www.elastic.co/guide/en/elasticsearch/reference/current/ml-set-upgrade-mode.html):
+
+     ```console
+     POST _ml/set_upgrade_mode?enabled=true
+     ```
+
+     When you disable upgrade mode, the jobs resume using the last model state that was automatically saved. This option avoids the overhead of managing active jobs during the shutdown and is faster than explicitly stopping datafeeds and closing jobs.
+
+   - [Stop all datafeeds and close all jobs](https://www.elastic.co/guide/en/machine-learning/7.13/stopping-ml.html). This option saves the model state at the time of closure. When you reopen the jobs after the cluster restart, they use the exact same model. However, saving the latest model state takes longer than using upgrade mode, especially if you have a lot of jobs or jobs with large model states.
+
+4. **Shut down all nodes.**
+
+   - If you are running Elasticsearch with `systemd`:
+
+     ```sh
+     sudo systemctl stop elasticsearch.service
+     ```
+
+   - If you are running Elasticsearch with SysV `init`:
+
+     ```sh
+     sudo -i service elasticsearch stop
+     ```
+
+   - If you are running Elasticsearch as a daemon:
+
+     ```sh
+     kill $(cat pid)
+     ```
+
+5. **Perform any needed changes.**
+
+6. **Restart nodes.**
+
+   If you have dedicated master nodes, start them first and wait for them to form a cluster and elect a master before proceeding with your data nodes. You can check progress by looking at the logs.
+
+   As soon as enough master-eligible nodes have discovered each other, they form a cluster and elect a master. At that point, you can use the [cat health](https://www.elastic.co/guide/en/elasticsearch/reference/current/cat-health.html) and [cat nodes](https://www.elastic.co/guide/en/elasticsearch/reference/current/cat-nodes.html) APIs to monitor nodes joining the cluster:
+
+   ```console
+   GET _cat/health
+   GET _cat/nodes
+   
+   curl -X GET "localhost:9200/_cat/health?pretty"
+   curl -X GET "localhost:9200/_cat/nodes?pretty"
+   ```
+
+   The `status` column returned by `_cat/health` shows the health of each node in the cluster: `red`, `yellow`, or `green`.
+
+7. **Wait for all nodes to join the cluster and report a status of yellow.**
+
+   When a node joins the cluster, it begins to recover any primary shards that are stored locally. The [`_cat/health`](https://www.elastic.co/guide/en/elasticsearch/reference/current/cat-health.html) API initially reports a `status` of `red`, indicating that not all primary shards have been allocated.
+
+   Once a node recovers its local shards, the cluster `status` switches to `yellow`, indicating that all primary shards have been recovered, but not all replica shards are allocated. This is to be expected because you have not yet re-enabled allocation. Delaying the allocation of replicas until all nodes are `yellow` allows the master to allocate replicas to nodes that already have local shard copies.
+
+8. **Re-enable allocation.**
+
+   When all nodes have joined the cluster and recovered their primary shards, re-enable allocation by restoring `cluster.routing.allocation.enable` to its default:
+
+   ```console
+   PUT _cluster/settings
+   
+   curl -X PUT "localhost:9200/_cluster/settings?pretty" -H 'Content-Type: application/json' -d'
+   {
+     "persistent": {
+       "cluster.routing.allocation.enable": null
+     }
+   }
+   ```
+
+   Once allocation is re-enabled, the cluster starts allocating replica shards to the data nodes. At this point it is safe to resume indexing and searching, but your cluster will recover more quickly if you can wait until all primary and replica shards have been successfully allocated and the status of all nodes is `green`.
+
+   You can monitor progress with the [`_cat/health`](https://www.elastic.co/guide/en/elasticsearch/reference/current/cat-health.html) and [`_cat/recovery`](https://www.elastic.co/guide/en/elasticsearch/reference/current/cat-recovery.html) APIs:
+
+   ```console
+   GET _cat/health
+   GET _cat/recovery
+   
+   curl -X GET "localhost:9200/_cat/health?pretty"
+   curl -X GET "localhost:9200/_cat/recovery?pretty"
+   ```
+
+9. **Restart machine learning jobs.** (Optional)
+
+   If you temporarily halted the tasks associated with your machine learning jobs, use the [set upgrade mode API](https://www.elastic.co/guide/en/elasticsearch/reference/current/ml-set-upgrade-mode.html) to return them to active states:
+
+   ```console
+   POST _ml/set_upgrade_mode?enabled=false
+   ```
+
+   If you closed all machine learning jobs before stopping the nodes, open the jobs and start the datafeeds from Kibana or with the [open jobs](https://www.elastic.co/guide/en/elasticsearch/reference/current/ml-open-job.html) and [start datafeed](https://www.elastic.co/guide/en/elasticsearch/reference/current/ml-start-datafeed.html) APIs.
 
 ## Logstash
 

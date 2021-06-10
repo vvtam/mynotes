@@ -90,6 +90,8 @@ create tables IF NOT EXISTS actor (
     last_name VARCHAR(100) NOT NULL,
     PRIMARY KEY ( actor_id )
 );
+
+UPDATE aa_table a , bb_table b SET a.url=b.url WHERE a.`code`=b.`code`;
 ```
 
 ## 索引
