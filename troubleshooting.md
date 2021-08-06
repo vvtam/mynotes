@@ -66,3 +66,9 @@ After transmitting the SYN+ACK, the SYN Queue waits for an ACK packet from the c
 ### netstat显示源ip和ss显示不一样
 
 netstat某个版本显示的源ip，和ss，tcpdump抓包显示的源ip不一样，特别是ipv4的最后一位
+
+### 系统负载高，但是cpu，内存，磁盘，网络占用正常
+
+vmstat 1 100 -Sm 发现cs切换特别高 
+
+pidstat -w 2 发现cs切换频繁的进程是nfs相关，发现nfs服务端服务异常

@@ -1,49 +1,55 @@
 ## 安装环境
+
 ```
 # cat /etc/redhat-release 
-CentOS Linux release 7.1.1503 (Core) 
+CentOS Linux release 7.9.2009 (Core) 
 
 # uname -a
-Linux localhost.localdomain 3.10.0-229.el7.x86_64 #1 SMP Fri Mar 6 11:36:42 UTC 2015 x86_64 x86_64 x86_64 GNU/Linux
-
-
-# cat /etc/redhat-release 
-CentOS Linux release 7.1.1503 (Core) 
-[root@localhost ~]# uname -a
-Linux localhost.localdomain 3.10.0-229.20.1.el7.x86_64 #1 SMP Tue Nov 3 19:10:07 UTC 2015 x86_64 x86_64 x86_64 GNU/Linux
+Linux centos7 3.10.0-1160.el7.x86_64 #1 SMP Mon Oct 19 16:18:59 UTC 2020 x86_64 x86_64 x86_64 GNU/Linux
 
 # rpm -qa cobbler
 cobbler-2.6.10-1.el7.noarch
 ```
+
 ## 安装过程
+
 ### 增加repo源
+
 rpm -ivh http://mirrors.aliyun.com/epel/epel-release-latest-7.noarch.rpm
 
 wget -O /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo
 
 ### 安装Cobbler及相关软件
+
 yum -y install httpd xinetd tftp-server dnsmasq rsync syslinux
-yum -y install cobbler fence-agents pykickstart
+yum -y install cobbler fence-agents pykickstart cobbler-web
 
 ### 配置
+#### 关闭selinux
 ```
 # vi /etc/selinux/config 
 SELINUX=disabled
 
 # 获取selinux状态
 # getenforce
+```
 
-# 关闭iptables
+#### 关闭防火墙
+```
 systemctl stop firewalld
 systemctl disable firewalld 
-
+```
+#### 生成默认密码
+```
 # 生成系统安装后，root的密码 (默认密码为 cobbler)
 # 格式 openssl passwd -1 -salt 'random-phrase-here' 'your-password-here'
 # 其中 random-phrase-here 为干扰码
 
-# openssl passwd -1 -salt 'KoGvJXV2AuBNFeH' 'GxqYwNna0yIG21FNKKYu'                                 
-$1$KoGvJXV2$nWIwUgQNSaRrYJ.xL8QJh0
-
+# openssl passwd -1 -salt 'KoGvJXV2AuBNFeH' 'cobbler'                                 
+$1$fDdHOmOo$7FSWHeKI9UrXQ4b.07w031
+```
+#### 配置cobbler
+```
 # 修改Cobbler配置/etc/cobbler/settings
 manage_dhcp：1
 manage_dns：1
@@ -65,9 +71,7 @@ module = manage_dnsmasq
 [tftpd]
 module = manage_in_tftpd
 
-# 修改dnsmasq配置文件 /etc/dnsmasq.conf 
-# vi /etc/dnsmasq.conf 
-
+# 修改dnsmasq配置文件 /etc/cobbler/dnsmasq.template
 # Cobbler generated configuration file for dnsmasq
 # $date
 #
@@ -78,9 +82,8 @@ module = manage_in_tftpd
 read-ethers
 addn-hosts = /var/lib/cobbler/cobbler_hosts
 
-dhcp-range=192.168.211.10,192.168.211.29,255.255.255.0
-dhcp-ignore=tag:!known
-dhcp-option=3,$next_server
+dhcp-range=192.168.1.5,192.168.1.200
+dhcp-option=66,$next_server
 dhcp-lease-max=1000
 dhcp-authoritative
 dhcp-boot=pxelinux.0
@@ -88,6 +91,8 @@ dhcp-boot=net:normalarch,pxelinux.0
 dhcp-boot=net:ia64,$elilo
 
 $insert_cobbler_system_definitions
+
+
 
 # TFTP配置
 # cat /etc/xinetd.d/tftp 
@@ -110,16 +115,8 @@ service tftp
         flags                   = IPv4
 }
 
-systemctl start xinetd.service
-systemctl status xinetd.service
 systemctl enable xinetd.service
-
-systemctl start tftp.socket
-systemctl status tftp.socket
 systemctl enable tftp.socket
-
-systemctl start tftp.service
-systemctl status tftp.service
 systemctl enable tftp.service
 
 # 配置httpd
@@ -131,13 +128,11 @@ mv welcome.conf welcome.conf.bak
 
 
 # 启动httpd、Cobbler
-systemctl start httpd.service
-systemctl enable httpd.service
-systemctl status httpd.service
 
-systemctl start cobblerd.service
+systemctl enable httpd.service
 systemctl enable cobblerd.service
-systemctl status cobblerd.service
+
+reboot
 
 # Cobbler检查，会检测到一些错误，根据提示解决
 cobbler check
@@ -151,19 +146,17 @@ ss -naltu
 
 # 准备安装文件
 # 导入iso文件
-mount -t iso9660 -o loop,ro /os/CentOS-7-x86_64-Minimal-1503-01.iso /mnt
-cobbler import --name=centos7mini --path=/mnt --arch=x86_64
-# cobbler import --arch=x86_64 --path=/mnt --name=centos7mini2
+mount -t iso9660 -o loop,ro CentOS-7-x86_64-DVD-2009.iso /mnt/centos/
+cobbler import --name=centos7 --path=/mnt/centos --arch=x86_64
 
 # 查看导入结果
 cobbler distro list
+	centos7-x86_64
 cobbler distro report
 cobbler profile report
 
 # 添加kickstart配置文件
-# 从现有sample_end 修改得到
-# cp /var/lib/cobbler/kickstarts/sample_end.ks /var/lib/cobbler/kickstarts/jxl_data.ks
-# vi /var/lib/cobbler/kickstarts/jxl_data.ks
+# cp /var/lib/cobbler/kickstarts/centos7.ks
 timezone Asia/Shanghai --isUtc
 lang en_US.UTF-8 --addsupport=zh_CN.UTF-8
 

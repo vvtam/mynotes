@@ -1,7 +1,8 @@
 # Cobbler Quick Start
 
 ## Installing Cobbler
-http://cobbler.github.io/manuals/quickstart/  
+[1. Quickstart — Cobbler 3.2.1 documentation](https://cobbler.readthedocs.io/en/latest/quickstart-guide.html)
+
 follow this manual,but you need to install dhcp and xinetd,if the system did not install before this.  
 
 ```
