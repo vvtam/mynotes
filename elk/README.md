@@ -27,6 +27,29 @@ curl -GET 'http://localhost:9200/_cluster/allocation/explain'
 curl -GET 'http://localhost:9200/_cat/shards?h=index,shard,prirep,state,unassigned.reason'
 ```
 
+### 常用查询
+
+```
+检查索引映射
+curl -XGET 'http://10.191.184.104:9200/iptv-nginx-2021-08-09/_mapping?pretty' 
+
+获取一些文档
+curl -XGET 'http://10.191.184.104:9200/iptv-nginx-2021-08-09/_search?pretty'
+
+查看数据数量
+curl -XGET 'http://10.191.184.104:9200/iptv-nginx-2021-08-09/_count?pretty'
+
+curl -XGET 'http://10.191.184.104:9200/iptv-nginx-2021-08-09/_search?pretty='  -d '
+ {
+"query":{  
+      "match":{  
+         "project" : "xxx"
+      }
+ }'
+```
+
+
+
 ### 重启elasticsearch集群
 
 1. **Disable shard allocation.**
