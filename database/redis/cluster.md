@@ -20,15 +20,27 @@ redis的源码自带一个集群配置脚本，在src目录下 redis-trib.rb
 
 需要ruby 2.4.4 版本及以上，有的系统需要升级ruby
 可以用rvm升级管理ruby
+
 ```
-# http://www.rvm.io
-gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
-\curl -sSL https://get.rvm.io | bash -s stable
-# 按照提示操作
-# 升级版本
-rvm install ruby-2.4.4
-rvm use 2.4.4 default
-# 安装redis相关
+# 安装rvm
+curl -L get.rvm.io | bash -s stable
+# 上语句报错后执行下面
+curl -sSL https://rvm.io/mpapis.asc | gpg2 --import - 
+curl -sSL https://rvm.io/pkuczynski.asc | gpg2 --import -
+# 重新下载
+curl -L get.rvm.io | bash -s stable
+# 设置为环境变量
+source /usr/local/rvm/scripts/rvm
+
+# 安装一个ruby版本
+rvm install 2.3.3
+# 使用一个ruby版本
+rvm use 2.3.3
+
+
+换成下面的
+yum install -y centos-release-scl-rh
+scl enable rh-ruby24 bash
 gem install redis
 ```
 ```

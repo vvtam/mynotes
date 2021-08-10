@@ -72,3 +72,36 @@ netstat某个版本显示的源ip，和ss，tcpdump抓包显示的源ip不一样
 vmstat 1 100 -Sm 发现cs切换特别高 
 
 pidstat -w 2 发现cs切换频繁的进程是nfs相关，发现nfs服务端服务异常
+
+### 单用户启动
+
+```
+修改Linux 16开头的行，将ro改为rw init=/sysroot/bin/sh
+# 启动
+Control+x
+chroot /sysroot
+
+# reset password，其它维护操作
+passwd root
+
+# selinux
+touch /.autorelabel
+
+#chroot
+exit
+
+#重启系统
+reboot
+```
+
+### 救援模式启动，root账号需要启用
+
+```
+# linux16 开头行末尾加上systemd.unit=emergency.target 启动
+linux16 /vmlinuz-3.10.0-327.36.1.el7.x86_64 root=/dev/mapper/rhel_unus\
+ed-root ro console=tty0 crashkernel=128M rd.lvm.lv=rhel_unused/root rd.lvm.lv=\
+rhel_unused/swap console=ttyS0,115200 LANG=en_US.UTF-8 systemd.unit=emergency.target
+```
+
+
+
