@@ -1,15 +1,30 @@
 ## 配置
 
-tmsh 进入配置
+### 查看用户
 
-查看用户
+`list auth user`
 
-list auth user
+### 修改 ltm 接口允许的源IP
 
-创建用户
+`modify ltm virtual vs_proxy_9090 source x.x.x.x/y`
 
-create auth user yourname partition-access add { all-partitions { role admin} } description xxxxyyy password 'yourpassword' shell bash
+### 新建用户
 
-修改 ltm 接口允许的源IP
+```
+tmsh
+create auth user yourname
+modify auth user yourname password 7DMMHajq@!#
+modify auth user yourname partition-access modify { all-partitions { role admin } }
+modify auth user yourname partition-access modify { all-partitions { role admin } } shell bash
+save sys config current-partition base
+```
 
-modify ltm virtual vs_proxy_9090 source x.x.x.x/y
+### 修改用户
+
+```
+tmsh
+modify auth password root
+save sys config
+quit
+```
+
