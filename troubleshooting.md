@@ -1,3 +1,5 @@
+
+
 ## Linux
 
 ### 收到SYN包，没有回复
@@ -103,5 +105,28 @@ ed-root ro console=tty0 crashkernel=128M rd.lvm.lv=rhel_unused/root rd.lvm.lv=\
 rhel_unused/swap console=ttyS0,115200 LANG=en_US.UTF-8 systemd.unit=emergency.target
 ```
 
+### 设置limit 的坑
 
+默认软限制
 
+```
+*          soft    nproc     4096
+root       soft    nproc     unlimited
+```
+
+sysctl 里面的限制，
+
+```
+fs.nr_open = 1048576
+fs.file-max = 366671
+fs.file-nr = 1504       0       366671
+```
+
+ulimit 设置open files 不能操作这个数字
+
+```
+# ulimit -n 1048577
+-bash: ulimit: open files: cannot modify limit: Operation not permitted
+```
+
+设置硬限制超过  `fs.nr_open = 1048576`       `*          hard    nofile     1048588` 后，登录会失败
