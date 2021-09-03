@@ -67,6 +67,7 @@ cat >>/var/lib/tftpboot/pxelinux/pxelinux.cfg/default<<EOFbios
 default vesamenu.c32
 ## 要手动按enter?
 # prompt 1
+## 600是60s
 timeout 600
 
 display boot.msg
@@ -102,6 +103,7 @@ mkdir /var/lib/tftpboot/uefi
 cp ./boot/efi/EFI/centos/shim.efi /var/lib/tftpboot/uefi/
 cp ./boot/efi/EFI/centos/grubx64.efi /var/lib/tftpboot/uefi/
 cat >>/var/lib/tftpboot/uefi/grub.cfg<<EOFuefi
+## 10s
 set timeout=10
   menuentry 'Install system' {
   linuxefi uefi/vmlinuz ip=dhcp inst.repo=http://${http_server}/cdrom inst.ks=http://${http_server}/ks.cfg
