@@ -1,5 +1,13 @@
 ## 配置
 
+### 备份，恢复
+
+```
+tmsh save sys ucs $(echo $HOSTNAME | cut -d'.' -f1)-$(date +%H%M-%m%d%y)
+
+tmsh load /sys ucs /var/tmp/MyUCS.ucs
+```
+
 ### 查看用户
 
  `# list auth user`
@@ -25,7 +33,7 @@ ltm pool Pool_xxx {
 `create ltm node xxx`
 
 ```
-modify ltm pool mypool { members add { 14.18.65.15:https { address 14.18.65.15 } 14.18.65.14:https { address 14.18.65.14 } 14.18.65.103:https { address 14.18.65.103 } 14.24.239.233:https { address 24.24.239.233 } 12.24.239.232:https { address 12.24.239.232 } 12.23.239.231:https { address 12.23.239.231 } } }
+modify ltm pool mypool members add { 14.18.65.15:https 14.18.65.14:https 14.18.65.103:https 14.24.239.233:https 12.24.239.232:https 12.23.239.231:https }
 ```
 
 `modify ltm pool mypoolmembers delete { 42.62.16.26:https 42.62.16.27:https }`
