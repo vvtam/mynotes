@@ -22,7 +22,7 @@ Factory images下载
 
 https://raw.githubusercontent.com/topjohnwu/magisk-files/canary/app-debug.apk
 
-从Factory images 提前boot.img 传输到手机，打开magisk安装，选择boot.img修补
+从Factory images 提取boot.img 传输到手机，打开magisk修补boot.img
 
 修补过的boot_patched.img传输到本地，adb安装
 
