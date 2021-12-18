@@ -178,6 +178,46 @@ curl -XGET 'http://10.191.184.104:9200/iptv-nginx-2021-08-09/_search?pretty='  -
 
    If you closed all machine learning jobs before stopping the nodes, open the jobs and start the datafeeds from Kibana or with the [open jobs](https://www.elastic.co/guide/en/elasticsearch/reference/current/ml-open-job.html) and [start datafeed](https://www.elastic.co/guide/en/elasticsearch/reference/current/ml-start-datafeed.html) APIs.
 
+### 滚动重启节点
+
+1. 可能的话，停止索引新的数据。虽然不是每次都能真的做到，但是这一步可以帮助提高恢复速度。
+
+2. 禁止分片分配。这一步阻止 Elasticsearch 再平衡缺失的分片，直到你告诉它可以进行了。如果你知道维护窗口会很短，这个主意棒极了。你可以像下面这样禁止分配：
+
+   ```js
+   PUT /_cluster/settings
+   curl -X PUT "localhost:9200/_cluster/settings?pretty" -H 'Content-Type: application/json' -d'
+   {
+       "transient" : {
+           "cluster.routing.allocation.enable" : "none"
+       }
+   }'
+   ```
+
+3. 关闭单个节点。
+
+4. 执行维护/升级。
+
+5. 重启节点，然后确认它加入到集群了。
+
+6. 用如下命令重启分片分配：
+
+   ```js
+   PUT /_cluster/settings
+   curl -X PUT "localhost:9200/_cluster/settings?pretty" -H 'Content-Type: application/json' -d'
+   {
+       "transient" : {
+           "cluster.routing.allocation.enable" : "all"
+       }
+   }'
+   ```
+
+   分片再平衡会花一些时间。一直等到集群变成 `绿色` 状态后再继续。
+
+7. 重复第 2 到 6 步操作剩余节点。
+
+8. 到这步你可以安全的恢复索引了（如果你之前停止了的话），不过等待集群完全均衡后再恢复索引，也会有助于提高处理速度。
+
 ## Logstash
 
 Logstash 是免费且开放的服务器端数据处理管道，能够从多个来源采集数据，转换数据，然后将数据发送到您最喜欢的“存储库”中。
