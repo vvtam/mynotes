@@ -54,3 +54,13 @@ vgcreate vgname /dev/sdb1 /dev/sdb2
 lvcreate -n lvname -L 700M vgname #vgname中创建一个700MiB的lv，-l指定区块，-L 指定大小
 
 用名称挂载逻辑卷等同于用uuid挂载
+
+```
+pvcreate /dev/vdb1 
+vgcreate  data /dev/vdb1 
+lvcreate -n soft -l 127999 data
+mkfs.xfs /dev/mapper/data-soft 
+# lvrename vgname lv-old-name lv-new-name
+lvrename data data-soft soft
+```
+
