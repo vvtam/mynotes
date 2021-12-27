@@ -1,0 +1,41 @@
+---
+- hosts: all
+  tasks:
+  - name: copy file/haproxy-1.5.18-9.el7_9.1.x86_64.rpm
+    copy:
+      src: file/haproxy-1.5.18-9.el7_9.1.x86_64.rpm
+      dest: /tmp/
+      mode: '0755'
+  - name: install haproxy-1.5.18-9.el7_9.1.x86_64.rpm 
+    command: rpm -Uvh haproxy-1.5.18-9.el7_9.1.x86_64.rpm
+    args:
+      chdir: /tmp/
+  - name: copy file/haproxy.cfg
+    copy:
+      src: file/haproxy.cfg
+      dest: /etc/haproxy/haproxy.cfg
+      mode: '0644'
+  - name: create dir /data/logs/haproxy/
+    file:
+      path: /data/logs/haproxy/
+      state: directory
+      mode: '0755'
+  - name: touch /data/logs/haproxy/haproxy.log
+    file:
+      path: /data/logs/haproxy/haproxy.log
+      state: touch
+      mode: '0755'
+  - name: enable and start haproxy service
+    systemd:
+      name: haproxy
+      state: started
+      enabled: yes
+  - name: set logrotate
+    copy:
+      src: file/haproxy
+      dest: /etc/logrotate.d/haproxy
+  - name: restart rsyslog service
+    systemd:
+      name: rsyslog
+      state: restarted
+      enabled: yes
