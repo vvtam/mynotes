@@ -18,6 +18,7 @@ Elasticsearch 是一个分布式、RESTful 风格的搜索和数据分析引擎�
 
 ```
 curl -XGET 'http://localhost:9200/'
+curl -XGET http://127.0.0.1:9200/_cat/indices
 curl -XGET 'http://localhost:9200/_cluster/health?pretty'
 # 分片状态查看
 curl -XGET 'http://localhost:9200/_cat/shards?v'
@@ -46,6 +47,9 @@ curl -XGET 'http://10.191.184.104:9200/iptv-nginx-2021-08-09/_search?pretty='  -
          "project" : "xxx"
       }
  }'
+
+删除
+curl -XDELETE http://127.0.0.1:9200/xxxxx
 ```
 
 
@@ -185,7 +189,7 @@ curl -XGET 'http://10.191.184.104:9200/iptv-nginx-2021-08-09/_search?pretty='  -
 2. 禁止分片分配。这一步阻止 Elasticsearch 再平衡缺失的分片，直到你告诉它可以进行了。如果你知道维护窗口会很短，这个主意棒极了。你可以像下面这样禁止分配：
 
    ```js
-   PUT /_cluster/settings
+   # PUT /_cluster/settings
    curl -X PUT "localhost:9200/_cluster/settings?pretty" -H 'Content-Type: application/json' -d'
    {
        "transient" : {
@@ -203,7 +207,7 @@ curl -XGET 'http://10.191.184.104:9200/iptv-nginx-2021-08-09/_search?pretty='  -
 6. 用如下命令重启分片分配：
 
    ```js
-   PUT /_cluster/settings
+   # PUT /_cluster/settings
    curl -X PUT "localhost:9200/_cluster/settings?pretty" -H 'Content-Type: application/json' -d'
    {
        "transient" : {

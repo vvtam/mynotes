@@ -18,9 +18,7 @@ Factory images下载
 
 ## Root
 
-下载magisk canary版本，现在支持12
-
-https://raw.githubusercontent.com/topjohnwu/magisk-files/canary/app-debug.apk
+下载magisk，现在支持12
 
 从Factory images 提取boot.img 传输到手机，打开magisk修补boot.img
 
