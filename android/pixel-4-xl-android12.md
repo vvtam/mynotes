@@ -41,3 +41,7 @@ setprop pixel.oslo.allowed_override 1
 setprop persist.pixel.oslo.allowed_override 1
 setprop ctl.restart zygote
 ```
+
+## fastboot 驱动
+
+https://developer.android.com/studio/run/win-usb
