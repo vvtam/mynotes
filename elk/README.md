@@ -404,6 +404,14 @@ kill -TERM {logstash_pid}
 
 Alternatively, enter **Ctrl-C** in the console.
 
+### 离线安装插件
+
+有网的机器安装插件  ./bin/logstash-plugin install logstash-output-zabbix
+
+打包插件 ./bin/logstash-plugin prepare-offline-pack --output logstash-output-zabbix.zip logstash-output-zabbix
+
+离线安装 bin/logstash-plugin install file:///home/logstash-6.8.23/logstash-output-zabbix.zip
+
 ## Beat
 
 Beats 是一个免费且开放的平台，集合了多种单一用途数据采集器。它们从成百上千或成千上万台机器和系统向 Logstash 或 Elasticsearch 发送数据。

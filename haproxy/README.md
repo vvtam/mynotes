@@ -15,3 +15,15 @@ set_real_ip_from  172.17.56.0/26;  #haproxy 所在的ip段
 real_ip_header    X-Forwarded-For;
 real_ip_recursive on;
 ```
+
+### Cannot raise FD limit to 131113
+
+添加配置 `ulimit-n 131113`，继续报错
+
+需要sysctl修改
+
+```
+fs.file-max=xxx
+fs.nr_open=xxx
+```
+

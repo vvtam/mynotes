@@ -24,3 +24,9 @@ select num #选择库
 flushdb #当前库
 
 flushall #所有库
+
+
+
+
+
+./redis/bin/redis-cli -h 192.168.166.71 -p 7000 -a SmCm4ErEXyJgpedv -n 3 keys "Playurl*" | xargs ./redis/bin/redis-cli -h 192.168.166.71 -p 7000 -a SmCm4ErEXyJgpedv -n 3 del

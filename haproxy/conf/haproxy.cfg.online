@@ -5,7 +5,7 @@ global
         chroot /usr/local/haproxy1517
         uid 99
         gid 99
-        #设定运行的uid和gid 或者使用用户名和组名 
+        #设定运行的uid和gid 或者使用用户名和组名
         daemon
         #设置后台运行 推荐的方式
         #quiet
@@ -38,7 +38,7 @@ defaults
         timeout server  50000
         timeout check 2000
 
-#监控页面 listen相当于frontend和backend的组合       
+#监控页面 listen相当于frontend和backend的组合
 listen admin_status
         bind-process 1
         bind *:23333
@@ -49,18 +49,18 @@ listen admin_status
         stats auth admin:Admin@push
         stats hide-version
         stats admin if TRUE
-        
-        errorfile 403 /usr/local/haproxy1517/errorfiles/403.http 
-        errorfile 500 /usr/local/haproxy1517/errorfiles/500.http 
-        errorfile 502 /usr/local/haproxy1517/errorfiles/502.http 
-        errorfile 503 /usr/local/haproxy1517/errorfiles/503.http 
-        errorfile 504 /usr/local/haproxy1517/errorfiles/504.http 
-       
-        #haproxy日志记录内容设置# 
-        capture request  header Host           len 40 
-        capture request  header Content-Length len 10 
-        capture request  header Referer        len 200 
-        capture response header Server         len 40 
+
+        errorfile 403 /usr/local/haproxy1517/errorfiles/403.http
+        errorfile 500 /usr/local/haproxy1517/errorfiles/500.http
+        errorfile 502 /usr/local/haproxy1517/errorfiles/502.http
+        errorfile 503 /usr/local/haproxy1517/errorfiles/503.http
+        errorfile 504 /usr/local/haproxy1517/errorfiles/504.http
+
+        #haproxy日志记录内容设置#
+        capture request  header Host           len 40
+        capture request  header Content-Length len 10
+        capture request  header Referer        len 200
+        capture response header Server         len 40
         capture response header Content-Length len 10
 
 #监控后端服务器状态#
@@ -80,7 +80,7 @@ listen site_status
         #不记录转发192.168.1.3的日志#
 
 frontend cms
-	bind-process 1-8
+    bind-process 1-8
         bind            0.0.0.0:80
         #bind           192.168.1.10:443 ssl crt /etc/haproxy/haproxy.pem
         mode            http
@@ -91,10 +91,10 @@ frontend cms
         #后端需要客户端真实ip的时候开启#
 
         ##acl策略配置##
-	#acl acl_dynamic hdr_reg(host) -i ^(itvmkt.ah163.net|itvmkt1.ah163.net)$
+    #acl acl_dynamic hdr_reg(host) -i ^(itvmkt.ah163.net|itvmkt1.ah163.net)$
         #正则匹配域名#
-	#acl acl_dynamic hdr_dom(host) -i itvmkt.ah163.net 
-	#acl acl_static hdr_dom(host) -i itvmkt2.ah163.net 
+    #acl acl_dynamic hdr_dom(host) -i itvmkt.ah163.net
+    #acl acl_static hdr_dom(host) -i itvmkt2.ah163.net
         #匹配域名 -i 不区分大小写#
         #acl acl_dynamic hdr(host) -i itvmkt.ah163.net
         #acl file_req url_sub -i  id=
@@ -119,7 +119,7 @@ frontend cms
 
 # The backend setting
 backend server_dynamic
-	bind-process 1-8
+    bind-process 1-8
         mode            http
         balance         roundrobin
         #balance         source
@@ -135,19 +135,19 @@ backend server_dynamic
         #option redispatch
         #timeout connect 5s
         #timeout server  5s
-	#健康检测,不配置默认用4层 配置了就是7层#
+    #健康检测,不配置默认用4层 配置了就是7层#
         #option httpchk /index.html HTTP/1.0
         #option httpchk
-	#监听端口
-	option httpchk  GET /haproxycheck.php
+    #监听端口
+    option httpchk  GET /haproxycheck.php
         #GET后端的web页面检测
-	#option httpchk HEAD /index.jsp HTTP/1.1\r\nHost:\ www.xxx.com
-	#匹配头信息 更加精细化
+    #option httpchk HEAD /index.jsp HTTP/1.1\r\nHost:\ www.xxx.com
+    #匹配头信息 更加精细化
         server cms1 192.168.1.105:80 cookie cms1 check inter 1500 rise 3 fall 3 weight 1
         server cms2 192.168.1.106:80 cookie cms2 check inter 1500 rise 3 fall 3 weight 2
         server cms3 192.168.1.107:80 cookie cms3 check inter 1500 rise 3 fall 3 weight 3
 
-#backend static 
+#backend static
 #        mode            http
 #        balance         roundrobin
 #        retries         2
