@@ -44,7 +44,7 @@ modify ltm pool mypool members add { 14.18.65.15:https 14.18.65.14:https 14.18.6
 tmsh
 create auth user yourname
 modify auth user yourname password 7DMMHajq@!#
-modify auth password  xxx
+modify auth password  username
 modify auth user yourname partition-access modify { all-partitions { role admin } }
 modify auth user yourname partition-access modify { all-partitions { role admin } } shell bash
 save sys config current-partition base
@@ -57,5 +57,21 @@ tmsh
 modify auth password root
 save sys config
 quit
+```
+
+### 重启服务
+
+```
+killall -9 httpd
+tmsh start sys service httpd
+
+restart /sys service tomcat
+
+bigstart restart httpd
+bigstart restart tomcat
+
+bigpipe syslog include none
+bigpipe syslog remote server none
+bigpipe save all
 ```
 

@@ -19,6 +19,7 @@ Elasticsearch 是一个分布式、RESTful 风格的搜索和数据分析引擎�
 ```
 curl -XGET 'http://localhost:9200/'
 curl -XGET http://127.0.0.1:9200/_cat/indices
+curl 'http://192.168.111.81:9400/_cat/node'
 curl -XGET 'http://localhost:9200/_cluster/health?pretty'
 # 分片状态查看
 curl -XGET 'http://localhost:9200/_cat/shards?v'

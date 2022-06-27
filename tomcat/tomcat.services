@@ -1,0 +1,25 @@
+# Systemd unit file for tomcat
+[Unit]
+Description=Apache Tomcat Web Application Container
+After=syslog.target network.target
+
+[Service]
+Type=forking
+
+Environment=JAVA_HOME=/data/thirdAssembly/jdk
+Environment=CATALINA_PID=/data/yunnanmobile/tomcat-ddxt/tomcat-ddxt.pid
+Environment=CATALINA_HOME=/data/yunnanmobile/tomcat-ddxt
+Environment=CATALINA_BASE=/data/yunnanmobile/tomcat-ddxt
+
+ExecStart=/data/yunnanmobile/tomcat-ddxt/bin/startup.sh
+ExecStop=/bin/kill -9 $MAINPID
+ExecStopPost=/usr/bin/rm -f /data/yunnanmobile/tomcat-ddxt/tomcat-ddxt.pid
+
+User=webadmin
+Group=webadmin
+UMask=0007
+RestartSec=10
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

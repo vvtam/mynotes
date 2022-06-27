@@ -6,6 +6,7 @@ OTA下载
 
 ```
 adb reboot recovery
+power + up键
 adb devices
 adb sideload ota-file.zip
 ```

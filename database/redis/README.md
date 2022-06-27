@@ -30,3 +30,19 @@ flushall #所有库
 
 
 ./redis/bin/redis-cli -h 192.168.166.71 -p 7000 -a SmCm4ErEXyJgpedv -n 3 keys "Playurl*" | xargs ./redis/bin/redis-cli -h 192.168.166.71 -p 7000 -a SmCm4ErEXyJgpedv -n 3 del
+
+type  类型有 string ，hash，set等
+
+hgetall key 
+
+hget key field
+
+hset key field value
+
+SISMEMBER key member
+
+SADD key member
+
+SREM
+
+scard key

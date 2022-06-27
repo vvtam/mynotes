@@ -5,6 +5,7 @@ Download, extract and compile Redis with:
 $ wget http://download.redis.io/releases/redis-5.0.2.tar.gz
 $ tar xzf redis-5.0.2.tar.gz
 $ cd redis-5.0.2
+$ make distclean
 $ make
 ```
 The binaries that are now compiled are available in the src directory. Run Redis with:

@@ -114,3 +114,15 @@ dns配置/etc/resolv.conf，或者使用resovle服务
 #### 安装openssh
 
 pacman -Syu openssh
+
+### 问题总结
+
+#### 安装了oh-my-zsh tab 补全的问题
+
+```
+去掉 /etc/locale.gen中
+en_US.UTF-8 UTF-8的注释‘#’
+运行
+locale-gen
+```
+
