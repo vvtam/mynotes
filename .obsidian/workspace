@@ -1,0 +1,92 @@
+{
+  "main": {
+    "id": "36ab7778528e2202",
+    "type": "split",
+    "children": [
+      {
+        "id": "8f3ea0741873f824",
+        "type": "leaf",
+        "state": {
+          "type": "empty",
+          "state": {}
+        }
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "c543f581ccb32ba2",
+    "type": "split",
+    "children": [
+      {
+        "id": "0de2407675e32dcd",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "643f3e6b111a69db",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {}
+            }
+          },
+          {
+            "id": "208b0f0156a01b49",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "35e547b1878b7eac",
+    "type": "split",
+    "children": [
+      {
+        "id": "224cc54df803ade4",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "83335793d3f0f939",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "active": "8f3ea0741873f824",
+  "lastOpenFiles": [
+    "zabbix/README.md",
+    "elk/README.md",
+    "elk/get_start_with_beats_and_elastic_stack.md",
+    "h3c/readme.md"
+  ]
+}
