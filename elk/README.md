@@ -28,7 +28,7 @@ curl -GET 'http://localhost:9200/_cluster/allocation/explain'
 # 查看集群中不同节点、不同索引的状态
 curl -GET 'http://localhost:9200/_cat/shards?h=index,shard,prirep,state,unassigned.reason'
 ```
-### 关闭就索引
+### 关闭旧索引
 ```
 curl -X POST "http://localhost:9200/default_iptv*_2021*/_flush"
 curl -X POST "http://localhost:9200/default_iptv*_2021*/_close"
