@@ -16,3 +16,7 @@
   `zabbix_get [5309]: Check access restrictions in Zabbix agent configuration`
 添加 127.0.0.1 到agent配置的server
 
+- zabbix get We trust you have received the usual lecture from the local System Administrator. It usually boils down to these three things； zabbix_get得到的值，需要检查sudo 权限
+sudoers文件添加相应权限
+
+      `zabbix  ALL=(ALL)       NOPASSWD:/usr/local/sbin,/usr/local/bin,/usr/sbin,/usr/bin,/usr/bin/systemctl,/bin/chmod,/usr/bin/chage,/bin/mkdir,/bin/echo,/bin/sed,/bin/cat,/bin/ls,/bin/grep,/bin/egrep,/bin/awk,/usr/bin/crontab,/bin/netstat,/sbin/ss,/usr/sbin/lsof,/usr/sbin/iftop,/usr/bin/python,/bin/readlink,/usr/bin/echo,/usr/sbin/fping,/usr/sbin/fpin6`
