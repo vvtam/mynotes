@@ -129,4 +129,5 @@ ulimit 设置open files 不能操作这个数字
 -bash: ulimit: open files: cannot modify limit: Operation not permitted
 ```
 
-设置硬限制超过  `fs.nr_open = 1048576`       `*          hard    nofile     1048588` 后，登录会失败
+设置硬限制超过  `fs.nr_open = 1048576`         
+`*          hard    nofile     1048588` 后，登录会失败

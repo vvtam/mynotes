@@ -64,6 +64,7 @@ db.createUser(
   {
     user: "user",
     pwd: "adfaf23sfasdf",
+    roles:[{role: "dbOwner",db:"dbname"}]
     roles:[{role: "readWrite",db:"dbname"}]
   }
 )

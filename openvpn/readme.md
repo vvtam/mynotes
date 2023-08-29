@@ -33,6 +33,7 @@ cd /usr/loacl/openvpn/esayrsa3
 ./easyrsa init-pki
 ./easyrsa build-ca
 ./easyrsa gen-dh
+OpenVPN --genkey --secret keys/ta.key
 ./easyrsa build-server-full
 ./easyrsa build-client-full
 

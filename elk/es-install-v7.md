@@ -11,17 +11,18 @@ jdk：使用es自带的jdk（如果系统有自带的JAVA_HOME变量会有影响
 ## 配置
 
 ```
-cluster.name: cluster-name
-node.name: node13
+cluster.name: my-application
+node.name: node110
 node.master: true
 node.data: true
-path.data: /home/data/esdata/
-path.logs: /home/data/eslog/
+path.data: /data/elk/elasticsearch7/data
+path.logs: /data/elk/elasticsearch7/logs
 network.host: 0.0.0.0
-http.port: 9200
-discovery.zen.ping.unicast.hosts: ["192.168.60.13","192.168.60.14","192.168.60.15"]
+http.port: 9400
+transport.port: 9500
+discovery.zen.ping.unicast.hosts: ["10.191.184.110","10.191.184.111","10.191.184.112"]
 discovery.zen.minimum_master_nodes: 2
-cluster.initial_master_nodes: ["192.168.60.13"]
+cluster.initial_master_nodes: ["10.191.184.110"]
 ```
 
 ## 插件放到在plugins中
@@ -33,20 +34,22 @@ cluster.initial_master_nodes: ["192.168.60.13"]
 ./bin/elasticsearch-certutil cert -out ./config/elastic-certificates.p12 -pass ""
 ```
 
-修改配置文件重启
+修改配置文件启动elasticsearch
 ```
 xpack.security.enabled: true
 xpack.license.self_generated.type: basic
 xpack.security.transport.ssl.enabled: true
-xpack.security.transport.ssl.verification_mode:certificate
+xpack.security.transport.ssl.verification_mode: certificate
 #elastic-certificates.p12 绝对路径
-xpack.security.transport.ssl.keystore.path: /home/data/esconfig/elastic-certificates.p12
-xpack.security.transport.ssl.truststore.path: /home/data/es/config/elastic-certificates.p12
+xpack.security.transport.ssl.keystore.path: /data/elk/elasticsearch7/config/elastic-certificates.p12
+xpack.security.transport.ssl.truststore.path: /data/elk/elasticsearch7/config/elastic-certificates.p12
 ```
+elasticsearch启动后
+
 添加密码，可以选择自动生成
 
 ./bin/elasticsearch-setup-passwords auto
 
 访问验证
 
-`curl -u elastic:************** -XGET 'http://127.0.0.1:9200/_cat/nodes?v'`
+`curl -u elastic:************** -XGET 'http://127.0.0.1:9400/_cat/nodes?v'`

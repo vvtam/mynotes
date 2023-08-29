@@ -30,15 +30,15 @@ map 可以使用在http中，配置open_log_file_cache可以提高日志效率
 ## 使用logrotate分割日志
 
 ```
-/data/nginx/logs/*.log
+/data/thirdAssembly/nginx/logs/*.log
 /data/logs/nginx/*.log 
 {
   #copytruncate
-  create 644 root root
+  create 644 webadmin webadmin
   #su root webadmin
   daily
   rotate 5
-  olddir /data/nginx/logs/backup/
+  olddir /data/logs/nginx/backup
   missingok
   dateext
   dateformat -%Y%m%d
@@ -46,9 +46,30 @@ map 可以使用在http中，配置open_log_file_cache可以提高日志效率
   notifempty
   sharedscripts
   postrotate
-    [ -e /var/run/nginx.pid ] && kill -USR1 `cat /var/run/nginx.pid`
+    [ -e /data/thirdAssembly/nginx/logs/nginx.pid ] && kill -USR1 `/data/thirdAssembly/nginx/logs/nginx.pid`
   endscript
 }
+
+/data/thirdAssembly/nginx/logs/*.log
+/data/logs/nginx/*.log 
+{
+  #copytruncate
+  create 644 webadmin webadmin
+  #su root webadmin
+  daily
+  rotate 5
+  olddir /data/logs/nginx/backup
+  missingok
+  dateext
+  dateformat -%Y%m%d
+  compress
+  notifempty
+  sharedscripts
+  postrotate
+    [ -e /data/thirdAssembly/nginx/logs/nginx.pid ] && /data/thirdAssembly/nginx/sbin/nginx -s reload
+  endscript
+}
+
 ```
 
 

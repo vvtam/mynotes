@@ -45,4 +45,7 @@ SADD key member
 
 SREM
 
-scard key
+scard key  数量
+
+SMEMBERS key 
+echo "SMEMBERS iptv:data:cqcm:auth:white_set" | /data/redis/src/redis-cli -h 10.191.184.112 -n 1 -a auth >> id.txt
