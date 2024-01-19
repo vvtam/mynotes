@@ -37,8 +37,8 @@ Install_redis_server() {
     sed -i 's@daemonize no@daemonize yes@' ${redis_install_dir}/etc/redis.conf
     sed -i "s@^bind 127.0.0.1@bind 0.0.0.0@" ${redis_install_dir}/etc/redis.conf
     # change the password
-    sed -i "s@^# requirepass foobared@requirepass S2yqJBa5yCK53uQ36tfF@" ${redis_install_dir}/etc/redis.conf
-    sed -i "s@^# masterauth <master-password>@masterauth S2yqJBa5yCK53uQ36tfF@" ${redis_install_dir}/etc/redis.conf
+    sed -i "s@^# requirepass foobared@requirepass yourpassword@" ${redis_install_dir}/etc/redis.conf
+    sed -i "s@^# masterauth <master-password>@masterauth yourpassword@" ${redis_install_dir}/etc/redis.conf
     # change the master ip and port
     # slave 才执行
     #sed -i "s@^# replicaof <masterip> <masterport>@replicaof ip port@" ${redis_install_dir}/etc/redis.conf
@@ -49,7 +49,7 @@ Install_redis_server() {
     sed -i 's@daemonize no@daemonize yes@' ${redis_install_dir}/etc/sentinel.conf
     # change the master ip port, password
     sed -i 's@^sentinel monitor mymaster 127.0.0.1 6379 2@sentinel monitor mymaster 10.177.3.7 6379 2@' ${redis_install_dir}/etc/sentinel.conf
-    sed -i 's@^# sentinel auth-pass <master-name> <password>@sentinel auth-pass mymaster S2yqJBa5yCK53uQ36tfF@' ${redis_install_dir}/etc/sentinel.conf
+    sed -i 's@^# sentinel auth-pass <master-name> <password>@sentinel auth-pass mymaster yourpassword@' ${redis_install_dir}/etc/sentinel.conf
     # redis_maxmemory=`expr $Mem / 8`000000
     # [ -z "`grep ^maxmemory ${redis_install_dir}/etc/redis.conf`" ] && sed -i "s@maxmemory <bytes>@maxmemory <bytes>\nmaxmemory `expr $Mem / 8`000000@" ${redis_install_dir}/etc/redis.conf
     echo "${CSUCCESS}Redis-server installed successfully! ${CEND}"
