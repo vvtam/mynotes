@@ -44,15 +44,16 @@ parted -s /dev/sdb set 2 lvm on
 创建pv
 
 pvcreate /dev/sdb1 /dev/sdb2
-
+pvcreate /dev/vdb
 创建vg
 
+vgcreate data /dev/vdb  
 vgcreate vgname /dev/sdb1 /dev/sdb2
 
 创建lv
 
 lvcreate -n lvname -L 700M vgname #vgname中创建一个700MiB的lv，-l指定区块，-L 指定大小
-
+lvcreate -n sw -l +100%FREE data
 用名称挂载逻辑卷等同于用uuid挂载
 
 ```

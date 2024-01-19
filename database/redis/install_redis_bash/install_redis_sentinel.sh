@@ -14,8 +14,8 @@
 yum -y install redhat-lsb-core gcc make
 
 soft_dir=$(pwd)
-redis_ver=6.2.13
-redis_install_dir=/data/thirdAssembly/redis
+redis_ver=6.2.14
+redis_install_dir=/apprun/redis
 
 Install_redis_server() {
   pushd ${soft_dir}/src > /dev/null
@@ -40,13 +40,15 @@ Install_redis_server() {
     sed -i "s@^# requirepass foobared@requirepass S2yqJBa5yCK53uQ36tfF@" ${redis_install_dir}/etc/redis.conf
     sed -i "s@^# masterauth <master-password>@masterauth S2yqJBa5yCK53uQ36tfF@" ${redis_install_dir}/etc/redis.conf
     # change the master ip and port
-    sed -i "s@^# replicaof <masterip> <masterport>@replicaof ip port@" ${redis_install_dir}/etc/redis.conf
+    # slave 才执行
+    #sed -i "s@^# replicaof <masterip> <masterport>@replicaof ip port@" ${redis_install_dir}/etc/redis.conf
+
     # sentinel
     /bin/cp sentinel.conf ${redis_install_dir}/etc/
     sed -i 's@pidfile.*@pidfile /var/run/redis/redis-sentinel.pid@' ${redis_install_dir}/etc/sentinel.conf
     sed -i 's@daemonize no@daemonize yes@' ${redis_install_dir}/etc/sentinel.conf
     # change the master ip port, password
-    sed -i 's@^sentinel monitor mymaster 127.0.0.1 6379 2@sentinel monitor mymaster 192.168.139.28 6379 2@' ${redis_install_dir}/etc/sentinel.conf
+    sed -i 's@^sentinel monitor mymaster 127.0.0.1 6379 2@sentinel monitor mymaster 10.177.3.7 6379 2@' ${redis_install_dir}/etc/sentinel.conf
     sed -i 's@^# sentinel auth-pass <master-name> <password>@sentinel auth-pass mymaster S2yqJBa5yCK53uQ36tfF@' ${redis_install_dir}/etc/sentinel.conf
     # redis_maxmemory=`expr $Mem / 8`000000
     # [ -z "`grep ^maxmemory ${redis_install_dir}/etc/redis.conf`" ] && sed -i "s@maxmemory <bytes>@maxmemory <bytes>\nmaxmemory `expr $Mem / 8`000000@" ${redis_install_dir}/etc/redis.conf
@@ -55,7 +57,7 @@ Install_redis_server() {
     rm -rf redis-${redis_ver}
     id -u redis >/dev/null 2>&1
     [ $? -ne 0 ] && useradd -M -s /sbin/nologin redis
-    chown -R redis:redis ${redis_install_dir}/{var,etc}
+    chown -R redis:redis ${redis_install_dir}/
 
     if [ -e /bin/systemctl ]; then
       /bin/cp ../init.d/redis-server.service /lib/systemd/system/
@@ -70,7 +72,7 @@ Install_redis_server() {
     #[ -z "`grep 'vm.overcommit_memory' /etc/sysctl.conf`" ] && echo 'vm.overcommit_memory = 1' >> /etc/sysctl.conf
     #sysctl -p
     service redis-server start
-    su -s /bin/bash -c "/data/thirdAssembly/redis/bin/redis-sentinel /data/thirdAssembly/redis/etc/sentinel.conf" redis
+    su -s /bin/bash -c "${redis_install_dir}/bin/redis-sentinel ${redis_install_dir}/etc/sentinel.conf" redis
   else
     rm -rf ${redis_install_dir}
     echo "${CFAILURE}Redis-server install failed, Please contact the author! ${CEND}" && lsb_release -a

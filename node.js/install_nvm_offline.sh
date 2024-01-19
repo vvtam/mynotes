@@ -1,3 +1,5 @@
+## https://github.com/nvm-sh/nvm
+
 NVM_VERSION="nvm-0.39.5"
 unzip "${NVM_VERSION}.zip"
 export NVM_DIR="$HOME/.nvm" && (

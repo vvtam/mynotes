@@ -27,17 +27,19 @@ pt-table-checksum --nocheck-binlog-format --nocheck-plan --nocheck-replication-f
 
 ```
 # 第一次完整备份
-./innobackupex --defaults-file=/etc/my.cnf --user=root --password='password' /home/pxb_backup/full
-# 第二次把日志写入
-./innobackupex --defaults-file=/etc/my.cnf --user=root --password='password' --apply-log /home/pxb_backup/full/时间
+./bin/xtrabackup --defaults-file=/etc/my.cnf --user=root --password='password' --port=3306 --socket=/data/mysql/mysql.sock --backup --target-dir=/home/pxb_backup/full
+# 第二次 
+If you intend the backup to be the basis for further incremental backups, you should use the xtrabackup --apply-log-only option when preparing the backup, or you will not be able to apply incremental backups to it. See the documentation on preparing [incremental backup] (incremental_backup.md#incremental-backup) for more details.
+./bin/xtrabackup --prepare --target-dir=/data/backups/
 
 # 恢复
-
-恢复准备
-./innobackupex --defaults-file=/etc/my.cnf --user=root --password='password' --use-memory=16G --apply-log /home/pxb_backup/full/2017-05-27_17-06-51/
-
 确认数据库是关闭的，并且datadir，目录下为空(一般备份之前目录，新建mysql的各种目录)
-./innobackupex --defaults-file=/etc/my.cnf --user=root --password='password' --use-memory=16G --copy-back /home/pxb_backup/full/2017-05-27_17-06-51/
+Backup needs to be prepared before it can be restored.
+$ xtrabackup --copy-back --target-dir=/data/backups/
+If you don’t want to save your backup, you can use the xtrabackup --move-back option which will move the backed up data to the datadir.
+If you don’t want to use any of the above options, you can additionally use rsync or cp to restore the files.
+Note
+The datadir must be empty before restoring the backup. Also it’s important to note that MySQL server needs to be shut down before restore is performed. You can’t restore to a datadir of a running mysqld instance (except when importing a partial backup).
 ```
 ## Stream and compress
 ```

@@ -1,8 +1,8 @@
 #!/bin/bash
 
-mysql_version=5.7.33
-mysql_install_dir=/web/soft/mysql
-mysql_data_dir=/web/data/mysql
+mysql_version=5.7.43
+mysql_install_dir=/apprun/mysql
+mysql_data_dir=/apprun/data/mysql
 mysql_cnf_path=/etc/my.cnf
 
 cd $(pwd)/src
@@ -33,7 +33,7 @@ chkconfig --add mysqld
 service mysqld start
 
 # update mysql root password
-${mysql_install_dir}/bin/mysql -uroot -e "flush privileges; alter user 'root'@'localhost' identified by 'fn2dB2rhn6hBBzgv6KYZ';"
+${mysql_install_dir}/bin/mysql -uroot -e "flush privileges; alter user 'root'@'localhost' identified by 'yourpassword';"
 
 # add mysql to PATH
 

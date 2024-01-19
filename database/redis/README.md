@@ -44,8 +44,16 @@ SISMEMBER key member
 SADD key member
 
 SREM
+SREM key member
 
 scard key  数量
 
 SMEMBERS key 
 echo "SMEMBERS iptv:data:cqcm:auth:white_set" | /data/redis/src/redis-cli -h 10.191.184.112 -n 1 -a auth >> id.txt
+
+#scan 命令
+scan 0 match travelCountry* count 1000
+
+SSCAN key 0  count 10
+SSCAN key 0 match member*
+

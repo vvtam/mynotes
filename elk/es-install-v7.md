@@ -52,4 +52,4 @@ elasticsearch启动后
 
 访问验证
 
-`curl -u elastic:************** -XGET 'http://127.0.0.1:9400/_cat/nodes?v'`
+`curl -u elastic:pw -XGET 'http://127.0.0.1:9200/_cat/nodes?v'`

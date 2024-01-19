@@ -7,9 +7,10 @@ make install
 ```
 安装一些依赖
 ln -s libmysqlclient.so.18.0.0 libmysqlclient.so
-yum install mariadb-devel（或者mysql-devel）
-um install libxml2.x86_64 libxml2-devel.x86_64
+yum install mariadb-devel（或者mysql-devel）,推荐用mariadb，新版系统mysql 8和zabbix 兼容问题
+yum install libxml2.x86_64 libxml2-devel.x86_64
 yum install libcurl libcurl-devel
+yum install net-snmp-devel
 ```
 ##zabbix proxy##
 ./configure --prefix=/usr/local/zabbix --enable-proxy --enable-agent --with-mysql --with-net-snmp --with-libcurl --with-libxml2
